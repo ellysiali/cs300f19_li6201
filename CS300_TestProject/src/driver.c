@@ -16,6 +16,7 @@
 int main()
 {
 	print42();
+	printf("\nEllysia Li\n");
 
 	return EXIT_SUCCESS;
 }
