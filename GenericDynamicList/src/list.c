@@ -93,22 +93,6 @@ int lstSize (const ListPtr psList)
 }
 
 /**************************************************************************
- Function: 	 	lstIsFull
-
- Description: Checks if the list is full
-
- Parameters:	psList - pointer to a list
-
- Returned:	 	Returns true if list is full otherwise false
- *************************************************************************/
-bool lstIsFull (const ListPtr psList)
-{
-// results: If list is full, return true; otherwise, return false
-// 					error code priority: ERROR_INVALID_LIST
-	return true;
-}
-
-/**************************************************************************
  Function: 	 	lstIsEmpty
 
  Description: Checks if the list is empty
@@ -165,7 +149,7 @@ bool lstHasNext (const ListPtr psList)
 
  Parameters:	psList  - pointer to a list
  	 	 	 	 	 	  pBuffer - void pointer used to store the value
- 	 	 	 	 	 	  size    - size of the
+ 	 	 	 	 	 	  size    - size of value
 
  Returned:	 	Pointer to the buffer of the peek value
  *************************************************************************/
@@ -187,7 +171,7 @@ void *lstPeek (const ListPtr psList, void *pBuffer, int size)
 
  Parameters:	psList  - pointer to a list
  	 	 	 	 	 	  pBuffer - void pointer used to store the value
- 	 	 	 	 	 	  size    - size of the
+ 	 	 	 	 	 	  size    - size of value
 
  Returned:	 	Pointer to the buffer of the peek value
  *************************************************************************/
@@ -209,39 +193,36 @@ void *lstPeekNext (const ListPtr psList, void *pBuffer, int size)
 
  Parameters:	psList  - pointer to a list
  	 	 	 	 	 	  pBuffer - void pointer used to store the value
- 	 	 	 	 	 	  size    - size of the
+ 	 	 	 	 	 	  size    - size of value
 
  Returned:	 	Pointer to the buffer with the first element's value
  *************************************************************************/
-void *lstFirst (ListPtr psList, void *pBuffer, int size)
+void lstFirst (ListPtr psList)
 {
 	// requires:  List is not empty
-	// results: 	If the list is not empty, the value of the first element is
-	//						returned and current is changed to the first element
-	//          	error code priority: ERROR_INVALID_LIST, ERROR_NULL_PTR,
-	//															 	 ERROR_EMPTY_LIST
-	return pBuffer;
+	// results: 	If the list is not empty, current is changed to the first element
+	//          	error code priority: ERROR_INVALID_LIST,
+	//										  ERROR_EMPTY_LIST
 }
 
 /**************************************************************************
- Function: 	 	lstFirst
+ Function: 	 	lstNext
 
  Description: Changes psCurrent to the next element in the list
 
  Parameters:	psList  - pointer to a list
  	 	 	 	 	 	  pBuffer - void pointer used to store the value
- 	 	 	 	 	 	  size    - size of the
+ 	 	 	 	 	 	  size    - size of value
 
  Returned:	 	Pointer to the buffer with the former psCurrent's value
  *************************************************************************/
-void *lstNext (ListPtr psList, void *pBuffer, int size)
+void lstNext (ListPtr psList)
 {
 	// requires:  List is not empty
-	// results:   The value of the current element is returned
-	// IMPORTANT: Current is changed to the successor of the current element
-	//            error code priority: ERROR_INVALID_LIST, ERROR_NULL_PTR,
-	//																 ERROR_EMPTY_LIST, ERROR_NO_CURRENT
-	return pBuffer;
+	// results:   If the list is not empty, current is changed to the
+	//						successor of the current element
+	//            error code priority: ERROR_INVALID_LIST,
+	//										 ERROR_EMPTY_LIST, ERROR_NO_CURRENT
 }
 
 /**************************************************************************
@@ -251,18 +232,17 @@ void *lstNext (ListPtr psList, void *pBuffer, int size)
 
  Parameters:	psList  - pointer to a list
  	 	 	 	 	 	  pBuffer - void pointer used to store the value
- 	 	 	 	 	 	  size    - size of the
+ 	 	 	 	 	 	  size    - size of value
 
  Returned:	 	Pointer to the buffer with the last element's value
  *************************************************************************/
-void *lstLast (ListPtr psList, void *pBuffer, int size)
+void lstLast (ListPtr psList)
 {
 	// requires:  List is not empty
-	// results:   The value of the last element is returned
-	// IMPORTANT: Current is changed to last if it exists
-	//            error code priority: ERROR_INVALID_LIST, ERROR_NULL_PTR,
-	//																 ERROR_EMPTY_LIST
-	return pBuffer;
+	// results:   If the list is not empty, current is changed to last
+	//						if it exists
+	//            error code priority: ERROR_INVALID_LIST,
+	//										 ERROR_EMPTY_LIST
 }
 
 /**************************************************************************
@@ -273,7 +253,7 @@ void *lstLast (ListPtr psList, void *pBuffer, int size)
 
  Parameters:	psList  - pointer to a list
  	 	 	 	 	 	  pBuffer - void pointer used to store the value
- 	 	 	 	 	 	  size    - size of the
+ 	 	 	 	 	 	  size    - size of value
 
  Returned:	 	None
  *************************************************************************/
@@ -295,7 +275,7 @@ void lstInsertAfter (ListPtr psList, const void *pBuffer, int size)
 
  Parameters:	psList  - pointer to a list
  	 	 	 	 	 	  pBuffer - void pointer used to store the value
- 	 	 	 	 	 	  size    - size of the
+ 	 	 	 	 	 	  size    - size of value
 
  Returned:	 	Pointer to the buffer with the last element's value
  *************************************************************************/
@@ -320,7 +300,7 @@ void *lstDeleteCurrent (ListPtr psList, void *pBuffer, int size)
 
  Parameters:	psList  - pointer to a list
  	 	 	 	 	 	  pBuffer - void pointer used to store the value
- 	 	 	 	 	 	  size    - size of the
+ 	 	 	 	 	 	  size    - size of value
 
  Returned:	 	Pointer to the buffer with the last element's value
  *************************************************************************/
@@ -343,7 +323,7 @@ void lstInsertBefore (ListPtr psList, const void *pBuffer,
 
  Parameters:	psList  - pointer to a list
  	 	 	 	 	 	  pBuffer - void pointer used to store the value
- 	 	 	 	 	 	  size    - size of the
+ 	 	 	 	 	 	  size    - size of value
 
  Returned:	 	None
  *************************************************************************/
@@ -358,3 +338,16 @@ void lstUpdateCurrent (ListPtr psList, const void *pBuffer,
 	//					  so free data, then reallocate based on size before updating
 }
 
+/**************************************************************************
+ Function: 	 	lstReverse
+
+ Description: Reverse the order of the list
+
+ Parameters:	psList  - pointer to a list
+
+ Returned:	 	None
+ *************************************************************************/
+void lstReverse(ListPtr psList)
+{
+
+}

@@ -1,7 +1,7 @@
 /**************************************************************************
  File name:		  list.h
  Author:        CS, Pacific University
- Date:          10.4.17
+ Date:          09.19.2019
  Class:         CS300
  Assignment:    List Interface
  Purpose:       This file defines the constants, data structures, and
@@ -95,16 +95,12 @@ extern int lstSize (const ListPtr psList);
 // results: Returns the number of elements in the list
 // 					error code priority: ERROR_INVALID_LIST
 
-extern bool lstIsFull (const ListPtr psList);
-// results: If list is full, return true; otherwise, return false
-// 					error code priority: ERROR_INVALID_LIST
-
 extern bool lstIsEmpty (const ListPtr psList);
 // results: If list is empty, return true; otherwise, return false
 // 					error code priority: ERROR_INVALID_LIST
 
 //*************************************************************************
-//												List Testing
+//										List Testing
 //*************************************************************************
 extern bool lstHasCurrent (const ListPtr psList);
 // results: Returns true if the current node is not NULL; otherwise, false
@@ -117,46 +113,45 @@ extern bool lstHasNext (const ListPtr psList);
  // 				 error code priority: ERROR_INVALID_LIST
 
 //*************************************************************************
-//													Peek Operations
+//										Peek Operations
 //*************************************************************************
 extern void *lstPeek (const ListPtr psList, void *pBuffer, int size);
 // requires:  List is not empty
 // results:   The value of the current element is returned
 // IMPORTANT: Do not change current
 //            error code priority: ERROR_INVALID_LIST, ERROR_NULL_PTR,
-//											           ERROR_EMPTY_LIST, ERROR_NO_CURRENT
+//										           ERROR_EMPTY_LIST, ERROR_NO_CURRENT
 
 extern void *lstPeekNext (const ListPtr psList, void *pBuffer, int size);
 // requires:  List contains two or more elements and current is not last
 // results:   The data value of current's successor is returned
 // IMPORTANT: Do not change current
 //            error code priority: ERROR_INVALID_LIST, ERROR_NULL_PTR,
-//											           ERROR_EMPTY_LIST, ERROR_NO_CURRENT,
-//																 ERROR_NO_NEXT
+//										           ERROR_EMPTY_LIST, ERROR_NO_CURRENT,
+//										 ERROR_NO_NEXT
 
 //*************************************************************************
-//							Retrieving values and updating current
+//							Updating current
 //*************************************************************************
-extern void *lstFirst (ListPtr psList, void *pBuffer, int size);
+extern void lstFirst (ListPtr psList);
 // requires:  List is not empty
-// results: 	If the list is not empty, the value of the first element is
-//						returned and current is changed to the first element
-//          	error code priority: ERROR_INVALID_LIST, ERROR_NULL_PTR,
-//															 	 ERROR_EMPTY_LIST
+// results: 	If the list is not empty, current is changed to the first element
+//          	error code priority: ERROR_INVALID_LIST,
+//										  ERROR_EMPTY_LIST
 
-extern void *lstNext (ListPtr psList, void *pBuffer, int size);
+extern void lstNext (ListPtr psList);
 // requires:  List is not empty
-// results:   The value of the current element is returned
-// IMPORTANT: Current is changed to the successor of the current element
-//            error code priority: ERROR_INVALID_LIST, ERROR_NULL_PTR,
-//																 ERROR_EMPTY_LIST, ERROR_NO_CURRENT
+// results:   If the list is not empty, current is changed to the
+//						successor of the current element
+//            error code priority: ERROR_INVALID_LIST,
+//										 ERROR_EMPTY_LIST, ERROR_NO_CURRENT
 
-extern void *lstLast (ListPtr psList, void *pBuffer, int size);
+extern void lstLast (ListPtr psList);
 // requires:  List is not empty
-// results:   The value of the last element is returned
-// IMPORTANT: Current is changed to last if it exists
-//            error code priority: ERROR_INVALID_LIST, ERROR_NULL_PTR,
-//																 ERROR_EMPTY_LIST
+// results:   If the list is not empty, current is changed to last
+//						if it exists
+//            error code priority: ERROR_INVALID_LIST,
+//										 ERROR_EMPTY_LIST
 
 //*************************************************************************
 //									Insertion, Deletion, and Updating
@@ -169,7 +164,7 @@ extern void lstInsertAfter (ListPtr psList, const void *pBuffer, int size);
 //           the current element; otherwise, insert element and make it
 //					 current.
 //           error code priority: ERROR_INVALID_LIST, ERROR_NULL_PTR,
-//																ERROR_NO_CURRENT
+//										ERROR_NO_CURRENT
 
 extern void *lstDeleteCurrent (ListPtr psList, void *pBuffer, int size);
 // requires: List is not empty
@@ -182,17 +177,17 @@ extern void *lstDeleteCurrent (ListPtr psList, void *pBuffer, int size);
 //					                     ERROR_EMPTY_LIST, ERROR_NO_CURRENT
 
 extern void lstInsertBefore (ListPtr psList, const void *pBuffer,
-														 int size);
+										 int size);
 // requires: List is not full
 // results:  If the list is not empty, insert the new element as the
 //           predecessor of the current element and make the inserted
 //           element the current element; otherwise, insert element
 //           and make it current.
 //           error code priority: ERROR_INVALID_LIST, ERROR_NULL_PTR,
-//																ERROR_NO_CURRENT
+//										ERROR_NO_CURRENT
 
 extern void lstUpdateCurrent (ListPtr psList, const void *pBuffer,
-														  int size);
+										  int size);
 // requires: List is not empty
 // results:  The value of pBuffer is copied into the current element
 //            error code priority: ERROR_INVALID_LIST, ERROR_NULL_PTR,
@@ -200,6 +195,6 @@ extern void lstUpdateCurrent (ListPtr psList, const void *pBuffer,
 // IMPORTANT: user could update with smaller, larger, or the same size data
 //					  so free data, then reallocate based on size before updating
 
+extern void lstReverse(ListPtr psList);
 
 #endif /* LIST_H_ */
-
