@@ -1,7 +1,7 @@
 /**************************************************************************
  File name:  list.c
  Author:     Ellysia Li
- Date:			 9.17.2019
+ Date:			 9.24.2019
  Class:			 CS300
  Assignment: GenericDynamicList
  Purpose:    Implementation for a dynamic list of generic elements
@@ -42,8 +42,14 @@ static void processError (const char *pszFunctionName, int errorCode)
  *************************************************************************/
 void lstCreate (ListPtr psList)
 {
-	// results: If the list can be created, then the list exists and is empty;
-	//					otherwise, ERROR_NO_LIST_CREATE if psList is NULL
+	if (NULL == psList)
+	{
+		processError ("lstCreate", ERROR_NO_LIST_CREATE);
+	}
+	psList->psCurrent = NULL;
+	psList->psFirst = NULL;
+	psList->psLast = NULL;
+	psList->numElements = 0;
 }
 
 /**************************************************************************
@@ -57,8 +63,47 @@ void lstCreate (ListPtr psList)
  *************************************************************************/
 void lstTerminate (ListPtr psList)
 {
-	// results: If the list can be terminated, then the list no longer exists
-	// and is empty; otherwise, ERROR_NO_LIST_TERMINATE
+	int i, j;
+	if (NULL == psList)
+	{
+		processError ("lstTerminate", ERROR_NO_LIST_TERMINATE);
+	}
+
+	for (i = psList->numElements; i > 0; i--)
+	{
+		psList->psCurrent = psList->psFirst;
+		for (j = 1; j < i; j++)
+		{
+			psList->psCurrent = psList->psCurrent->psNext;
+		}
+		free (psList->psCurrent->pData);
+		psList->psCurrent->pData = NULL;
+		free (psList->psCurrent);
+		psList->numElements--;
+	}
+	psList->psCurrent = NULL;
+	psList->psFirst = NULL;
+	psList->psLast = NULL;
+
+//	psList->psCurrent = psList->psFirst;
+//	while (NULL != psList->psFirst)
+//	{
+//		while (NULL != psList->psCurrent->psNext)
+//		{
+//			psList->psCurrent = psList->psCurrent->psNext;
+//		}
+//		free (psList->psCurrent->pData);
+//		psList->psCurrent->pData = NULL;
+//		free (psList->psCurrent);
+//
+//		if (psList->psCurrent == psList->psFirst)
+//		{
+//			psList->psFirst = NULL;
+//			psList->psLast = NULL;
+//		}
+//		psList->psCurrent = psList->psFirst;
+//		psList->numElements--;
+//	}
 }
 
 /**************************************************************************
@@ -87,9 +132,11 @@ void lstLoadErrorMessages ()
  *************************************************************************/
 int lstSize (const ListPtr psList)
 {
-	// results: Returns the number of elements in the list
-	// 					error code priority: ERROR_INVALID_LIST
-	return 0;
+	if (NULL ==  psList)
+	{
+		processError ("lstSize", ERROR_INVALID_LIST);
+	}
+	return psList->numElements;
 }
 
 /**************************************************************************
@@ -103,9 +150,11 @@ int lstSize (const ListPtr psList)
  *************************************************************************/
 bool lstIsEmpty (const ListPtr psList)
 {
-	// results: If list is empty, return true; otherwise, return false
-	// 					error code priority: ERROR_INVALID_LIST
-	return true;
+	if (NULL ==  psList)
+	{
+		processError ("lstIsEmpty", ERROR_INVALID_LIST);
+	}
+	return 0 == psList->numElements;
 }
 
 /**************************************************************************
@@ -155,11 +204,23 @@ bool lstHasNext (const ListPtr psList)
  *************************************************************************/
 void *lstPeek (const ListPtr psList, void *pBuffer, int size)
 {
-	// requires:  List is not empty
-	// results:   The value of the current element is returned
-	// IMPORTANT: Do not change current
-	//            error code priority: ERROR_INVALID_LIST, ERROR_NULL_PTR,
-	//											           ERROR_EMPTY_LIST, ERROR_NO_CURRENT
+	if (NULL == psList)
+	{
+		processError ("lstPeek", ERROR_INVALID_LIST);
+	}
+	if (NULL == pBuffer)
+	{
+		processError ("lstPeek", ERROR_NULL_PTR);
+	}
+	if (lstIsEmpty (psList))
+	{
+		processError ("lstPeek", ERROR_EMPTY_LIST);
+	}
+	if (NULL == psList->psCurrent)
+	{
+		processError ("lstPeek", ERROR_NO_CURRENT);
+	}
+	memcpy (pBuffer, psList->psCurrent->pData, size);
 	return pBuffer;
 }
 
@@ -199,10 +260,15 @@ void *lstPeekNext (const ListPtr psList, void *pBuffer, int size)
  *************************************************************************/
 void lstFirst (ListPtr psList)
 {
-	// requires:  List is not empty
-	// results: 	If the list is not empty, current is changed to the first element
-	//          	error code priority: ERROR_INVALID_LIST,
-	//										  ERROR_EMPTY_LIST
+	if (NULL == psList)
+	{
+		processError ("lstFirst", ERROR_INVALID_LIST);
+	}
+	if (lstIsEmpty (psList))
+	{
+		processError ("lstFirst", ERROR_EMPTY_LIST);
+	}
+	psList->psCurrent = psList->psFirst;
 }
 
 /**************************************************************************
@@ -218,11 +284,19 @@ void lstFirst (ListPtr psList)
  *************************************************************************/
 void lstNext (ListPtr psList)
 {
-	// requires:  List is not empty
-	// results:   If the list is not empty, current is changed to the
-	//						successor of the current element
-	//            error code priority: ERROR_INVALID_LIST,
-	//										 ERROR_EMPTY_LIST, ERROR_NO_CURRENT
+	if (NULL == psList)
+	{
+		processError ("lstNext", ERROR_INVALID_LIST);
+	}
+	if (lstIsEmpty (psList))
+	{
+		processError ("lstNext", ERROR_EMPTY_LIST);
+	}
+	if (NULL == psList->psCurrent)
+	{
+		processError ("lstNext", ERROR_NO_CURRENT);
+	}
+	psList->psCurrent = psList->psCurrent->psNext;
 }
 
 /**************************************************************************
@@ -259,13 +333,42 @@ void lstLast (ListPtr psList)
  *************************************************************************/
 void lstInsertAfter (ListPtr psList, const void *pBuffer, int size)
 {
-	// requires: List is not full
-	// results:  If the list is not empty, insert the new element as the
-	//           successor of the current element and make the inserted element
-	//           the current element; otherwise, insert element and make it
-	//					 current.
-	//           error code priority: ERROR_INVALID_LIST, ERROR_NULL_PTR,
-	//																ERROR_NO_CURRENT
+	ListElementPtr psElementBuffer;
+
+	if (NULL == psList)
+	{
+		processError ("lstInsertAfter", ERROR_INVALID_LIST);
+	}
+	if (NULL == pBuffer)
+	{
+		processError ("lstInsertAfter", ERROR_NULL_PTR);
+	}
+	if (0 != psList->numElements && NULL == psList->psCurrent)
+	{
+		processError ("lstInsertAfter", ERROR_NO_CURRENT);
+	}
+
+	psElementBuffer = (ListElementPtr) malloc (sizeof(ListElement));
+	psElementBuffer->pData = malloc (size);
+	memcpy (psElementBuffer->pData, pBuffer, size);
+
+	if (NULL == psList->psCurrent)
+	{
+		psElementBuffer->psNext = NULL;
+		psList->psFirst = psElementBuffer;
+		psList->psLast = psElementBuffer;
+	}
+	else
+	{
+		psElementBuffer->psNext = psList->psCurrent->psNext;
+		psList->psCurrent->psNext = psElementBuffer;
+		if (psList->psCurrent == psList->psLast)
+		{
+			psList->psLast = psElementBuffer;
+		}
+	}
+	psList->psCurrent = psElementBuffer;
+	psList->numElements++;
 }
 
 /**************************************************************************
