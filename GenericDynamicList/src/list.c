@@ -46,9 +46,7 @@ void lstCreate (ListPtr psList)
 	{
 		processError ("lstCreate", ERROR_NO_LIST_CREATE);
 	}
-	psList->psCurrent = NULL;
-	psList->psFirst = NULL;
-	psList->psLast = NULL;
+	psList->psCurrent = psList->psFirst = psList->psLast = NULL;
 	psList->numElements = 0;
 }
 
@@ -63,47 +61,20 @@ void lstCreate (ListPtr psList)
  *************************************************************************/
 void lstTerminate (ListPtr psList)
 {
-	int i, j;
 	if (NULL == psList)
 	{
 		processError ("lstTerminate", ERROR_NO_LIST_TERMINATE);
 	}
 
-	for (i = psList->numElements; i > 0; i--)
+	psList->psCurrent = psList->psFirst;
+	while (0 < psList->numElements)
 	{
-		psList->psCurrent = psList->psFirst;
-		for (j = 1; j < i; j++)
-		{
-			psList->psCurrent = psList->psCurrent->psNext;
-		}
 		free (psList->psCurrent->pData);
-		psList->psCurrent->pData = NULL;
-		free (psList->psCurrent);
+		psList->psFirst = psList->psCurrent;
+		psList->psCurrent = psList->psCurrent->psNext;
+		free (psList->psFirst);
 		psList->numElements--;
 	}
-	psList->psCurrent = NULL;
-	psList->psFirst = NULL;
-	psList->psLast = NULL;
-
-//	psList->psCurrent = psList->psFirst;
-//	while (NULL != psList->psFirst)
-//	{
-//		while (NULL != psList->psCurrent->psNext)
-//		{
-//			psList->psCurrent = psList->psCurrent->psNext;
-//		}
-//		free (psList->psCurrent->pData);
-//		psList->psCurrent->pData = NULL;
-//		free (psList->psCurrent);
-//
-//		if (psList->psCurrent == psList->psFirst)
-//		{
-//			psList->psFirst = NULL;
-//			psList->psLast = NULL;
-//		}
-//		psList->psCurrent = psList->psFirst;
-//		psList->numElements--;
-//	}
 }
 
 /**************************************************************************

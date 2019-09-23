@@ -9,6 +9,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "../include/list.h"
 
 #define MAX_BUFFER_CHARS 64
@@ -90,8 +91,8 @@ int main ()
 	{
 		lstInsertAfter (&sTheList, &i, sizeof(char));
 
-		sprintf (szSuccess, "Added (current) element is %c", i);
-		sprintf (szFailure, "Added (current) element is NOT %c", i);
+		sprintf (szSuccess, "InsertAfter (current) element is %c", i);
+		sprintf (szFailure, "InsertAfter (current) element is NOT %c", i);
 		lstPeek (&sTheList, &charBuffer, sizeof(char));
 		assert (i == charBuffer, szSuccess, szFailure);
 
@@ -107,7 +108,7 @@ int main ()
 	assert ('A' == charBuffer, "lstFirst moved (first) element is A",
 			"lstFirst moved (first) element is NOT A");
 
-	for (i = 'B'; i <= 'E'; i++)
+	for (i = 'B'; i <= 'E'; i++))
 	{
 		lstNext (&sTheList);
 		sprintf (szSuccess, "lstNext element is %c", i);
@@ -117,6 +118,7 @@ int main ()
 	}
 
 	lstTerminate (&sTheList);
+	puts ("");
 	assert (0 == lstSize (&sTheList), "Terminated list size is 0\n",
 			"Terminated list size is NOT 0\n");
 
@@ -125,40 +127,54 @@ int main ()
 	charBuffer = 'C';
 	lstInsertAfter (&sTheList, &charBuffer, sizeof(char));
 	lstPeek (&sTheList, &charBuffer, sizeof(char));
-	assert ('C' == charBuffer, "Added (current) element is C",
-			"Added (current) element is NOT C");
+	assert ('C' == charBuffer, "InsertAfter (current) element is C",
+			"InsertAfter (current) element is NOT C");
 	charBuffer = '3';
 	lstInsertAfter (&sTheList, &charBuffer, sizeof(char));
 	lstPeek (&sTheList, &charBuffer, sizeof(char));
-	assert ('3' == charBuffer, "Added (current) element is 3",
-			"Added (current) element is NOT 3");
+	assert ('3' == charBuffer, "InsertAfter (current) element is 3",
+			"InsertAfter (current) element is NOT 3");
 	charBuffer = '0';
 	lstInsertAfter (&sTheList, &charBuffer, sizeof(char));
 	lstPeek (&sTheList, &charBuffer, sizeof(char));
-	assert ('0' == charBuffer, "Added (current) element is 0",
-			"Added (current) element is NOT 0");
+	assert ('0' == charBuffer, "InsertAfter (current) element is 0",
+			"InsertAfter (current) element is NOT 0");
 
 	lstFirst (&sTheList);
 	charBuffer = 'S';
 	lstInsertAfter (&sTheList, &charBuffer, sizeof(char));
 	lstPeek (&sTheList, &charBuffer, sizeof(char));
-	assert ('S' == charBuffer, "Added (current) element is S (added after C)",
-			"Added (current) element is NOT S (added after C)");
+	assert ('S' == charBuffer,
+			"InsertAfter (current) element is S (attempted to add after C)",
+			"InsertAfter (current) element is NOT S (attempted to add after C)");
 	lstNext (&sTheList);
 	charBuffer = '0';
 	lstInsertAfter (&sTheList, &charBuffer, sizeof(char));
 	lstPeek (&sTheList, &charBuffer, sizeof(char));
-	assert ('0' == charBuffer, "Added (current) element is 0 (added after 3)",
-			"Added (current) element is NOT 0 (added after 3)");
+	assert ('0' == charBuffer,
+			"InsertAfter (current) element is 0 (attempted to add after 3)\n",
+			"InsertAfter (current) element is NOT 0 (attempted to add after 3)\n");
 
 	lstFirst (&sTheList);
-	for (i = 0; i < 5; i++)
-	{
-		lstPeek (&sTheList, &charBuffer, sizeof(char));
-		printf("%c", charBuffer);
-		lstNext (&sTheList);
-	}
-	puts ("");
+	lstPeek (&sTheList, &charBuffer, sizeof(char));
+	assert ('C' == charBuffer, "lstFirst moved (first) element is C",
+			"lstFirst moved (first) element is NOT C");
+	lstNext (&sTheList);
+	lstPeek (&sTheList, &charBuffer, sizeof(char));
+	assert ('S' == charBuffer, "lstNext element is S",
+			"lstNext element is NOT S");
+	lstNext (&sTheList);
+	lstPeek (&sTheList, &charBuffer, sizeof(char));
+	assert ('3' == charBuffer, "lstNext element is 3",
+			"lstNext element is NOT 3");
+	lstNext (&sTheList);
+	lstPeek (&sTheList, &charBuffer, sizeof(char));
+	assert ('0' == charBuffer, "lstNext element is 0",
+			"lstNext element is NOT 0");
+	lstNext (&sTheList);
+	lstPeek (&sTheList, &charBuffer, sizeof(char));
+	assert ('0' == charBuffer, "lstNext element is 0",
+			"lstNext element is NOT 0");
 
 	return EXIT_SUCCESS;
 }
