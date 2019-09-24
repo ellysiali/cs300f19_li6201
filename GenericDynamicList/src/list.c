@@ -1,8 +1,8 @@
 /**************************************************************************
  File name:  list.c
  Author:     Ellysia Li
- Date:			 9.24.2019
- Class:			 CS300
+ Date:		 	 9.24.2019
+ Class:		 	 CS300
  Assignment: GenericDynamicList
  Purpose:    Implementation for a dynamic list of generic elements
  *************************************************************************/
@@ -120,7 +120,7 @@ int lstSize (const ListPtr psList)
  *************************************************************************/
 bool lstIsEmpty (const ListPtr psList)
 {
-	if (NULL ==  psList)
+	if (NULL == psList)
 	{
 		processError ("lstIsEmpty", ERROR_INVALID_LIST);
 	}
@@ -138,7 +138,7 @@ bool lstIsEmpty (const ListPtr psList)
  *************************************************************************/
 bool lstHasCurrent (const ListPtr psList)
 {
-	if (NULL ==  psList)
+	if (NULL == psList)
 	{
 		processError ("lstHasCurrent", ERROR_INVALID_LIST);
 	}
@@ -158,12 +158,12 @@ bool lstHasCurrent (const ListPtr psList)
  *************************************************************************/
 bool lstHasNext (const ListPtr psList)
 {
-	if (NULL ==  psList)
+	if (NULL == psList)
 	{
 		processError ("lstHasNext", ERROR_INVALID_LIST);
 	}
-	 // results: Returns true if the current node has a successor; otherwise,
-	 //					 false is returned
+	// results: Returns true if the current node has a successor; otherwise,
+	//					 false is returned
 	return (true);
 }
 
@@ -173,8 +173,8 @@ bool lstHasNext (const ListPtr psList)
  Description: Looks at the value psCurrent is pointing to in the list
 
  Parameters:	psList  - pointer to a list
- 	 	 	 	 	 	  pBuffer - void pointer used to store the value
- 	 	 	 	 	 	  size    - size of value
+ 	 	 	 	 	 	 	pBuffer - void pointer used to store the value
+ 	 	 	 	 	 	 	size    - size of value
 
  Returned:	 	Pointer to the buffer of the peek value
  *************************************************************************/
@@ -188,7 +188,7 @@ void *lstPeek (const ListPtr psList, void *pBuffer, int size)
 	{
 		processError ("lstPeek", ERROR_NULL_PTR);
 	}
-	if (lstIsEmpty (psList))
+	if (0 == psList->numElements)
 	{
 		processError ("lstPeek", ERROR_EMPTY_LIST);
 	}
@@ -204,21 +204,21 @@ void *lstPeek (const ListPtr psList, void *pBuffer, int size)
  Function: 	 	lstPeekNext
 
  Description: Looks at the value psCurrent's successor is pointing to in the
- 	 	 	 	 	 	  list
+ list
 
  Parameters:	psList  - pointer to a list
- 	 	 	 	 	 	  pBuffer - void pointer used to store the value
- 	 	 	 	 	 	  size    - size of value
+ 	 	 	 	 	 	 	pBuffer - void pointer used to store the value
+ 	 	 	 	 	 	 	size    - size of value
 
  Returned:	 	Pointer to the buffer of the peek value
  *************************************************************************/
 void *lstPeekNext (const ListPtr psList, void *pBuffer, int size)
 {
-	if (NULL ==  psList)
+	if (NULL == psList)
 	{
 		processError ("lstPeekNext", ERROR_INVALID_LIST);
 	}
-	if (NULL ==  pBuffer)
+	if (NULL == pBuffer)
 	{
 		processError ("lstPeekNext", ERROR_NULL_PTR);
 	}
@@ -245,8 +245,8 @@ void *lstPeekNext (const ListPtr psList, void *pBuffer, int size)
  Description: Changes psCurrent to the first element in the list
 
  Parameters:	psList  - pointer to a list
- 	 	 	 	 	 	  pBuffer - void pointer used to store the value
- 	 	 	 	 	 	  size    - size of value
+						 	pBuffer - void pointer used to store the value
+						 	size    - size of value
 
  Returned:	 	Pointer to the buffer with the first element's value
  *************************************************************************/
@@ -256,7 +256,7 @@ void lstFirst (ListPtr psList)
 	{
 		processError ("lstFirst", ERROR_INVALID_LIST);
 	}
-	if (lstIsEmpty (psList))
+	if (0 == psList->numElements)
 	{
 		processError ("lstFirst", ERROR_EMPTY_LIST);
 	}
@@ -269,8 +269,8 @@ void lstFirst (ListPtr psList)
  Description: Changes psCurrent to the next element in the list
 
  Parameters:	psList  - pointer to a list
- 	 	 	 	 	 	  pBuffer - void pointer used to store the value
- 	 	 	 	 	 	  size    - size of value
+							pBuffer - void pointer used to store the value
+							size    - size of value
 
  Returned:	 	Pointer to the buffer with the former psCurrent's value
  *************************************************************************/
@@ -280,7 +280,7 @@ void lstNext (ListPtr psList)
 	{
 		processError ("lstNext", ERROR_INVALID_LIST);
 	}
-	if (lstIsEmpty (psList))
+	if (0 == psList->numElements)
 	{
 		processError ("lstNext", ERROR_EMPTY_LIST);
 	}
@@ -297,8 +297,8 @@ void lstNext (ListPtr psList)
  Description: Changes psCurrent to the last element in the list
 
  Parameters:	psList  - pointer to a list
- 	 	 	 	 	 	  pBuffer - void pointer used to store the value
- 	 	 	 	 	 	  size    - size of value
+							pBuffer - void pointer used to store the value
+							size    - size of value
 
  Returned:	 	Pointer to the buffer with the last element's value
  *************************************************************************/
@@ -308,7 +308,7 @@ void lstLast (ListPtr psList)
 	{
 		processError ("lstLast", ERROR_INVALID_LIST);
 	}
-	if (lstIsEmpty (psList))
+	if (0 == psList->numElements)
 	{
 		processError ("lstLast", ERROR_EMPTY_LIST);
 	}
@@ -321,11 +321,11 @@ void lstLast (ListPtr psList)
  Function: 	 	lstInsertAfter
 
  Description: Insert the new element as the successor of the current element
- 	 	 	 	 	 	  (and make the inserted element the current element)
+ (and make the inserted element the current element)
 
  Parameters:	psList  - pointer to a list
- 	 	 	 	 	 	  pBuffer - void pointer used to store the value
- 	 	 	 	 	 	  size    - size of value
+							pBuffer - void pointer used to store the value
+							size    - size of value
 
  Returned:	 	None
  *************************************************************************/
@@ -375,8 +375,8 @@ void lstInsertAfter (ListPtr psList, const void *pBuffer, int size)
  Description: Deletes the current element and adjusts successor and predecessor
 
  Parameters:	psList  - pointer to a list
- 	 	 	 	 	 	  pBuffer - void pointer used to store the value
- 	 	 	 	 	 	  size    - size of value
+							pBuffer - void pointer used to store the value
+							size    - size of value
 
  Returned:	 	Pointer to the buffer with the last element's value
  *************************************************************************/
@@ -411,16 +411,15 @@ void *lstDeleteCurrent (ListPtr psList, void *pBuffer, int size)
  Function: 	 	lstInsertBefore
 
  Description: Insert the new element as the predecessor of the current element
- 	 	 	 	 	 	  (and make the inserted element the current element)
+ (and make the inserted element the current element)
 
  Parameters:	psList  - pointer to a list
- 	 	 	 	 	 	  pBuffer - void pointer used to store the value
- 	 	 	 	 	 	  size    - size of value
+							pBuffer - void pointer used to store the value
+							size    - size of value
 
  Returned:	 	Pointer to the buffer with the last element's value
  *************************************************************************/
-void lstInsertBefore (ListPtr psList, const void *pBuffer,
-														 int size)
+void lstInsertBefore (ListPtr psList, const void *pBuffer, int size)
 {
 	if (NULL == psList)
 	{
@@ -447,13 +446,12 @@ void lstInsertBefore (ListPtr psList, const void *pBuffer,
  Description: Update the current element's value to the value of pBuffer
 
  Parameters:	psList  - pointer to a list
- 	 	 	 	 	 	  pBuffer - void pointer used to store the value
- 	 	 	 	 	 	  size    - size of value
+							pBuffer - void pointer used to store the value
+							size    - size of value
 
  Returned:	 	None
  *************************************************************************/
-void lstUpdateCurrent (ListPtr psList, const void *pBuffer,
-														  int size)
+void lstUpdateCurrent (ListPtr psList, const void *pBuffer, int size)
 {
 	if (NULL == psList)
 	{
@@ -486,7 +484,7 @@ void lstUpdateCurrent (ListPtr psList, const void *pBuffer,
 
  Returned:	 	None
  *************************************************************************/
-void lstReverse(ListPtr psList)
+void lstReverse (ListPtr psList)
 {
 	if (NULL == psList)
 	{

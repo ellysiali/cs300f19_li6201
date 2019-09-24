@@ -15,7 +15,7 @@
 #define CHAR_START 65
 #define CHAR_END 69
 #define INT_START 1
-#define INT_END 5
+#define INT_END 10
 
 /****************************************************************************
  Function: 	 	success
@@ -141,7 +141,6 @@ int main ()
 	}
 
 	lstFirst (&sTheList);
-
 	for (j = INT_START; j <= INT_END; j++)
 	{
 		if (0 == j % 2)
@@ -158,7 +157,6 @@ int main ()
 	}
 
 	puts ("");
-
 	lstFirst (&sTheList);
 	lstPeek (&sTheList, &intBuffer, sizeof(int));
 	assert (INT_START == intBuffer, "lstFirst moved (first) element is 1",
