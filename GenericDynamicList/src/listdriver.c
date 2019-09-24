@@ -1,18 +1,21 @@
 /**************************************************************************
  File name:  listdriver.c
  Author:     Ellysia Li
- Date:			 9.24.2019
- Class:			 CS300
+ Date:		 	 9.24.2019
+ Class:		 	 CS300
  Assignment: GenericDynamicList
  Purpose:    Test driver for a dynamic list of generic elements
  *************************************************************************/
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include "../include/list.h"
 
-#define MAX_BUFFER_CHARS 64
+#define MAX_BUFFER_CHARS 100
+#define CHAR_START 65
+#define CHAR_END 69
+#define INT_START 1
+#define INT_END 5
 
 /****************************************************************************
  Function: 	 	success
@@ -44,14 +47,14 @@ static void failure (char *pszStr)
 }
 
 /****************************************************************************
- Function: 	 	assert
+ Function: 	 		assert
 
- Description: if the expression is true, assert success; otherwise, assert
- 	 	 	 	 	    failure
+ Description: 	if the expression is true, assert success; otherwise, assert
+ 	 	 	 	 	 	 	  failure
 
- Parameters:	szStr - the message to print
+ Parameters:		szStr - the message to print
 
- Returned:	 	none
+ Returned:	 		none
  ****************************************************************************/
 static void assert (bool bExpression, char *pTrue, char *pFalse)
 {
@@ -78,6 +81,7 @@ int main ()
 {
 	List sTheList;
 	char i, charBuffer, szSuccess[MAX_BUFFER_CHARS], szFailure[MAX_BUFFER_CHARS];
+	int j, intBuffer;
 
 	lstLoadErrorMessages ();
 
@@ -87,7 +91,7 @@ int main ()
 	assert (lstIsEmpty (&sTheList), "Initial list is empty\n",
 			"Initial list is NOT empty\n");
 
-	for (i = 'A'; i <= 'E'; i++)
+	for (i = CHAR_START; i <= CHAR_END; i++)
 	{
 		lstInsertAfter (&sTheList, &i, sizeof(char));
 
@@ -96,19 +100,19 @@ int main ()
 		lstPeek (&sTheList, &charBuffer, sizeof(char));
 		assert (i == charBuffer, szSuccess, szFailure);
 
-		sprintf (szSuccess, "List size is %d", i - 'A' + 1);
-		sprintf (szFailure, "List size is NOT %d", i - 'A' + 1);
-		assert (i - 'A' + 1 == lstSize (&sTheList), szSuccess, szFailure);
+		sprintf (szSuccess, "List size is %d", i - CHAR_START + 1);
+		sprintf (szFailure, "List size is NOT %d", i - CHAR_START + 1);
+		assert (i - CHAR_START + 1 == lstSize (&sTheList), szSuccess, szFailure);
 
 		assert (!lstIsEmpty (&sTheList), "List is NOT empty\n", "List is empty\n");
 	}
 
 	lstFirst (&sTheList);
 	lstPeek (&sTheList, &charBuffer, sizeof(char));
-	assert ('A' == charBuffer, "lstFirst moved (first) element is A",
+	assert (CHAR_START == charBuffer, "lstFirst moved (first) element is A",
 			"lstFirst moved (first) element is NOT A");
 
-	for (i = 'B'; i <= 'E'; i++))
+	for (i = CHAR_START + 1; i <= CHAR_END; i++)
 	{
 		lstNext (&sTheList);
 		sprintf (szSuccess, "lstNext element is %c", i);
@@ -124,57 +128,50 @@ int main ()
 
 	lstCreate (&sTheList);
 
-	charBuffer = 'C';
-	lstInsertAfter (&sTheList, &charBuffer, sizeof(char));
-	lstPeek (&sTheList, &charBuffer, sizeof(char));
-	assert ('C' == charBuffer, "InsertAfter (current) element is C",
-			"InsertAfter (current) element is NOT C");
-	charBuffer = '3';
-	lstInsertAfter (&sTheList, &charBuffer, sizeof(char));
-	lstPeek (&sTheList, &charBuffer, sizeof(char));
-	assert ('3' == charBuffer, "InsertAfter (current) element is 3",
-			"InsertAfter (current) element is NOT 3");
-	charBuffer = '0';
-	lstInsertAfter (&sTheList, &charBuffer, sizeof(char));
-	lstPeek (&sTheList, &charBuffer, sizeof(char));
-	assert ('0' == charBuffer, "InsertAfter (current) element is 0",
-			"InsertAfter (current) element is NOT 0");
+	for (j = INT_START; j <= INT_END; j++)
+	{
+		if (1 == j % 2)
+		{
+			lstInsertAfter (&sTheList, &j, sizeof(int));
+			sprintf (szSuccess, "InsertAfter (current) element is %d", j);
+			sprintf (szFailure, "InsertAfter (current) element is NOT %d", j);
+			lstPeek (&sTheList, &intBuffer, sizeof(int));
+			assert (j == intBuffer, szSuccess, szFailure);
+		}
+	}
 
 	lstFirst (&sTheList);
-	charBuffer = 'S';
-	lstInsertAfter (&sTheList, &charBuffer, sizeof(char));
-	lstPeek (&sTheList, &charBuffer, sizeof(char));
-	assert ('S' == charBuffer,
-			"InsertAfter (current) element is S (attempted to add after C)",
-			"InsertAfter (current) element is NOT S (attempted to add after C)");
-	lstNext (&sTheList);
-	charBuffer = '0';
-	lstInsertAfter (&sTheList, &charBuffer, sizeof(char));
-	lstPeek (&sTheList, &charBuffer, sizeof(char));
-	assert ('0' == charBuffer,
-			"InsertAfter (current) element is 0 (attempted to add after 3)\n",
-			"InsertAfter (current) element is NOT 0 (attempted to add after 3)\n");
+
+	for (j = INT_START; j <= INT_END; j++)
+	{
+		if (0 == j % 2)
+		{
+			lstInsertAfter (&sTheList, &j, sizeof(int));
+			sprintf (szSuccess, "InsertAfter (current) element is %d "
+					"(attempted to add after %d)", j, j - 1);
+			sprintf (szFailure, "InsertAfter (current) element is NOT %d "
+					"(attempted to add after %d)", j, j - 1);
+			lstPeek (&sTheList, &intBuffer, sizeof(int));
+			assert (j == intBuffer, szSuccess, szFailure);
+			lstNext (&sTheList);
+		}
+	}
+
+	puts ("");
 
 	lstFirst (&sTheList);
-	lstPeek (&sTheList, &charBuffer, sizeof(char));
-	assert ('C' == charBuffer, "lstFirst moved (first) element is C",
-			"lstFirst moved (first) element is NOT C");
-	lstNext (&sTheList);
-	lstPeek (&sTheList, &charBuffer, sizeof(char));
-	assert ('S' == charBuffer, "lstNext element is S",
-			"lstNext element is NOT S");
-	lstNext (&sTheList);
-	lstPeek (&sTheList, &charBuffer, sizeof(char));
-	assert ('3' == charBuffer, "lstNext element is 3",
-			"lstNext element is NOT 3");
-	lstNext (&sTheList);
-	lstPeek (&sTheList, &charBuffer, sizeof(char));
-	assert ('0' == charBuffer, "lstNext element is 0",
-			"lstNext element is NOT 0");
-	lstNext (&sTheList);
-	lstPeek (&sTheList, &charBuffer, sizeof(char));
-	assert ('0' == charBuffer, "lstNext element is 0",
-			"lstNext element is NOT 0");
+	lstPeek (&sTheList, &intBuffer, sizeof(int));
+	assert (INT_START == intBuffer, "lstFirst moved (first) element is 1",
+			"lstFirst moved (first) element is NOT 1");
 
-	return EXIT_SUCCESS;
+	for (j = INT_START + 1; j <= INT_END; j++)
+	{
+		lstNext (&sTheList);
+		sprintf (szSuccess, "lstNext element is %d", j);
+		sprintf (szFailure, "lstNext element is NOT %d", j);
+		lstPeek (&sTheList, &intBuffer, sizeof(int));
+		assert (j == intBuffer, szSuccess, szFailure);
+	}
+
+	return (EXIT_SUCCESS);
 }
