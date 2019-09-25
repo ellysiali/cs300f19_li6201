@@ -112,13 +112,13 @@ int main ()
 	assert (CHAR_START == charBuffer, "lstFirst moved (first) element is A",
 			"lstFirst moved (first) element is NOT A");
 
-	for (i = CHAR_START + 1; i <= CHAR_END; i++)
+	for (i = CHAR_START + 1; CHAR_END >= i; i++)
 	{
 		lstNext (&sTheList);
 		sprintf (szSuccess, "lstNext element is %c", i);
 		sprintf (szFailure, "lstNext element is NOT %c", i);
 		lstPeek (&sTheList, &charBuffer, sizeof(char));
-		assert (i == charBuffer, szSuccess, szFailure);
+		assert (charBuffer == i, szSuccess, szFailure);
 	}
 
 	lstTerminate (&sTheList);
@@ -136,12 +136,12 @@ int main ()
 			sprintf (szSuccess, "InsertAfter (current) element is %d", j);
 			sprintf (szFailure, "InsertAfter (current) element is NOT %d", j);
 			lstPeek (&sTheList, &intBuffer, sizeof(int));
-			assert (j == intBuffer, szSuccess, szFailure);
+			assert (intBuffer == j, szSuccess, szFailure);
 		}
 	}
 
 	lstFirst (&sTheList);
-	for (j = INT_START; j <= INT_END; j++)
+	for (j = INT_START; INT_END >= j; j++)
 	{
 		if (0 == j % 2)
 		{
@@ -151,7 +151,7 @@ int main ()
 			sprintf (szFailure, "InsertAfter (current) element is NOT %d "
 					"(attempted to add after %d)", j, j - 1);
 			lstPeek (&sTheList, &intBuffer, sizeof(int));
-			assert (j == intBuffer, szSuccess, szFailure);
+			assert (intBuffer == j, szSuccess, szFailure);
 			lstNext (&sTheList);
 		}
 	}
@@ -162,7 +162,7 @@ int main ()
 	assert (INT_START == intBuffer, "lstFirst moved (first) element is 1",
 			"lstFirst moved (first) element is NOT 1");
 
-	for (j = INT_START + 1; j <= INT_END; j++)
+	for (j = INT_START + 1; INT_END >= j; j++)
 	{
 		lstNext (&sTheList);
 		sprintf (szSuccess, "lstNext element is %d", j);
