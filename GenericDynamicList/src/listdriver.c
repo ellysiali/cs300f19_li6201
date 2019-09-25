@@ -123,8 +123,10 @@ int main ()
 
 	lstTerminate (&sTheList);
 	puts ("");
-	assert (0 == lstSize (&sTheList), "Terminated list size is 0\n",
-			"Terminated list size is NOT 0\n");
+	assert (0 == lstSize (&sTheList), "Terminated list size is 0",
+			"Terminated list size is NOT 0");
+	assert (lstIsEmpty (&sTheList), "Terminated list is empty\n",
+			"Terminated list is NOT empty\n");
 
 	lstCreate (&sTheList);
 
