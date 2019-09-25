@@ -473,20 +473,3 @@ void lstUpdateCurrent (ListPtr psList, const void *pBuffer, int size)
 	// IMPORTANT: user could update with smaller, larger, or the same size data
 	//					  so free data, then reallocate based on size before updating
 }
-
-/**************************************************************************
- Function: 	 	lstReverse
-
- Description: Reverse the order of the list
-
- Parameters:	psList  - pointer to a list
-
- Returned:	 	None
- *************************************************************************/
-void lstReverse (ListPtr psList)
-{
-	if (NULL == psList)
-	{
-		processError ("lstUpdateCurrent", ERROR_INVALID_LIST);
-	}
-}

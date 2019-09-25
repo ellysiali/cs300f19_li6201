@@ -195,6 +195,4 @@ extern void lstUpdateCurrent (ListPtr psList, const void *pBuffer,
 // IMPORTANT: user could update with smaller, larger, or the same size data
 //					  so free data, then reallocate based on size before updating
 
-extern void lstReverse(ListPtr psList);
-
 #endif /* LIST_H_ */
