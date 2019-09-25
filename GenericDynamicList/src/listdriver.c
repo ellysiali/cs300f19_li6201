@@ -171,5 +171,7 @@ int main ()
 		assert (j == intBuffer, szSuccess, szFailure);
 	}
 
+	lstTerminate (&sTheList);
+
 	return (EXIT_SUCCESS);
 }
