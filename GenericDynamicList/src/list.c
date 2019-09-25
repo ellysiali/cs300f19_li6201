@@ -64,7 +64,6 @@ void lstTerminate (ListPtr psList)
 	{
 		processError ("lstTerminate", ERROR_NO_LIST_TERMINATE);
 	}
-
 	psList->psCurrent = psList->psFirst;
 	while (0 < psList->numElements)
 	{
