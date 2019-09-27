@@ -294,9 +294,9 @@ int main ()
 	}
 	assert (0 == lstSize (&sTheList), "Fully deleted list size is 0",
 			"Fully deleted list size is NOT 0");
-	assert (lstIsEmpty (&sTheList), "Terminated list is empty",
+	assert (lstIsEmpty (&sTheList), "Fully deleted list is empty",
 			"Fully deleted list is NOT empty");
-	assert (!lstHasCurrent (&sTheList), "Terminated list psCurrent is NULL\n",
+	assert (!lstHasCurrent (&sTheList), "Fully deleted list psCurrent is NULL\n",
 			"Fully deleted list psCurrent is NOT NULL\n");
 
 	for (j = DELETE_FIRST; DELETE_LAST >= j; j++)
