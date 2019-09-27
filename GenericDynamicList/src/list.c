@@ -133,7 +133,7 @@ bool lstIsEmpty (const ListPtr psList)
 
  Parameters:	psList - pointer to a list
 
- Returned:	 	Returns true if psCurrent is NULL otherwise false
+ Returned:	 	Returns true if psCurrent is not NULL otherwise false
  *************************************************************************/
 bool lstHasCurrent (const ListPtr psList)
 {
@@ -141,9 +141,7 @@ bool lstHasCurrent (const ListPtr psList)
 	{
 		processError ("lstHasCurrent", ERROR_INVALID_LIST);
 	}
-	// results: Returns true if the current node is not NULL; otherwise, false
-	//					is returned
-	return (true);
+	return (NULL != psList->psCurrent);
 }
 
 /**************************************************************************
@@ -161,9 +159,7 @@ bool lstHasNext (const ListPtr psList)
 	{
 		processError ("lstHasNext", ERROR_INVALID_LIST);
 	}
-	// results: Returns true if the current node has a successor; otherwise,
-	//					 false is returned
-	return (true);
+	return (NULL != psList->psCurrent->psNext);
 }
 
 /**************************************************************************
@@ -203,7 +199,7 @@ void *lstPeek (const ListPtr psList, void *pBuffer, int size)
  Function: 	 	lstPeekNext
 
  Description: Looks at the value psCurrent's successor is pointing to in the
- list
+ 	 	 	 	 	 	 	list
 
  Parameters:	psList  - pointer to a list
  	 	 	 	 	 	 	pBuffer - void pointer used to store the value
@@ -247,7 +243,7 @@ void *lstPeekNext (const ListPtr psList, void *pBuffer, int size)
 						 	pBuffer - void pointer used to store the value
 						 	size    - size of value
 
- Returned:	 	Pointer to the buffer with the first element's value
+ Returned:	 	None
  *************************************************************************/
 void lstFirst (ListPtr psList)
 {
@@ -271,7 +267,7 @@ void lstFirst (ListPtr psList)
 							pBuffer - void pointer used to store the value
 							size    - size of value
 
- Returned:	 	Pointer to the buffer with the former psCurrent's value
+ Returned:	 	None
  *************************************************************************/
 void lstNext (ListPtr psList)
 {
@@ -299,7 +295,7 @@ void lstNext (ListPtr psList)
 							pBuffer - void pointer used to store the value
 							size    - size of value
 
- Returned:	 	Pointer to the buffer with the last element's value
+ Returned:	 	None
  *************************************************************************/
 void lstLast (ListPtr psList)
 {
@@ -311,16 +307,14 @@ void lstLast (ListPtr psList)
 	{
 		processError ("lstLast", ERROR_EMPTY_LIST);
 	}
-	// requires:  List is not empty
-	// results:   If the list is not empty, current is changed to last
-	//						if it exists
+	psList->psCurrent = psList->psLast;
 }
 
 /**************************************************************************
  Function: 	 	lstInsertAfter
 
  Description: Insert the new element as the successor of the current element
- (and make the inserted element the current element)
+ 	 	 	 	 	 	  (and make the inserted element the current element)
 
  Parameters:	psList  - pointer to a list
 							pBuffer - void pointer used to store the value
@@ -381,6 +375,8 @@ void lstInsertAfter (ListPtr psList, const void *pBuffer, int size)
  *************************************************************************/
 void *lstDeleteCurrent (ListPtr psList, void *pBuffer, int size)
 {
+	ListElementPtr psElementBuffer;
+
 	if (NULL == psList)
 	{
 		processError ("lstDeleteCurrent", ERROR_INVALID_LIST);
@@ -397,6 +393,37 @@ void *lstDeleteCurrent (ListPtr psList, void *pBuffer, int size)
 	{
 		processError ("lstDeleteCurrent", ERROR_NO_CURRENT);
 	}
+	memcpy (pBuffer, psList->psCurrent->pData, size);
+	if (1 == psList->numElements)
+	{
+		free (psList->psCurrent->pData);
+		free (psList->psCurrent);
+		psList->psFirst = psList->psLast = psList->psCurrent = NULL;
+	}
+	else if (psList->psCurrent == psList->psFirst)
+	{
+		psList->psCurrent = psList->psCurrent->psNext;
+		free (psList->psFirst->pData);
+		free (psList->psFirst);
+		psList->psFirst = psList->psCurrent;
+	}
+	else
+	{
+		psElementBuffer = psList->psCurrent;
+		psList->psCurrent = psList->psFirst;
+		while (psList->psCurrent->psNext != psElementBuffer)
+		{
+			psList->psCurrent = psList->psCurrent->psNext;
+		}
+		psList->psCurrent->psNext = psElementBuffer->psNext;
+		if (psElementBuffer == psList->psLast)
+		{
+			psList->psLast = psList->psCurrent;
+		}
+		free (psElementBuffer->pData);
+		free (psElementBuffer);
+	}
+	psList->numElements--;
 	// requires: List is not empty
 	// results: The current element is deleted and its successor and
 	//				  predecessor become each others successor and predecessor. If
@@ -410,7 +437,7 @@ void *lstDeleteCurrent (ListPtr psList, void *pBuffer, int size)
  Function: 	 	lstInsertBefore
 
  Description: Insert the new element as the predecessor of the current element
- (and make the inserted element the current element)
+ 	 	 	 	 	 	 	(and make the inserted element the current element)
 
  Parameters:	psList  - pointer to a list
 							pBuffer - void pointer used to store the value
@@ -420,6 +447,8 @@ void *lstDeleteCurrent (ListPtr psList, void *pBuffer, int size)
  *************************************************************************/
 void lstInsertBefore (ListPtr psList, const void *pBuffer, int size)
 {
+	ListElementPtr psElementNew, psElementWalk;
+
 	if (NULL == psList)
 	{
 		processError ("lstInsertBefore", ERROR_INVALID_LIST);
@@ -432,11 +461,35 @@ void lstInsertBefore (ListPtr psList, const void *pBuffer, int size)
 	{
 		processError ("lstInsertBefore", ERROR_NO_CURRENT);
 	}
-	// requires: List is not full
-	// results:  If the list is not empty, insert the new element as the
-	//           predecessor of the current element and make the inserted
-	//           element the current element; otherwise, insert element
-	//           and make it current.
+	psElementNew = (ListElementPtr) malloc (sizeof(ListElement));
+	psElementNew->pData = malloc (size);
+	memcpy (psElementNew->pData, pBuffer, size);
+
+	if (NULL == psList->psCurrent)
+	{
+		psElementNew->psNext = NULL;
+		psList->psFirst = psElementNew;
+		psList->psLast = psElementNew;
+	}
+	else
+	{
+		psElementNew->psNext = psList->psCurrent;
+		if (psList->psFirst == psList->psCurrent)
+		{
+			psList->psFirst = psElementNew;
+		}
+		else
+		{
+			psElementWalk = psList->psFirst;
+			while (psElementWalk->psNext != psList->psCurrent)
+			{
+				psElementWalk = psElementWalk->psNext;
+			}
+			psElementWalk->psNext = psElementNew;
+		}
+	}
+	psList->psCurrent = psElementNew;
+	psList->numElements++;
 }
 
 /**************************************************************************
@@ -468,8 +521,8 @@ void lstUpdateCurrent (ListPtr psList, const void *pBuffer, int size)
 	{
 		processError ("lstUpdateCurrent", ERROR_NO_CURRENT);
 	}
-	// requires: List is not empty
-	// results:  The value of pBuffer is copied into the current element
-	// IMPORTANT: user could update with smaller, larger, or the same size data
-	//					  so free data, then reallocate based on size before updating
+
+	free (psList->psCurrent->pData);
+	psList->psCurrent->pData = malloc (size);
+	memcpy (psList->psCurrent->pData, pBuffer, size);
 }
