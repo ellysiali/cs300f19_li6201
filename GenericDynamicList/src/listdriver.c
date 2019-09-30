@@ -92,6 +92,8 @@ int main ()
 
 	lstLoadErrorMessages ();
 
+	// Validate the initiated list (after lstCreate)
+
 	lstCreate (&sTheList);
 	assert (0 == lstSize (&sTheList), "Initial list size is 0",
 			"Initial list size is NOT 0");
@@ -99,6 +101,8 @@ int main ()
 			"Initial list is NOT empty");
 	assert (!lstHasCurrent (&sTheList), "Initial list psCurrent is NULL\n",
 			"Initial list psCurrent is NOT NULL\n");
+
+	// Validate lstInsertAfter
 
 	for (i = CHAR_START; i <= CHAR_END; i++)
 	{
@@ -120,6 +124,8 @@ int main ()
 				"List psCurrent has a successor\n");
 	}
 
+	// Validate lstFirst and lsLast
+
 	lstFirst (&sTheList);
 	lstPeek (&sTheList, &charBuffer, sizeof(char));
 	assert (CHAR_START == charBuffer, "lstFirst moved (first) element is A",
@@ -129,6 +135,8 @@ int main ()
 	lstPeek (&sTheList, &charBuffer, sizeof(char));
 	assert (CHAR_END == charBuffer, "lstLast moved (last) element is E\n",
 			"lstLast moved (last) element is NOT E\n");
+
+ // Validate lsthasNext and check entire order of list
 
 	lstFirst (&sTheList);
 	lstPeek (&sTheList, &charBuffer, sizeof(char));
@@ -162,6 +170,8 @@ int main ()
 		}
 	}
 
+	// Validate lstTerminate on a non-empty list
+
 	lstTerminate (&sTheList);
 	assert (0 == lstSize (&sTheList), "Terminated list size is 0",
 			"Terminated list size is NOT 0");
@@ -169,6 +179,8 @@ int main ()
 			"Terminated list is NOT empty");
 	assert (!lstHasCurrent (&sTheList), "Terminated list psCurrent is NULL\n",
 			"Terminated list psCurrent is NOT NULL\n");
+
+	// Validate lstInsertAfter when inserting in the middle of the list
 
 	lstCreate (&sTheList);
 
@@ -215,10 +227,13 @@ int main ()
 		assert (j == intBuffer, szSuccess, szFailure);
 	}
 
-	lstTerminate (&sTheList);
-	lstCreate (&sTheList);
-
 	puts ("");
+
+	lstTerminate (&sTheList);
+
+	// Validate lstInsertBefore
+
+	lstCreate (&sTheList);
 
 	j = 0;
 	for (k = FLOAT_END; FLOAT_START <= k; k = k - 1)
@@ -301,6 +316,8 @@ int main ()
 
 	puts ("");
 
+	// Validate lstDeleteCurrent
+
 	for (k = 0; FLOAT_END > k; k = k + 1)
 	{
 		lstDeleteCurrent (&sTheList, &floatBuffer, sizeof(float));
@@ -322,6 +339,9 @@ int main ()
 	}
 
 	puts ("");
+
+	// Validate lstDeleteCurrent when deleting at the beginning/middle of list
+
 	lstFirst (&sTheList);
 
 	lstDeleteCurrent (&sTheList, &intBuffer, sizeof(int));
@@ -352,6 +372,8 @@ int main ()
 			"InsertAfter (current) element is NOT 1\n");
 
 	lstFirst (&sTheList);
+
+	// Validate lstUpdateCurrent
 
 	for (i = CHAR_START; CHAR_START + DELETE_LAST >= i; i++)
 	{
