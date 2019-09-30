@@ -15,7 +15,7 @@
 #define CHAR_START 65
 #define CHAR_END 69
 #define INT_START 1
-#define INT_END 10
+#define INT_END 4
 #define FLOAT_START 1.00
 #define FLOAT_END 6.00
 #define DELETE_FIRST 0
@@ -97,7 +97,7 @@ int main ()
 			"Initial list size is NOT 0");
 	assert (lstIsEmpty (&sTheList), "Initial list is empty",
 			"Initial list is NOT empty");
-	assert (!lstHasCurrent(&sTheList), "Initial list psCurrent is NULL\n",
+	assert (!lstHasCurrent (&sTheList), "Initial list psCurrent is NULL\n",
 			"Initial list psCurrent is NOT NULL\n");
 
 	for (i = CHAR_START; i <= CHAR_END; i++)
@@ -114,9 +114,9 @@ int main ()
 		assert (i - CHAR_START + 1 == lstSize (&sTheList), szSuccess, szFailure);
 
 		assert (!lstIsEmpty (&sTheList), "List is NOT empty", "List is empty");
-		assert (lstHasCurrent(&sTheList), "List psCurrent is NOT NULL",
+		assert (lstHasCurrent (&sTheList), "List psCurrent is NOT NULL",
 				"List psCurrent is NULL");
-		assert (!lstHasNext(&sTheList), "List psCurrent has NO successor\n",
+		assert (!lstHasNext (&sTheList), "List psCurrent has NO successor\n",
 				"List psCurrent has a successor\n");
 	}
 
@@ -134,10 +134,11 @@ int main ()
 	lstPeek (&sTheList, &charBuffer, sizeof(char));
 	assert (CHAR_START == charBuffer, "lstFirst moved (first) element is A",
 			"lstFirst moved (first) element is NOT A");
-	assert (lstHasCurrent(&sTheList), "List psCurrent is NOT NULL",
+	assert (lstHasCurrent (&sTheList), "List psCurrent is NOT NULL",
 			"List psCurrent is NULL");
 	assert (lstHasNext (&sTheList), "List psCurrent has a successor\n",
 			"List psCurrent has NO successor\n");
+	lstPeekNext (&sTheList, &charBuffer, sizeof(char));
 
 	for (i = CHAR_START + 1; CHAR_END >= i; i++)
 	{
@@ -146,16 +147,17 @@ int main ()
 		sprintf (szFailure, "lstNext element is NOT %c", i);
 		lstPeek (&sTheList, &charBuffer, sizeof(char));
 		assert (charBuffer == i, szSuccess, szFailure);
-		assert (lstHasCurrent(&sTheList), "List psCurrent is NOT NULL",
+		assert (lstHasCurrent (&sTheList), "List psCurrent is NOT NULL",
 				"List psCurrent is NULL");
 		if (CHAR_END != i)
 		{
+			lstPeekNext (&sTheList, &charBuffer, sizeof(char));
 			assert (lstHasNext (&sTheList), "List psCurrent has a successor\n",
 					"List psCurrent has NO successor\n");
 		}
 		else
 		{
-			assert (!lstHasNext(&sTheList), "List psCurrent has NO successor\n",
+			assert (!lstHasNext (&sTheList), "List psCurrent has NO successor\n",
 					"List psCurrent has a successor\n");
 		}
 	}
@@ -165,7 +167,7 @@ int main ()
 			"Terminated list size is NOT 0");
 	assert (lstIsEmpty (&sTheList), "Terminated list is empty",
 			"Terminated list is NOT empty");
-	assert (!lstHasCurrent(&sTheList), "Terminated list psCurrent is NULL\n",
+	assert (!lstHasCurrent (&sTheList), "Terminated list psCurrent is NULL\n",
 			"Terminated list psCurrent is NOT NULL\n");
 
 	lstCreate (&sTheList);
@@ -277,6 +279,10 @@ int main ()
 	lstPeek (&sTheList, &floatBuffer, sizeof(float));
 	assert (FLOAT_START == floatBuffer, "lstFirst moved (first) element is 1.00",
 			"lstFirst moved (first) element is NOT 1.00");
+	lstPeekNext (&sTheList, &floatBuffer, sizeof(float));
+	assert (FLOAT_START + 1 == floatBuffer, "lstPeekNext element is 2.00",
+			"lstPeekNext element is NOT 2.00");
+
 	for (k = FLOAT_START + 1; FLOAT_END >= k; k = k + 1)
 	{
 		lstNext (&sTheList);
@@ -284,6 +290,13 @@ int main ()
 		sprintf (szFailure, "lstNext element is NOT %.2f", k);
 		lstPeek (&sTheList, &floatBuffer, sizeof(float));
 		assert (k == floatBuffer, szSuccess, szFailure);
+		if (FLOAT_END != k)
+		{
+			lstPeekNext (&sTheList, &floatBuffer, sizeof(float));
+			sprintf (szSuccess, "lstPeekNext element is %.2f", k + 1);
+			sprintf (szFailure, "lstPeekNext element is NOT %.2f", k + 1);
+			assert (k + 1 == floatBuffer, szSuccess, szFailure);
+		}
 	}
 
 	puts ("");

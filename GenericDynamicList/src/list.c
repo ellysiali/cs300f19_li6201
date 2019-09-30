@@ -229,8 +229,7 @@ void *lstPeekNext (const ListPtr psList, void *pBuffer, int size)
 	{
 		processError ("lstPeekNext", ERROR_NO_NEXT);
 	}
-	// requires:  List contains two or more elements and current is not last
-	// results:   The data value of current's successor is returned
+	memcpy (pBuffer, psList->psCurrent->psNext->pData, size);
 	return (pBuffer);
 }
 
@@ -424,12 +423,6 @@ void *lstDeleteCurrent (ListPtr psList, void *pBuffer, int size)
 		free (psElementBuffer);
 	}
 	psList->numElements--;
-	// requires: List is not empty
-	// results: The current element is deleted and its successor and
-	//				  predecessor become each others successor and predecessor. If
-	//					the deleted element had a predecessor, then make it the new
-	// 					current element; otherwise, make the first element current if
-	// 					it exists. The value of the deleted element is returned.
 	return (pBuffer);
 }
 
