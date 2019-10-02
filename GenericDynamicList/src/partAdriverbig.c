@@ -72,23 +72,23 @@ static void assert (bool bExpression, char *pTrue, char *pFalse)
 
  Returned:	 	none
  *************************************************************************/
-static void printIntList (List sTheList)
-{
-	int i, theIntData;
-
-	if (!lstIsEmpty (&sTheList))
-	{
-		printf ("         ");
-		lstFirst (&sTheList);
-		for (i = 0; i < lstSize (&sTheList); ++i)
-		{
-			lstPeek(&sTheList,  &theIntData, sizeof (int));
-			lstNext (&sTheList);
-			printf ("%d ", theIntData);
-		}
-		printf ("\n");
-	}
-}
+//static void printIntList (List sTheList)
+//{
+//	int i, theIntData;
+//
+//	if (!lstIsEmpty (&sTheList))
+//	{
+//		printf ("         ");
+//		lstFirst (&sTheList);
+//		for (i = 0; i < lstSize (&sTheList); ++i)
+//		{
+//			lstPeek(&sTheList,  &theIntData, sizeof (int));
+//			lstNext (&sTheList);
+//			printf ("%d ", theIntData);
+//		}
+//		printf ("\n");
+//	}
+//}
 
 
 void insertAndValidManyTypes(ListPtr psTheList)

@@ -1,7 +1,7 @@
 /**************************************************************************
  File name:  list.c
  Author:     Ellysia Li
- Date:		 	 9.24.2019
+ Date:		 	 10.1.2019
  Class:		 	 CS300
  Assignment: GenericDynamicList
  Purpose:    Implementation for a dynamic list of generic elements

@@ -1,7 +1,7 @@
 /**************************************************************************
  File name:  listdriver.c
  Author:     Ellysia Li
- Date:		 	 9.24.2019
+ Date:		 	 10.1.2019
  Class:		 	 CS300
  Assignment: GenericDynamicList
  Purpose:    Test driver for a dynamic list of generic elements
@@ -13,11 +13,9 @@
 
 #define MAX_BUFFER_CHARS 100
 #define CHAR_START 65
-#define CHAR_END 69
-#define INT_START 1
-#define INT_END 4
-#define FLOAT_START 1.00
-#define FLOAT_END 6.00
+#define CHAR_END 90
+#define LARGE_LIST_SIZE 10000
+#define VERY_LARGE_LIST_SIZE 1000000
 #define DELETE_FIRST 0
 #define DELETE_MID 1
 #define DELETE_LAST 2
@@ -90,6 +88,8 @@ int main ()
 	int j, intBuffer;
 	float k, floatBuffer;
 
+	puts ("Driver Started\n");
+
 	lstLoadErrorMessages ();
 
 	// Validate the initiated list (after lstCreate)
@@ -102,26 +102,43 @@ int main ()
 	assert (!lstHasCurrent (&sTheList), "Initial list psCurrent is NULL\n",
 			"Initial list psCurrent is NOT NULL\n");
 
-	// Validate lstInsertAfter
+	// Add chars using lstInsertAfter and validate appropriately
 
-	for (i = CHAR_START; i <= CHAR_END; i++)
+	for (i = CHAR_START; CHAR_END >= i; i++)
 	{
 		lstInsertAfter (&sTheList, &i, sizeof(char));
-
-		sprintf (szSuccess, "InsertAfter (current) element is %c", i);
-		sprintf (szFailure, "InsertAfter (current) element is NOT %c", i);
 		lstPeek (&sTheList, &charBuffer, sizeof(char));
-		assert (i == charBuffer, szSuccess, szFailure);
-
-		sprintf (szSuccess, "List size is %d", i - CHAR_START + 1);
-		sprintf (szFailure, "List size is NOT %d", i - CHAR_START + 1);
-		assert (i - CHAR_START + 1 == lstSize (&sTheList), szSuccess, szFailure);
-
-		assert (!lstIsEmpty (&sTheList), "List is NOT empty", "List is empty");
-		assert (lstHasCurrent (&sTheList), "List psCurrent is NOT NULL",
-				"List psCurrent is NULL");
-		assert (!lstHasNext (&sTheList), "List psCurrent has NO successor\n",
-				"List psCurrent has a successor\n");
+		if (i != charBuffer)
+		{
+			assert (i == charBuffer, "Added char elements and validated",
+					"Could not lstInsertAfter all char elements "
+							"(couldn't validate lstPeek)");
+		}
+		if (i - CHAR_START + 1 != lstSize (&sTheList))
+		{
+			assert (i - CHAR_START + 1 == lstSize (&sTheList),
+					"Added char elements and validated",
+					"Could not lstInsertAfter all char elements "
+							"(couldn't validate lstSize)");
+		}
+		if (lstIsEmpty (&sTheList))
+		{
+			assert (!lstIsEmpty (&sTheList), "Added char elements and validated",
+					"Could not lstInsertAfter all char elements "
+							"(couldn't validate lstIsEmpty)");
+		}
+		if (!lstHasCurrent (&sTheList))
+		{
+			assert (lstHasCurrent (&sTheList), "Added char elements and validated",
+					"Could not lstInsertAfter all char elements "
+							"(couldn't validate lstHasCurrent)");
+		}
+		if (lstHasNext (&sTheList))
+		{
+			assert (!lstHasNext (&sTheList), "Added char elements and validated",
+					"Could not lstInsertAfter all char elements "
+							"(couldn't validate lstHasNext)");
+		}
 	}
 
 	// Validate lstFirst and lsLast
@@ -136,39 +153,40 @@ int main ()
 	assert (CHAR_END == charBuffer, "lstLast moved (last) element is E\n",
 			"lstLast moved (last) element is NOT E\n");
 
- // Validate lsthasNext and check entire order of list
+	// Validate within the middle of the list appropriately
 
 	lstFirst (&sTheList);
-	lstPeek (&sTheList, &charBuffer, sizeof(char));
-	assert (CHAR_START == charBuffer, "lstFirst moved (first) element is A",
-			"lstFirst moved (first) element is NOT A");
-	assert (lstHasCurrent (&sTheList), "List psCurrent is NOT NULL",
-			"List psCurrent is NULL");
-	assert (lstHasNext (&sTheList), "List psCurrent has a successor\n",
-			"List psCurrent has NO successor\n");
-	lstPeekNext (&sTheList, &charBuffer, sizeof(char));
-
-	for (i = CHAR_START + 1; CHAR_END >= i; i++)
+	for (i = CHAR_START; CHAR_END >= i; i++)
 	{
-		lstNext (&sTheList);
 		sprintf (szSuccess, "lstNext element is %c", i);
 		sprintf (szFailure, "lstNext element is NOT %c", i);
 		lstPeek (&sTheList, &charBuffer, sizeof(char));
 		assert (charBuffer == i, szSuccess, szFailure);
-		assert (lstHasCurrent (&sTheList), "List psCurrent is NOT NULL",
-				"List psCurrent is NULL");
+		if (!lstHasCurrent (&sTheList))
+		{
+			assert (lstHasCurrent (&sTheList), "lsthasNext procedure validated",
+					"Could not validate lstHasCurrent in lsthasNext procedure");
+		}
 		if (CHAR_END != i)
 		{
+			sprintf (szSuccess, "lstPeekNext element is %c", i + 1);
+			sprintf (szFailure, "lstPeekNext element is NOT %c", i + 1);
 			lstPeekNext (&sTheList, &charBuffer, sizeof(char));
-			assert (lstHasNext (&sTheList), "List psCurrent has a successor\n",
-					"List psCurrent has NO successor\n");
+			assert (charBuffer == i + 1, szSuccess, szFailure);
+			if (!lstHasCurrent (&sTheList))
+			{
+				assert (!lstHasNext (&sTheList), "lsthasNext procedure validated",
+						"Could not validate lstHasNext in lsthasNext procedure");
+			}
 		}
-		else
+		else if (lstHasNext (&sTheList))
 		{
-			assert (!lstHasNext (&sTheList), "List psCurrent has NO successor\n",
-					"List psCurrent has a successor\n");
+			assert (!lstHasNext (&sTheList), "lsthasNext procedure validated",
+					"Could not validate lstHasNext in lsthasNext procedure");
 		}
+		lstNext (&sTheList);
 	}
+	puts ("");
 
 	// Validate lstTerminate on a non-empty list
 
@@ -180,148 +198,154 @@ int main ()
 	assert (!lstHasCurrent (&sTheList), "Terminated list psCurrent is NULL\n",
 			"Terminated list psCurrent is NOT NULL\n");
 
-	// Validate lstInsertAfter when inserting in the middle of the list
+	// Validate order of lstInsertAfter when inserting in the middle of the list
 
 	lstCreate (&sTheList);
 
-	for (j = INT_START; j <= INT_END; j++)
+	for (i = CHAR_START; CHAR_END >= i; i++)
 	{
-		if (1 == j % 2)
+		if (1 == i % 2)
 		{
-			lstInsertAfter (&sTheList, &j, sizeof(int));
-			sprintf (szSuccess, "InsertAfter (current) element is %d", j);
-			sprintf (szFailure, "InsertAfter (current) element is NOT %d", j);
-			lstPeek (&sTheList, &intBuffer, sizeof(int));
-			assert (intBuffer == j, szSuccess, szFailure);
+			lstInsertAfter (&sTheList, &i, sizeof(char));
 		}
 	}
 
 	lstFirst (&sTheList);
-	for (j = INT_START; INT_END >= j; j++)
+
+	for (i = CHAR_START; CHAR_END >= i; i++)
 	{
-		if (0 == j % 2)
+		if (0 == i % 2)
 		{
-			lstInsertAfter (&sTheList, &j, sizeof(int));
-			sprintf (szSuccess, "InsertAfter (current) element is %d "
-					"(attempted to add after %d)", j, j - 1);
-			sprintf (szFailure, "InsertAfter (current) element is NOT %d "
-					"(attempted to add after %d)", j, j - 1);
-			lstPeek (&sTheList, &intBuffer, sizeof(int));
-			assert (intBuffer == j, szSuccess, szFailure);
+			lstInsertAfter (&sTheList, &i, sizeof(char));
 			lstNext (&sTheList);
 		}
 	}
 
-	puts ("");
 	lstFirst (&sTheList);
-	lstPeek (&sTheList, &intBuffer, sizeof(int));
-	assert (INT_START == intBuffer, "lstFirst moved (first) element is 1",
-			"lstFirst moved (first) element is NOT 1");
 
-	for (j = INT_START + 1; INT_END >= j; j++)
+	for (i = CHAR_START; CHAR_END >= i; i++)
 	{
+		lstPeek (&sTheList, &charBuffer, sizeof(char));
+		if (i != charBuffer)
+		{
+			assert (i == charBuffer,
+					"Validated order when adding to middle via lstInsertAfter",
+					"Could not validate order when adding to middle via lstInsertAfter");
+		}
 		lstNext (&sTheList);
-		sprintf (szSuccess, "lstNext element is %d", j);
-		sprintf (szFailure, "lstNext element is NOT %d", j);
-		lstPeek (&sTheList, &intBuffer, sizeof(int));
-		assert (j == intBuffer, szSuccess, szFailure);
 	}
-
-	puts ("");
 
 	lstTerminate (&sTheList);
 
-	// Validate lstInsertBefore
+	// Add chars using lstInsertBefore and validate appropriately
 
 	lstCreate (&sTheList);
 
-	j = 0;
-	for (k = FLOAT_END; FLOAT_START <= k; k = k - 1)
+	for (i = CHAR_END; CHAR_START <= i; i--)
 	{
-		if (0 == (int) k % 2)
+		lstInsertBefore (&sTheList, &i, sizeof(char));
+		lstPeek (&sTheList, &charBuffer, sizeof(char));
+		if (i != charBuffer)
 		{
-			j++;
+			assert (i == charBuffer, "Added char elements and validated",
+					"Could not lstInsertBefore all char elements "
+							"(couldn't validate lstPeek)");
+		}
+		if (CHAR_END - i + 1 != lstSize (&sTheList))
+		{
+			assert (CHAR_END - i + 1 == lstSize (&sTheList),
+					"Added char elements and validated",
+					"Could not lstInsertBefore all char elements "
+							"(couldn't validate lstSize)");
+		}
+		if (lstIsEmpty (&sTheList))
+		{
+			assert (!lstIsEmpty (&sTheList), "Added char elements and validated",
+					"Could not lstInsertBefore all char elements "
+							"(couldn't validate lstIsEmpty)");
+		}
+		if (!lstHasCurrent (&sTheList))
+		{
+			assert (lstHasCurrent (&sTheList), "Added char elements and validated",
+					"Could not lstInsertBefore all char elements "
+							"(couldn't validate lstHasCurrent)");
+		}
+		if (CHAR_END == i && lstHasNext (&sTheList))
+		{
+			assert (!lstHasNext (&sTheList), "Added char elements and validated",
+					"Could not lstInsertBefore all char elements "
+							"(couldn't validate lstHasNext)");
+		}
+		if (CHAR_END != i && !lstHasNext (&sTheList))
+		{
+			assert (lstHasNext (&sTheList), "Added char elements and validated",
+					"Could not lstInsertBefore all char elements "
+							"(couldn't validate lstHasNext)");
+		}
+	}
 
-			lstInsertBefore (&sTheList, &k, sizeof(float));
+	lstTerminate (&sTheList);
 
-			sprintf (szSuccess, "InsertBefore (current) element is %.2f", k);
-			sprintf (szFailure, "InsertBefore (current) element is NOT %.2f", k);
-			lstPeek (&sTheList, &floatBuffer, sizeof(float));
-			assert (k == floatBuffer, szSuccess, szFailure);
+	// Validate order of lstInsertBefore when inserting in the beginning/middle
+	// of the list
 
-			sprintf (szSuccess, "List size is %d", j);
-			sprintf (szFailure, "List size is NOT %d", j);
-			assert (j == lstSize (&sTheList), szSuccess, szFailure);
+	lstCreate (&sTheList);
 
-			assert (!lstIsEmpty (&sTheList), "List is NOT empty", "List is empty");
-			assert (lstHasCurrent (&sTheList), "List psCurrent is NOT NULL",
-					"List psCurrent is NULL");
-			if (1 == j)
-			{
-				assert (!lstHasNext (&sTheList), "List psCurrent has NO successor\n",
-						"List psCurrent has a successor\n");
-			}
-			else
-			{
-				assert (lstHasNext (&sTheList), "List psCurrent has a successor\n",
-						"List psCurrent has NO successor\n");
-			}
+	for (i = CHAR_END; CHAR_START <= i; i--)
+	{
+		if (0 == i % 2)
+		{
+			lstInsertBefore (&sTheList, &i, sizeof(char));
 		}
 	}
 
 	lstFirst (&sTheList);
 
-	for (k = FLOAT_START; FLOAT_END >= k; k = k + 1)
+	for (i = CHAR_START; CHAR_END >= i; i++)
 	{
-		if (1 == (int) k % 2)
+		if (1 == i % 2)
 		{
-			lstInsertBefore (&sTheList, &k, sizeof(float));
-
-			sprintf (szSuccess, "InsertBefore (current) element is %.2f "
-					"(attempted to add before %.2f)", k, k + 1);
-			sprintf (szFailure, "InsertBefore (current) element is NOT %.2f "
-					"(attempted to add before %.2f)", k, k + 1);
-			lstPeek (&sTheList, &floatBuffer, sizeof(float));
-			assert (k == floatBuffer, szSuccess, szFailure);
-
+			lstInsertBefore (&sTheList, &i, sizeof(char));
 			lstNext (&sTheList);
 			lstNext (&sTheList);
 		}
 	}
 
-	puts ("");
 	lstFirst (&sTheList);
-	lstPeek (&sTheList, &floatBuffer, sizeof(float));
-	assert (FLOAT_START == floatBuffer, "lstFirst moved (first) element is 1.00",
-			"lstFirst moved (first) element is NOT 1.00");
-	lstPeekNext (&sTheList, &floatBuffer, sizeof(float));
-	assert (FLOAT_START + 1 == floatBuffer, "lstPeekNext element is 2.00",
-			"lstPeekNext element is NOT 2.00");
 
-	for (k = FLOAT_START + 1; FLOAT_END >= k; k = k + 1)
+	for (i = CHAR_START; CHAR_END >= i; i++)
 	{
+		lstPeek (&sTheList, &charBuffer, sizeof(char));
+		if (i != charBuffer)
+		{
+			assert (i == charBuffer,
+					"Validated order when adding to middle via lstInsertAfter",
+					"Could not validate order when adding to middle via lstInsertAfter");
+		}
 		lstNext (&sTheList);
-		sprintf (szSuccess, "lstNext element is %.2f", k);
-		sprintf (szFailure, "lstNext element is NOT %.2f", k);
-		lstPeek (&sTheList, &floatBuffer, sizeof(float));
-		assert (k == floatBuffer, szSuccess, szFailure);
-		if (FLOAT_END != k)
+	}
+
+	lstTerminate (&sTheList);
+
+	// Create a large list and validate lstDeleteCurrent
+
+	lstCreate (&sTheList);
+
+	for (j = 0; LARGE_LIST_SIZE >= j; j++)
+	{
+		lstInsertAfter (&sTheList, &j, sizeof(int));
+	}
+
+	for (j = 0; LARGE_LIST_SIZE >= j; j++)
+	{
+		lstDeleteCurrent (&sTheList, &intBuffer, sizeof(int));
+		if (LARGE_LIST_SIZE - j != lstSize (&sTheList))
 		{
-			lstPeekNext (&sTheList, &floatBuffer, sizeof(float));
-			sprintf (szSuccess, "lstPeekNext element is %.2f", k + 1);
-			sprintf (szFailure, "lstPeekNext element is NOT %.2f", k + 1);
-			assert (k + 1 == floatBuffer, szSuccess, szFailure);
+			assert (LARGE_LIST_SIZE - j == lstSize (&sTheList),
+					"Deleted list is correct size", "Deleted list is NOT correct size");
 		}
 	}
 
-	puts ("");
-
-	// Validate lstDeleteCurrent
-
-	for (k = 0; FLOAT_END > k; k = k + 1)
-	{
-		lstDeleteCurrent (&sTheList, &floatBuffer, sizeof(float));
-	}
 	assert (0 == lstSize (&sTheList), "Fully deleted list size is 0",
 			"Fully deleted list size is NOT 0");
 	assert (lstIsEmpty (&sTheList), "Fully deleted list is empty",
@@ -329,18 +353,12 @@ int main ()
 	assert (!lstHasCurrent (&sTheList), "Fully deleted list psCurrent is NULL\n",
 			"Fully deleted list psCurrent is NOT NULL\n");
 
+	// Validate lstDeleteCurrent when deleting at the beginning/middle of list
+
 	for (j = DELETE_FIRST; DELETE_LAST >= j; j++)
 	{
 		lstInsertAfter (&sTheList, &j, sizeof(int));
-		sprintf (szSuccess, "InsertAfter (current) element is %d", j);
-		sprintf (szFailure, "InsertAfter (current) element is NOT %d", j);
-		lstPeek (&sTheList, &intBuffer, sizeof(int));
-		assert (j == intBuffer, szSuccess, szFailure);
 	}
-
-	puts ("");
-
-	// Validate lstDeleteCurrent when deleting at the beginning/middle of list
 
 	lstFirst (&sTheList);
 
@@ -353,60 +371,68 @@ int main ()
 
 	intBuffer = DELETE_FIRST;
 	lstInsertBefore (&sTheList, &intBuffer, sizeof(int));
-	lstPeek (&sTheList, &intBuffer, sizeof(int));
-	assert (DELETE_FIRST == intBuffer, "InsertBefore (current) element is 0",
-			"InsertBefore (current) element is NOT 0");
 
 	lstNext (&sTheList);
 	lstDeleteCurrent (&sTheList, &intBuffer, sizeof(int));
 	assert (DELETE_MID == intBuffer, "Deleted middle element (1)",
 			"Did NOT delete middle element (1)");
 	lstPeek (&sTheList, &intBuffer, sizeof(int));
-	assert (DELETE_FIRST == intBuffer, "Current (peeked) element is 0",
-			"Current (peeked) element is NOT 0");
+	assert (DELETE_FIRST == intBuffer, "Current (peeked) element is 0\n",
+			"Current (peeked) element is NOT 0\n");
 
 	intBuffer = DELETE_MID;
 	lstInsertAfter (&sTheList, &intBuffer, sizeof(int));
-	lstPeek (&sTheList, &intBuffer, sizeof(int));
-	assert (DELETE_MID == intBuffer, "InsertAfter (current) element is 1\n",
-			"InsertAfter (current) element is NOT 1\n");
+
+	lstTerminate (&sTheList);
+
+	// Validate lstUpdateCurrent in a very large list
+
+	lstCreate (&sTheList);
+
+	for (j = 0; VERY_LARGE_LIST_SIZE >= j; j++)
+	{
+		lstInsertAfter (&sTheList, &j, sizeof(int));
+	}
 
 	lstFirst (&sTheList);
 
-	// Validate lstUpdateCurrent
-
-	for (i = CHAR_START; CHAR_START + DELETE_LAST >= i; i++)
+	for (k = 0; VERY_LARGE_LIST_SIZE >= k; k++)
 	{
-		lstPeek (&sTheList, &intBuffer, sizeof(int));
-		sprintf (szSuccess, "Current element is %d", i - CHAR_START);
-		sprintf (szFailure, "First (current) element is NOT %d", i - CHAR_START);
-		assert (i - CHAR_START == intBuffer, szSuccess, szFailure);
-
-		lstUpdateCurrent (&sTheList, &i, sizeof(char));
-		lstPeek (&sTheList, &charBuffer, sizeof(char));
-		sprintf (szSuccess, "Updated (current) element is %c", i);
-		sprintf (szFailure, "Updated (current) element is NOT %c", i);
-		assert (i == charBuffer, szSuccess, szFailure);
-
+		if (0 == (int) k % 2)
+		{
+			lstUpdateCurrent (&sTheList, &k, sizeof(float));
+		}
 		lstNext (&sTheList);
 	}
 
-	puts ("");
 	lstFirst (&sTheList);
-	lstPeek (&sTheList, &charBuffer, sizeof(char));
-	assert (CHAR_START == charBuffer, "lstFirst moved (first) element is A",
-			"lstFirst moved (first) element is NOT A");
 
-	for (i = CHAR_START + 1; CHAR_START + DELETE_LAST >= i; i++)
+	for (j = 0; VERY_LARGE_LIST_SIZE >= j; j++)
 	{
+		if (0 == j % 2)
+		{
+			lstPeek (&sTheList, &floatBuffer, sizeof(float));
+			if ((float) j != floatBuffer)
+			{
+				assert ((float) j == floatBuffer, "Updated current",
+						"Could not validate lstUpdateCurrent (on float)");
+			}
+		}
+		else
+		{
+			lstPeek (&sTheList, &intBuffer, sizeof(int));
+			if (j != intBuffer)
+			{
+				assert (j == intBuffer, "Updated current",
+						"Could not validate lstUpdateCurrent (on int)");
+			}
+		}
 		lstNext (&sTheList);
-		lstPeek (&sTheList, &charBuffer, sizeof(char));
-		sprintf (szSuccess, "lstNext element is %c", i);
-		sprintf (szFailure, "lstNext element is NOT %c", i);
-		assert (i == charBuffer, szSuccess, szFailure);
 	}
 
 	lstTerminate (&sTheList);
+
+	puts ("Driver Terminated");
 
 	return (EXIT_SUCCESS);
 }

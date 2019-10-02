@@ -70,24 +70,24 @@ static void assert (bool bExpression, char *pTrue, char *pFalse)
 
  Returned:	 	none
  *************************************************************************/
-static void printIntList (List sTheList)
-{
-	int i, theIntData;
-
-	if (!lstIsEmpty (&sTheList))
-	{
-		printf ("         ");
-		lstFirst (&sTheList);
-		for (i = 0; i < lstSize (&sTheList); ++i)
-		{
-			lstPeek(&sTheList, &theIntData, sizeof(int));
-			printf ("%d ", theIntData);
-
-			lstNext (&sTheList);
-		}
-		printf ("\n");
-	}
-}
+//static void printIntList (List sTheList)
+//{
+//	int i, theIntData;
+//
+//	if (!lstIsEmpty (&sTheList))
+//	{
+//		printf ("         ");
+//		lstFirst (&sTheList);
+//		for (i = 0; i < lstSize (&sTheList); ++i)
+//		{
+//			lstPeek(&sTheList, &theIntData, sizeof(int));
+//			printf ("%d ", theIntData);
+//
+//			lstNext (&sTheList);
+//		}
+//		printf ("\n");
+//	}
+//}
 /**************************************************************************
  Function: 	 	main
 

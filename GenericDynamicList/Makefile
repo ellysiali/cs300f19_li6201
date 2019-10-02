@@ -1,7 +1,7 @@
 ######################################################################
 # File name:  Makefile
 # Author:     Ellysia Li
-# Date:       9.17.19
+# Date:       10.1.19
 # Class:      CS 300
 # Assignment: GenericDynamicList
 # Purpose: 	  This is the Makefile for the GenericDynamicList    
@@ -30,7 +30,7 @@ bin/partAdriverbig: bin/partAdriverbig.o bin/list.o
 	${CC} ${CFLAGS} bin/partAdriverbig.o bin/list.o -o bin/partAdriverbig
 
 bin/partAdriversmall: bin/partAdriversmall.o bin/list.o
-	${CC} ${CFLAGS} bin/partAdriversmall.o bin/list.o 
+	${CC} ${CFLAGS} bin/partAdriversmall.o bin/list.o \
 	-o bin/partAdriversmall
 
 bin/partAdriverbig.o: src/partAdriverbig.c include/list.h
