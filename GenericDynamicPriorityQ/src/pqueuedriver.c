@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../include/pqueue.h"
+#include "../../GenericDynamicList/include/list.h"
 
 /****************************************************************************
  Function: 	 	success
@@ -74,5 +75,13 @@ static void assert (bool bExpression, char *pTrue, char *pFalse)
  *************************************************************************/
 int main ()
 {
+	PriorityQueue sTheQueue;
+	puts ("Start Driver");
+
+	pqueueCreate (&sTheQueue);
+
+	pqueueTerminate (&sTheQueue);
+
+	puts ("End Driver");
 	return EXIT_SUCCESS;
 }

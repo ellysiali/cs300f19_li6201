@@ -87,7 +87,11 @@
                 			
             </storageModule>
             			
-            <storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+            <storageModule moduleId="org.eclipse.cdt.core.externalSettings">
+                				
+                <externalSettings containerId="GenericDynamicList;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier"/>
+                			
+            </storageModule>
             		
         </cconfiguration>
         	
@@ -99,14 +103,22 @@
         	
     </storageModule>
     	
-    <storageModule moduleId="scannerConfiguration">
-        		
-        <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-        	
-    </storageModule>
-    	
     <storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
     	
     <storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
+    	
+    <storageModule moduleId="refreshScope"/>
+    	
+    <storageModule moduleId="scannerConfiguration">
+        		
+        <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+        		
+        <scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.base.101917737;cdt.managedbuild.toolchain.gnu.base.101917737.557134389;cdt.managedbuild.tool.gnu.c.compiler.base.751311322;cdt.managedbuild.tool.gnu.c.compiler.input.1148560035">
+            			
+            <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+            		
+        </scannerConfigBuildInfo>
+        	
+    </storageModule>
     
 </cproject>

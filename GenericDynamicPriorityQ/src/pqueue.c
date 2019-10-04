@@ -11,6 +11,7 @@
 #include <stdlib.h>
 
 #include "../include/pqueue.h"
+#include "../../GenericDynamicList/include/list.h"
 
 char gszPQErrors[NUMBER_OF_PQ_ERRORS][MAX_ERROR_PQ_CHARS];
 
@@ -42,14 +43,17 @@ static void processError (const char *pszFunctionName, int errorCode)
 void pqueueCreate (PriorityQueuePtr psQueue
 													/*, 	cmpFunction cmpFunct */)
 {
+	if (NULL == psQueue)
+	{
+		processError ("pqueueCreate", ERROR_NO_PQ_CREATE);
+	}
+	lstCreate (&psQueue->sTheList);
 }
-// results: If PQ can be created, then PQ exists and is empty
-//					otherwise, ERROR_NO_PQ_CREATE
 
 /**************************************************************************
  Function: 	 	pqueueTerminate
 
- Description: Terminates the data in the queue elements and the list
+ Description: Terminates the list as well as the data in the queue elements
 
  Parameters:	psQueue - pointer to the priority queue
 
@@ -57,6 +61,18 @@ void pqueueCreate (PriorityQueuePtr psQueue
  *************************************************************************/
 void pqueueTerminate (PriorityQueuePtr psQueue)
 {
+	PriorityQueueElementPtr psQElementBuffer;
+	if (NULL == psQueue)
+	{
+		processError ("pqueueCreate", ERROR_NO_PQ_TERMINATE);
+	}
+	while (0 != lstSize (&psQueue->sTheList))
+	{
+		lstFirst (&psQueue->sTheList);
+		lstDeleteCurrent (&psQueue->sTheList, psQElementBuffer,
+				sizeof (PriorityQueueElement));
+		free (psQElementBuffer->pData);
+	}
 }
 // results: If PQ can be terminated, then PQ no longer exists and is empty
 //				   otherwise, ERROR_NO_PQ_TERMINATE
