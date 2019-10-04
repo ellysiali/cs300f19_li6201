@@ -1,11 +1,12 @@
 ######################################################################
 # File name:  Makefile
 # Author:     Ellysia Li
-# Date:       10.1.19
+# Date:		  Oct 3, 2019
 # Class:      CS 300
-# Assignment: GenericDynamicList
-# Purpose: 	  This is the Makefile for the GenericDynamicList    
+# Assignment: Priority Queue Implementation
+# Purpose: 	  This is the Makefile for the Priority Queue Implementation    
 ######################################################################
+
 
 CC=gcc
 CFLAGS=-Wall -g
@@ -44,3 +45,7 @@ tarball: clean
 
 clean:
 	rm -rf bin/*.o bin/listdriver
+
+valgrind: bin/pqueuedriver
+	valgrind -v --leak-check=yes --track-origins=yes --leak-check=full \
+--showleak-kinds=all bin/pqueuedriver

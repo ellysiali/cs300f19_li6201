@@ -14,7 +14,14 @@
 #include "../../GenericDynamicList/include/list.h"
 
 char gszPQErrors[NUMBER_OF_PQ_ERRORS][MAX_ERROR_PQ_CHARS];
-
+/**************************************************************************
+ File name:  pqueuedriver.c
+ Author:     Ellysia Li
+ Date:		   Oct 3, 2019
+ Class:		   CS300
+ Assignment: Priority Queue Implementation
+ Purpose:    Test driver for a priority queue data structure
+ *************************************************************************/
 /**************************************************************************
  Function: 	 	processError
 
@@ -61,17 +68,17 @@ void pqueueCreate (PriorityQueuePtr psQueue
  *************************************************************************/
 void pqueueTerminate (PriorityQueuePtr psQueue)
 {
-	PriorityQueueElementPtr psQElementBuffer;
+	PriorityQueueElement sQElementBuffer;
 	if (NULL == psQueue)
 	{
-		processError ("pqueueCreate", ERROR_NO_PQ_TERMINATE);
+		processError ("pqueueTerminate", ERROR_NO_PQ_TERMINATE);
 	}
-	while (0 != lstSize (&psQueue->sTheList))
+	while (!lstIsEmpty (&psQueue->sTheList))
 	{
 		lstFirst (&psQueue->sTheList);
-		lstDeleteCurrent (&psQueue->sTheList, psQElementBuffer,
+		lstDeleteCurrent (&psQueue->sTheList, &sQElementBuffer,
 				sizeof (PriorityQueueElement));
-		free (psQElementBuffer->pData);
+		free (sQElementBuffer.pData);
 	}
 }
 // results: If PQ can be terminated, then PQ no longer exists and is empty
@@ -103,10 +110,12 @@ void pqueueLoadErrorMessages ()
  *************************************************************************/
 int pqueueSize (const PriorityQueuePtr psQueue)
 {
-	return 0;
+	if (NULL == psQueue)
+	{
+		processError ("pqueueSize", ERROR_INVALID_PQ);
+	}
+	return lstSize (&psQueue->sTheList);
 }
-// results: Returns the number of elements in the PQ
-// 					error code priority: ERROR_INVALID_PQ if PQ is NULL
 
 /**************************************************************************
  Function: 	 	pqueueIsEmpty
@@ -119,10 +128,12 @@ int pqueueSize (const PriorityQueuePtr psQueue)
  *************************************************************************/
 bool pqueueIsEmpty (const PriorityQueuePtr psQueue)
 {
-	return true;
+	if (NULL == psQueue)
+	{
+		processError ("pqueueIsEmpty", ERROR_INVALID_PQ);
+	}
+	return lstIsEmpty (&psQueue->sTheList);
 }
-// results: If PQ is empty, return true{} otherwise, return false
-// 					error code priority: ERROR_INVALID_PQ
 
 /**************************************************************************
  Function: 	 	pqueueEnqueue
@@ -139,13 +150,49 @@ bool pqueueIsEmpty (const PriorityQueuePtr psQueue)
 void pqueueEnqueue (PriorityQueuePtr psQueue, const void *pBuffer,
 										int size, int priority)
 {
-}
-// requires: psQueue is not full
-// results: Insert the element into the priority queue based on the
-//          priority of the element.
-//					error code priority: ERROR_INVALID_PQ, ERROR_NULL_PQ_PTR,
-//															 ERROR_FULL_PQ
+	PriorityQueueElement sQElementNew, sQElementPeeker;
+	if (NULL == psQueue)
+	{
+		processError ("pqueueEnqueue", ERROR_INVALID_PQ);
+	}
+	if (NULL == pBuffer)
+	{
+		processError ("pqueueEnqueue", ERROR_NULL_PQ_PTR);
+	}
+	sQElementNew.pData = &size;
+	sQElementNew.priority = priority;
 
+	if (pqueueIsEmpty (psQueue))
+	{
+		lstInsertBefore (&psQueue->sTheList, &sQElementNew,
+				sizeof (PriorityQueueElement));
+	}
+	else
+	{
+		lstLast (&psQueue->sTheList);
+		lstPeek (&psQueue->sTheList, &sQElementPeeker,
+				sizeof (PriorityQueueElement));
+		if (sQElementNew.priority >= sQElementPeeker.priority)
+		{
+			lstInsertAfter (&psQueue->sTheList, &sQElementNew,
+					sizeof (PriorityQueueElement));
+		}
+		else
+		{
+			lstFirst (&psQueue->sTheList);
+			lstPeek (&psQueue->sTheList, &sQElementPeeker,
+					sizeof (PriorityQueueElement));
+			while (sQElementNew.priority > sQElementPeeker.priority)
+			{
+				lstNext (&psQueue->sTheList);
+				lstPeek (&psQueue->sTheList, &sQElementPeeker,
+						sizeof (PriorityQueueElement));
+			}
+			lstInsertBefore (&psQueue->sTheList, &sQElementNew,
+					sizeof (PriorityQueueElement));
+		}
+	}
+}
 /**************************************************************************
  Function: 	 	pqueueDequeue
 
@@ -156,41 +203,66 @@ void pqueueEnqueue (PriorityQueuePtr psQueue, const void *pBuffer,
  	 	 	 	 	 	 	size      - size of the removed value
  	 	 	 	 	 	 	pPriority - pointer to store the priority of the removed value
 
- Returned:	 	None
+ Returned:	 	Pointer to the buffer of the removed value
  *************************************************************************/
 void *pqueueDequeue (PriorityQueuePtr psQueue, void *pBuffer,
 														int size, int *pPriority)
 {
+	PriorityQueueElement sQElementBuffer;
+	if (NULL == psQueue)
+	{
+		processError ("pqueueDequeue", ERROR_INVALID_PQ);
+	}
+	if (NULL == pBuffer)
+	{
+		processError ("pqueueDequeue", ERROR_NULL_PQ_PTR);
+	}
+	if (pqueueIsEmpty (psQueue))
+	{
+		processError ("pqueueDequeue", ERROR_EMPTY_PQ);
+	}
+	lstFirst (&psQueue->sTheList);
+	lstDeleteCurrent (&psQueue->sTheList, &sQElementBuffer,
+			sizeof (PriorityQueueElement));
+	memcpy (pBuffer, sQElementBuffer.pData, size);
+	*pPriority = sQElementBuffer.priority;
 	return pBuffer;
 }
-// requires: psQueue is not empty
-// results: Remove the element from the front of a non-empty queue
-//					error code priority: ERROR_INVALID_PQ, ERROR_NULL_PQ_PTR,
-//															 ERROR_EMPTY_PQ
 
 /**************************************************************************
  Function: 	 	pqueuePeek
 
- Description: Peek at the first value of the priority queue
+ Description: Peek at the first value's data and priority of the priority queue
 
  Parameters:	psQueue  - pointer to the priority queue
  	 	 	 	 	 	 	pBuffer  - pointer to store the peeked value
  	 	 	 	 	 	 	size     - size of the peeked value
  	 	 	 	 	 	 	priority - pointer to store the priority of the peeked value
 
- Returned:	 	None
+ Returned:	 	Pointer to the buffer of the peeked value
  *************************************************************************/
 void *pqueuePeek (PriorityQueuePtr psQueue, void *pBuffer, int size,
 								 int *priority)
 {
+	PriorityQueueElement sQElementBuffer;
+	if (NULL == psQueue)
+	{
+		processError ("pqueuePeek", ERROR_INVALID_PQ);
+	}
+	if (NULL == pBuffer)
+	{
+		processError ("pqueuePeek", ERROR_NULL_PQ_PTR);
+	}
+	if (pqueueIsEmpty (psQueue))
+	{
+		processError ("pqueuePeek", ERROR_EMPTY_PQ);
+	}
+	lstFirst (&psQueue->sTheList);
+	lstPeek (&psQueue->sTheList, &sQElementBuffer, sizeof (PriorityQueueElement));
+	memcpy (pBuffer, sQElementBuffer.pData, size);
+	*priority = sQElementBuffer.priority;
 	return pBuffer;
 }
-// requires: psQueue is not empty
-// results: The priority and value of the first element is returned through
-//					the argument list
-// IMPORTANT: Do not remove element from the queue
-// 						error code priority: ERROR_INVALID_PQ, ERROR_NULL_PQ_PTR,
-//																 ERROR_EMPTY_PQ
 
 /**************************************************************************
  Function: 	 	pqueueChangePriority
