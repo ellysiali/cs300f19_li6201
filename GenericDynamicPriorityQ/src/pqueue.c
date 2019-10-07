@@ -1,7 +1,7 @@
 /**************************************************************************
  File name:  pqueue.c
  Author:     Ellysia Li
- Date:		 	 Oct 3, 2019
+ Date:		 	 Oct 15, 2019
  Class:		 	 CS300
  Assignment: Priority Queue Implementation
  Purpose:    Implementation for a priority queue data structure
@@ -14,14 +14,7 @@
 #include "../../GenericDynamicList/include/list.h"
 
 char gszPQErrors[NUMBER_OF_PQ_ERRORS][MAX_ERROR_PQ_CHARS];
-/**************************************************************************
- File name:  pqueuedriver.c
- Author:     Ellysia Li
- Date:		   Oct 3, 2019
- Class:		   CS300
- Assignment: Priority Queue Implementation
- Purpose:    Test driver for a priority queue data structure
- *************************************************************************/
+
 /**************************************************************************
  Function: 	 	processError
 
@@ -159,7 +152,8 @@ void pqueueEnqueue (PriorityQueuePtr psQueue, const void *pBuffer,
 	{
 		processError ("pqueueEnqueue", ERROR_NULL_PQ_PTR);
 	}
-	sQElementNew.pData = &size;
+	sQElementNew.pData = malloc (size);
+	memcpy (sQElementNew.pData, pBuffer, size);
 	sQElementNew.priority = priority;
 
 	if (pqueueIsEmpty (psQueue))
@@ -182,7 +176,7 @@ void pqueueEnqueue (PriorityQueuePtr psQueue, const void *pBuffer,
 			lstFirst (&psQueue->sTheList);
 			lstPeek (&psQueue->sTheList, &sQElementPeeker,
 					sizeof (PriorityQueueElement));
-			while (sQElementNew.priority > sQElementPeeker.priority)
+			while (sQElementNew.priority >= sQElementPeeker.priority)
 			{
 				lstNext (&psQueue->sTheList);
 				lstPeek (&psQueue->sTheList, &sQElementPeeker,
@@ -225,6 +219,7 @@ void *pqueueDequeue (PriorityQueuePtr psQueue, void *pBuffer,
 	lstDeleteCurrent (&psQueue->sTheList, &sQElementBuffer,
 			sizeof (PriorityQueueElement));
 	memcpy (pBuffer, sQElementBuffer.pData, size);
+	free (sQElementBuffer.pData);
 	*pPriority = sQElementBuffer.priority;
 	return pBuffer;
 }
@@ -277,6 +272,22 @@ void *pqueuePeek (PriorityQueuePtr psQueue, void *pBuffer, int size,
 void pqueueChangePriority (PriorityQueuePtr psQueue,
 																	int change)
 {
+	PriorityQueueElement sQElementBuffer;
+	if (NULL == psQueue)
+	{
+		processError ("pqueueChangePriority", ERROR_INVALID_PQ);
+	}
+	if (!pqueueIsEmpty (psQueue))
+	{
+		lstFirst (&psQueue->sTheList);
+		while (lstHasCurrent (&psQueue->sTheList))
+		{
+			lstPeek (&psQueue->sTheList, &sQElementBuffer,
+					sizeof(PriorityQueueElement));
+			sQElementBuffer.priority = sQElementBuffer.priority + change;
+			lstUpdateCurrent (&psQueue->sTheList, &sQElementBuffer,
+					sizeof(PriorityQueueElement));
+			lstNext (&psQueue->sTheList);
+		}
+	}
 }
-// results: The priority of all elements is increased by the amount in
-//					change error code priority: ERROR_INVALID_PQ

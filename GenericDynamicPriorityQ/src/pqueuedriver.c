@@ -1,7 +1,7 @@
 /**************************************************************************
  File name:  pqueuedriver.c
  Author:     Ellysia Li
- Date:		   Oct 3, 2019
+ Date:		   Oct 15, 2019
  Class:		   CS300
  Assignment: Priority Queue Implementation
  Purpose:    Test driver for a priority queue data structure
@@ -15,7 +15,10 @@
 #define MAX_BUFFER_CHARS 100
 #define CHAR_START 65
 #define CHAR_END 90
-#define LONG_LIST_LENGTH = 100000;
+#define LONG_LIST_LENGTH 2
+#define CHAR_END 90
+#define PRIORITY_ADD 100
+#define PRIORITY_SUB -50
 
 /****************************************************************************
  Function: 	 	success
@@ -81,20 +84,19 @@ static void assert (bool bExpression, char *pTrue, char *pFalse)
 int main ()
 {
 	PriorityQueue sTheQueue;
-	int priorityBuffer;
-	char i, charBuffer, aszSuccess[MAX_BUFFER_CHARS],
-	aszFailure[MAX_BUFFER_CHARS];
-	puts ("Start Driver");
+	char i, charBuffer;
+	int j, intBuffer, priorityBuffer;
+	float k, floatBuffer;
+
+	puts ("Start Driver\n");
 
 	// Validate the initiated queue (after pqueueCreate)
 
 	pqueueCreate (&sTheQueue);
 	assert (0 == pqueueSize (&sTheQueue), "Initialized queue size is 0",
 			"Initialized queue size is NOT 0");
-	assert (pqueueIsEmpty (&sTheQueue), "Initialized queue is empty",
-			"Initialized queue is NOT empty");
-
-	puts ("");
+	assert (pqueueIsEmpty (&sTheQueue), "Initialized queue is empty\n",
+			"Initialized queue is NOT empty\n");
 
 	// Add chars to the beginning of the queue using pqueueEnqueue and validate
 	// appropriately
@@ -120,16 +122,25 @@ int main ()
 			assert (i == charBuffer, "Validated first (peeked) element is correct",
 					"Could not validate (first (peeked) element is NOT correct)");
 		}
+		if (CHAR_END - i != priorityBuffer)
+		{
+			assert (i == charBuffer, "Validated first (peeked) priority is correct",
+					"Could not validate (first (peeked) priority is NOT correct)");
+		}
 	}
+	success ("Added elements to the beginning of the queue and validated "
+			"appropriately\n");
 
 	// Remove chars using pqueueDequeue and validate appropriately
 
 	for (i = CHAR_END; CHAR_START <= i; i--)
 	{
 		pqueueDequeue (&sTheQueue, &charBuffer, sizeof (char), &priorityBuffer);
-		sprintf (aszSuccess, "Removed element is %c", i);
-		sprintf (aszFailure, "Removed element is NOT %c", i);
-		assert (i == charBuffer, aszSuccess, aszFailure);
+		if (i != charBuffer)
+		{
+			assert (i == charBuffer, "Validated removed element value is correct",
+					"Could not validate (removed element value is NOT correct)");
+		}
 		if (CHAR_END - i != priorityBuffer)
 		{
 			assert (CHAR_END - i == priorityBuffer,
@@ -143,25 +154,130 @@ int main ()
 					"Could not validate (deleted queue size is NOT correct)");
 		}
 	}
-
-	puts ("");
+	success ("Removed elements from the queue and validated appropriately");
 
 	// Validate completely deleted queue
 
 	assert (0 == pqueueSize (&sTheQueue), "Fully deleted queue size is 0",
 			"Fully deleted queue size is NOT 0");
-	assert (pqueueIsEmpty (&sTheQueue), "Fully deleted queue is empty",
-			"Fully deleted queue is NOT empty");
+	assert (pqueueIsEmpty (&sTheQueue), "Fully deleted queue is empty\n",
+			"Fully deleted queue is NOT empty\n");
 
 	pqueueTerminate (&sTheQueue);
 
-	/*
-	 * TO DO:
-	 * - Terminate the queue when non-empty
-	 * - Add a bunch of ints and make sure to queue in the middle and end
-	 *   (mess around with the priorities)
-	 * - Implement pqueueChangePriority
-	 */
+	// Create a long queue, adding to the middle/end using pqueueEnqueue
+	// (some with the same priority) and validate appropriately
+
+	pqueueCreate (&sTheQueue);
+
+	for (j = 0; j < LONG_LIST_LENGTH; j++)
+	{
+		pqueueEnqueue (&sTheQueue, &j, sizeof (int), j);
+	}
+	for (k = 0; k < LONG_LIST_LENGTH; k = k + 1)
+	{
+		pqueueEnqueue (&sTheQueue, &k, sizeof (float), (int) k);
+	}
+
+	for (j = 0; j < 2 * LONG_LIST_LENGTH; j++)
+	{
+		if (0 == j % 2)
+		{
+			pqueueDequeue (&sTheQueue, &intBuffer, sizeof (int), &priorityBuffer);
+			if (j / 2 != intBuffer)
+			{
+				assert (j / 2 == intBuffer,
+						"Validated removed element value is correct",
+						"Could not validate (removed element value is NOT correct)");
+			}
+			if (j / 2 != priorityBuffer)
+			{
+				assert (j / 2 == priorityBuffer,
+						"Validated removed priority is correct",
+						"Could not validate (removed priority is NOT correct)");
+			}
+		}
+		else
+		{
+			pqueueDequeue (&sTheQueue, &floatBuffer, sizeof (float), &priorityBuffer);
+			if ((float) (j - 1) / 2 != floatBuffer)
+			{
+				assert ((float) (j - 1) / 2 == floatBuffer,
+						"Validated removed element value is correct",
+						"Could not validate (removed element value is NOT correct)");
+			}
+			if ((j - 1) / 2 != priorityBuffer)
+			{
+				assert ((j - 1) / 2 == priorityBuffer,
+						"Validated removed priority is correct",
+						"Could not validate (removed priority is NOT correct)");
+			}
+		}
+		if (2 * LONG_LIST_LENGTH - j - 1 != pqueueSize (&sTheQueue))
+		{
+			assert (2 * LONG_LIST_LENGTH - j - 1 == pqueueSize (&sTheQueue),
+					"Validated deleted queue size is correct",
+					"Could not validate (deleted queue size is NOT correct)");
+		}
+	}
+
+	success ("Added elements to the middle/end of the queue and validated "
+			"order\n");
+
+	// Validate a terminated queue (nonempty)
+
+	for (j = 0; j < LONG_LIST_LENGTH; j++)
+	{
+		pqueueEnqueue (&sTheQueue, &j, sizeof (int), j);
+	}
+	pqueueTerminate (&sTheQueue);
+	assert (0 == pqueueSize (&sTheQueue),
+			"Terminated queue (from nonempty) size is 0",
+			"Terminated queue (from nonempty) size is NOT 0");
+	assert (pqueueIsEmpty (&sTheQueue),
+			"Terminated queue (from nonempty) is empty\n",
+			"Terminated queue (from nonempty) is NOT empty\n");
+
+	// Validate pqueueChangePriority on a queue
+	for (j = 0; j < LONG_LIST_LENGTH; j++)
+	{
+		pqueueEnqueue (&sTheQueue, &j, sizeof (int), j);
+	}
+
+	pqueueChangePriority (&sTheQueue, PRIORITY_ADD);
+
+	for (j = 0; j < LONG_LIST_LENGTH; j++)
+	{
+		pqueueDequeue (&sTheQueue, &intBuffer, sizeof (int), &priorityBuffer);
+		if (j + PRIORITY_ADD != priorityBuffer)
+		{
+			assert (j + PRIORITY_ADD == priorityBuffer,
+					"Validated updated (added) priority is correct",
+					"Could not validate (updated [added] priority is NOT correct)");
+		}
+	}
+	success ("Changed priorities (when adding) is correct");
+	for (j = 0; j < LONG_LIST_LENGTH; j++)
+	{
+		pqueueEnqueue (&sTheQueue, &j, sizeof (int), j);
+	}
+
+	pqueueChangePriority (&sTheQueue, PRIORITY_ADD);
+	pqueueChangePriority (&sTheQueue, PRIORITY_SUB);
+
+	for (j = 0; j < LONG_LIST_LENGTH; j++)
+	{
+		pqueueDequeue (&sTheQueue, &intBuffer, sizeof (int), &priorityBuffer);
+		if (j + PRIORITY_ADD + PRIORITY_SUB != priorityBuffer)
+		{
+			assert (j + PRIORITY_ADD + PRIORITY_SUB == priorityBuffer,
+					"Validated updated (subtracted) priority is correct",
+					"Could not validate (updated [subtracted] priority is NOT correct)");
+		}
+	}
+	success ("Changed priorities (when subtracting) is correct\n");
+
+	pqueueTerminate (&sTheQueue);
 
 	puts ("End Driver");
 	return EXIT_SUCCESS;
