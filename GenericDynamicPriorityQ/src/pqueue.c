@@ -89,6 +89,7 @@ void pqueueTerminate (PriorityQueuePtr psQueue)
  *************************************************************************/
 void pqueueLoadErrorMessages ()
 {
+	lstLoadErrorMessages ();
 	LOAD_PQ_ERRORS
 }
 
