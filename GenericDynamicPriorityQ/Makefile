@@ -38,5 +38,6 @@ tarball: clean
 ../GenericDynamicPriorityQ
 
 clean:
+	cd ../GenericDynamicList; make clean
 	rm -rf bin/*.o bin/GenericDynamicPriorityQ \
 ../GenericDynamicList/bin/SimpleMath.o

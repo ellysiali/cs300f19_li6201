@@ -112,8 +112,7 @@ int main ()
 		}
 		if (pqueueIsEmpty (&sTheQueue))
 		{
-			assert (!pqueueIsEmpty (&sTheQueue),
-					"Validated queue is not empty",
+			assert (!pqueueIsEmpty (&sTheQueue), "Validated queue is not empty",
 					"Could not validate (queue is empty)");
 		}
 		pqueuePeek (&sTheQueue, &charBuffer, sizeof (char), &priorityBuffer);
