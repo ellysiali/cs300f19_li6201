@@ -39,5 +39,8 @@ tarball: clean
 
 clean:
 	cd ../GenericDynamicList; make clean
-	rm -rf bin/*.o bin/GenericDynamicPriorityQ \
-../GenericDynamicList/bin/SimpleMath.o
+	rm -rf bin/*.o bin/GenericDynamicPriorityQ
+	
+valgrind: bin/pqueuedriver
+	valgrind -v --leak-check=yes --track-origins=yes --leak-check=full \
+--showleak-kinds=all bin/pqueuedriver

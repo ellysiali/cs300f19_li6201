@@ -282,10 +282,10 @@ void pqueueChangePriority (PriorityQueuePtr psQueue,
 		while (lstHasCurrent (&psQueue->sTheList))
 		{
 			lstPeek (&psQueue->sTheList, &sQElementBuffer,
-					sizeof(PriorityQueueElement));
+					sizeof (PriorityQueueElement));
 			sQElementBuffer.priority = sQElementBuffer.priority + change;
 			lstUpdateCurrent (&psQueue->sTheList, &sQElementBuffer,
-					sizeof(PriorityQueueElement));
+					sizeof (PriorityQueueElement));
 			lstNext (&psQueue->sTheList);
 		}
 	}

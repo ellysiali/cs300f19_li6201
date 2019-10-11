@@ -87,7 +87,7 @@ static void assert (bool bExpression, char *pTrue, char *pFalse)
  ****************************************************************************/
 static void validateEnqueue (PriorityQueuePtr psQueue)
 {
-	const int REPEAT = 1000, PRIORITY_1 = 7, PRIORITY_2 = 49, PRIORITY_3 = 2401;
+	const int REPEAT = 10000, PRIORITY_1 = 7, PRIORITY_2 = 49, PRIORITY_3 = 2401;
 	const int INT_CHARACTER = 6255;
 	const char CHAR_CHARACTER = '$';
 	const float FLOAT_CHARACTER = 4.4444444;
@@ -95,6 +95,7 @@ static void validateEnqueue (PriorityQueuePtr psQueue)
 	char charBuffer;
 	float floatBuffer;
 
+	pqueueCreate (psQueue);
 	for (i = 0; i < REPEAT; i++)
 	{
 		pqueueEnqueue (psQueue, &CHAR_CHARACTER, sizeof (char), PRIORITY_2);
@@ -103,7 +104,7 @@ static void validateEnqueue (PriorityQueuePtr psQueue)
 	pqueueEnqueue (psQueue, &FLOAT_CHARACTER, sizeof (float), PRIORITY_3);
 	pqueueEnqueue (psQueue, &INT_CHARACTER, sizeof (int), PRIORITY_2);
 
-	pqueueDequeue (psQueue, &intBuffer, sizeof (int), priorityBuffer);
+	pqueueDequeue (psQueue, &intBuffer, sizeof (int), &priorityBuffer);
 	if (INT_CHARACTER != intBuffer)
 	{
 		assert (INT_CHARACTER == intBuffer,
@@ -118,7 +119,7 @@ static void validateEnqueue (PriorityQueuePtr psQueue)
 	}
 	for (i = 0; i < REPEAT; i++)
 	{
-		pqueueDequeue (psQueue, &charBuffer, sizeof (char), priorityBuffer);
+		pqueueDequeue (psQueue, &charBuffer, sizeof (char), &priorityBuffer);
 		if (CHAR_CHARACTER != charBuffer)
 		{
 			assert (CHAR_CHARACTER == charBuffer,
@@ -132,7 +133,7 @@ static void validateEnqueue (PriorityQueuePtr psQueue)
 					"Could not validate (removed priority is NOT correct)");
 		}
 	}
-	pqueueDequeue (psQueue, &intBuffer, sizeof (int), priorityBuffer);
+	pqueueDequeue (psQueue, &intBuffer, sizeof (int), &priorityBuffer);
 	if (INT_CHARACTER != intBuffer)
 	{
 		assert (INT_CHARACTER == intBuffer,
@@ -145,7 +146,7 @@ static void validateEnqueue (PriorityQueuePtr psQueue)
 				"Validated removed priority is correct",
 				"Could not validate (removed priority is NOT correct)");
 	}
-	pqueueDequeue (psQueue, &floatBuffer, sizeof (float), priorityBuffer);
+	pqueueDequeue (psQueue, &floatBuffer, sizeof (float), &priorityBuffer);
 	if (FLOAT_CHARACTER != floatBuffer)
 	{
 		assert (FLOAT_CHARACTER == floatBuffer,
@@ -158,6 +159,7 @@ static void validateEnqueue (PriorityQueuePtr psQueue)
 				"Validated removed priority is correct",
 				"Could not validate (removed priority is NOT correct)");
 	}
+	pqueueTerminate (psQueue);
 }
 
 /**************************************************************************
@@ -351,14 +353,16 @@ int main ()
 		}
 	}
 
+	pqueueTerminate (&sTheQueue);
+
 	success ("Added elements to the middle/end of the queue and validated "
 			"order");
 
 	// Validate on an different combination of data types and priorities
 
 	validateEnqueue (&sTheQueue);
-	success ("Added elements to different combination of data types and "
-			"priorities and validated order\n");
+	success ("Added elements to different combination of data types/priorities "
+			"and validated order\n");
 
 	// Validate pqueueChangePriority on a queue
 
