@@ -19,7 +19,7 @@
 #define CHAR_END 90
 #define LONG_LIST_LENGTH 1000
 #define VERY_LONG_LIST_LENGTH 1000000
-#define CHAR_END 90
+#define PRIORITY 7
 #define PRIORITY_ADD 100
 #define PRIORITY_SUB -50
 
@@ -186,6 +186,29 @@ int main ()
 			"Fully deleted queue is NOT empty\n");
 
 	pqueueTerminate (&sTheQueue);
+
+	// Create a queue using all the same priorities and validate order
+
+	for (j = 0; j < LONG_LIST_LENGTH; j++)
+	{
+		pqueueEnqueue (&sTheQueue, &j, sizeof (int), PRIORITY);
+	}
+	for (j = 0; j < LONG_LIST_LENGTH; j++)
+	{
+		pqueueDequeue (&sTheQueue, &intBuffer, sizeof (int), &priorityBuffer);
+		if (j != intBuffer)
+		{
+			assert (j == intBuffer, "Validated removed element value is correct",
+					"Could not validate (removed element value is NOT correct)");
+		}
+		if (PRIORITY != priorityBuffer)
+		{
+			assert (0 == priorityBuffer,
+					"Validated removed priority is correct",
+					"Could not validate (removed priority is NOT correct)");
+		}
+	}
+	success ("Added elements with the same priority and validated order");
 
 	// Create a long queue, adding to the middle/end using pqueueEnqueue
 	// (some with the same priority) and validate appropriately
