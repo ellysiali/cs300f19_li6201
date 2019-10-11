@@ -17,8 +17,8 @@
 #define DOUBLE 2
 #define CHAR_START 65
 #define CHAR_END 90
-#define LONG_LIST_LENGTH 1000
-#define VERY_LONG_LIST_LENGTH 1000000
+#define LONG_QUEUE_LENGTH 1000
+#define VERY_LONG_QUEUE_LENGTH 1000000
 #define PRIORITY 7
 #define PRIORITY_ADD 100
 #define PRIORITY_SUB -50
@@ -75,6 +75,91 @@ static void assert (bool bExpression, char *pTrue, char *pFalse)
 	}
 }
 
+/****************************************************************************
+ Function: 	 		validateEnqueue
+
+ Description: 	Runs various tests on pqueueEnqueue using different
+ 	 	 	 	 	 	 	 	combinations of priorities
+
+ Parameters:		psQueue - pointer to the priority queue
+
+ Returned:	 		none
+ ****************************************************************************/
+static void validateEnqueue (PriorityQueuePtr psQueue)
+{
+	const int REPEAT = 1000, PRIORITY_1 = 7, PRIORITY_2 = 49, PRIORITY_3 = 2401;
+	const int INT_CHARACTER = 6255;
+	const char CHAR_CHARACTER = '$';
+	const float FLOAT_CHARACTER = 4.4444444;
+	int i, intBuffer, priorityBuffer;
+	char charBuffer;
+	float floatBuffer;
+
+	for (i = 0; i < REPEAT; i++)
+	{
+		pqueueEnqueue (psQueue, &CHAR_CHARACTER, sizeof (char), PRIORITY_2);
+	}
+	pqueueEnqueue (psQueue, &INT_CHARACTER, sizeof (int), PRIORITY_1);
+	pqueueEnqueue (psQueue, &FLOAT_CHARACTER, sizeof (float), PRIORITY_3);
+	pqueueEnqueue (psQueue, &INT_CHARACTER, sizeof (int), PRIORITY_2);
+
+	pqueueDequeue (psQueue, &intBuffer, sizeof (int), priorityBuffer);
+	if (INT_CHARACTER != intBuffer)
+	{
+		assert (INT_CHARACTER == intBuffer,
+				"Validated removed element value is correct",
+				"Could not validate (removed element value is NOT correct)");
+	}
+	if (PRIORITY_1 != priorityBuffer)
+	{
+		assert (PRIORITY_1 == priorityBuffer,
+				"Validated removed priority is correct",
+				"Could not validate (removed priority is NOT correct)");
+	}
+	for (i = 0; i < REPEAT; i++)
+	{
+		pqueueDequeue (psQueue, &charBuffer, sizeof (char), priorityBuffer);
+		if (CHAR_CHARACTER != charBuffer)
+		{
+			assert (CHAR_CHARACTER == charBuffer,
+					"Validated removed element value is correct",
+					"Could not validate (removed element value is NOT correct)");
+		}
+		if (PRIORITY_2 != priorityBuffer)
+		{
+			assert (PRIORITY_2 == priorityBuffer,
+					"Validated removed priority is correct",
+					"Could not validate (removed priority is NOT correct)");
+		}
+	}
+	pqueueDequeue (psQueue, &intBuffer, sizeof (int), priorityBuffer);
+	if (INT_CHARACTER != intBuffer)
+	{
+		assert (INT_CHARACTER == intBuffer,
+				"Validated removed element value is correct",
+				"Could not validate (removed element value is NOT correct)");
+	}
+	if (PRIORITY_2 != priorityBuffer)
+	{
+		assert (PRIORITY_2 == priorityBuffer,
+				"Validated removed priority is correct",
+				"Could not validate (removed priority is NOT correct)");
+	}
+	pqueueDequeue (psQueue, &floatBuffer, sizeof (float), priorityBuffer);
+	if (FLOAT_CHARACTER != floatBuffer)
+	{
+		assert (FLOAT_CHARACTER == floatBuffer,
+				"Validated removed element value is correct",
+				"Could not validate (removed element value is NOT correct)");
+	}
+	if (PRIORITY_3 != priorityBuffer)
+	{
+		assert (PRIORITY_3 == priorityBuffer,
+				"Validated removed priority is correct",
+				"Could not validate (removed priority is NOT correct)");
+	}
+}
+
 /**************************************************************************
  Function: 	 	main
 
@@ -103,7 +188,7 @@ int main ()
 
 	// Create a very long queue and validate when terminated (repeat twice)
 
-	for (j = 0; j < VERY_LONG_LIST_LENGTH; j++)
+	for (j = 0; j < VERY_LONG_QUEUE_LENGTH; j++)
 	{
 		pqueueEnqueue (&sTheQueue, &j, sizeof (int), j);
 	}
@@ -115,7 +200,7 @@ int main ()
 			"Terminated queue (from nonempty) is empty\n",
 			"Terminated queue (from nonempty) is NOT empty\n");
 
-	for (j = 0; j < VERY_LONG_LIST_LENGTH; j++)
+	for (j = 0; j < VERY_LONG_QUEUE_LENGTH; j++)
 	{
 		pqueueEnqueue (&sTheQueue, &j, sizeof (int), j);
 	}
@@ -189,11 +274,11 @@ int main ()
 
 	// Create a queue using all the same priorities and validate order
 
-	for (j = 0; j < LONG_LIST_LENGTH; j++)
+	for (j = 0; j < LONG_QUEUE_LENGTH; j++)
 	{
 		pqueueEnqueue (&sTheQueue, &j, sizeof (int), PRIORITY);
 	}
-	for (j = 0; j < LONG_LIST_LENGTH; j++)
+	for (j = 0; j < LONG_QUEUE_LENGTH; j++)
 	{
 		pqueueDequeue (&sTheQueue, &intBuffer, sizeof (int), &priorityBuffer);
 		if (j != intBuffer)
@@ -203,7 +288,7 @@ int main ()
 		}
 		if (PRIORITY != priorityBuffer)
 		{
-			assert (0 == priorityBuffer,
+			assert (PRIORITY == priorityBuffer,
 					"Validated removed priority is correct",
 					"Could not validate (removed priority is NOT correct)");
 		}
@@ -215,16 +300,16 @@ int main ()
 
 	pqueueCreate (&sTheQueue);
 
-	for (j = 0; j < LONG_LIST_LENGTH; j++)
+	for (j = 0; j < LONG_QUEUE_LENGTH; j++)
 	{
 		pqueueEnqueue (&sTheQueue, &j, sizeof (int), j);
 	}
-	for (k = 0; k < LONG_LIST_LENGTH; k = k + 1)
+	for (k = 0; k < LONG_QUEUE_LENGTH; k = k + 1)
 	{
 		pqueueEnqueue (&sTheQueue, &k, sizeof (float), (int) k);
 	}
 
-	for (j = 0; j < DOUBLE * LONG_LIST_LENGTH; j++)
+	for (j = 0; j < DOUBLE * LONG_QUEUE_LENGTH; j++)
 	{
 		if (0 == j % EVEN)
 		{
@@ -258,27 +343,33 @@ int main ()
 						"Could not validate (removed priority is NOT correct)");
 			}
 		}
-		if (DOUBLE * LONG_LIST_LENGTH - j - 1 != pqueueSize (&sTheQueue))
+		if (DOUBLE * LONG_QUEUE_LENGTH - j - 1 != pqueueSize (&sTheQueue))
 		{
-			assert (DOUBLE * LONG_LIST_LENGTH - j - 1 == pqueueSize (&sTheQueue),
+			assert (DOUBLE * LONG_QUEUE_LENGTH - j - 1 == pqueueSize (&sTheQueue),
 					"Validated deleted queue size is correct",
 					"Could not validate (deleted queue size is NOT correct)");
 		}
 	}
 
 	success ("Added elements to the middle/end of the queue and validated "
-			"order\n");
+			"order");
+
+	// Validate on an different combination of data types and priorities
+
+	validateEnqueue (&sTheQueue);
+	success ("Added elements to different combination of data types and "
+			"priorities and validated order\n");
 
 	// Validate pqueueChangePriority on a queue
 
-	for (j = 0; j < LONG_LIST_LENGTH; j++)
+	for (j = 0; j < LONG_QUEUE_LENGTH; j++)
 	{
 		pqueueEnqueue (&sTheQueue, &j, sizeof (int), j);
 	}
 
 	pqueueChangePriority (&sTheQueue, PRIORITY_ADD);
 
-	for (j = 0; j < LONG_LIST_LENGTH; j++)
+	for (j = 0; j < LONG_QUEUE_LENGTH; j++)
 	{
 		pqueueDequeue (&sTheQueue, &intBuffer, sizeof (int), &priorityBuffer);
 		if (j + PRIORITY_ADD != priorityBuffer)
@@ -289,7 +380,7 @@ int main ()
 		}
 	}
 	success ("Changed priorities (when adding) is correct");
-	for (j = 0; j < LONG_LIST_LENGTH; j++)
+	for (j = 0; j < LONG_QUEUE_LENGTH; j++)
 	{
 		pqueueEnqueue (&sTheQueue, &j, sizeof (int), j);
 	}
@@ -297,7 +388,7 @@ int main ()
 	pqueueChangePriority (&sTheQueue, PRIORITY_ADD);
 	pqueueChangePriority (&sTheQueue, PRIORITY_SUB);
 
-	for (j = 0; j < LONG_LIST_LENGTH; j++)
+	for (j = 0; j < LONG_QUEUE_LENGTH; j++)
 	{
 		pqueueDequeue (&sTheQueue, &intBuffer, sizeof (int), &priorityBuffer);
 		if (j + PRIORITY_ADD + PRIORITY_SUB != priorityBuffer)
