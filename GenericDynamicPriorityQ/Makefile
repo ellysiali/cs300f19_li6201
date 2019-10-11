@@ -43,4 +43,4 @@ clean:
 	
 valgrind: bin/pqueuedriver
 	valgrind -v --leak-check=yes --track-origins=yes --leak-check=full \
---showleak-kinds=all bin/pqueuedriver
+--show-leak-kinds=all bin/pqueuedriver
