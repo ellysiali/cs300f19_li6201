@@ -13,9 +13,12 @@
 #include "../../GenericDynamicList/include/list.h"
 
 #define MAX_BUFFER_CHARS 100
+#define EVEN 2
+#define DOUBLE 2
 #define CHAR_START 65
 #define CHAR_END 90
-#define LONG_LIST_LENGTH 2
+#define LONG_LIST_LENGTH 1000
+#define VERY_LONG_LIST_LENGTH 1000000
 #define CHAR_END 90
 #define PRIORITY_ADD 100
 #define PRIORITY_SUB -50
@@ -41,7 +44,7 @@ static void success (char *pszStr)
 
  Parameters:	pszStr - the message to print
 
- Returned:	 	none#define DELETE_MID 2
+ Returned:	 	none
 
  ****************************************************************************/
 static void failure (char *pszStr)
@@ -97,6 +100,26 @@ int main ()
 			"Initialized queue size is NOT 0");
 	assert (pqueueIsEmpty (&sTheQueue), "Initialized queue is empty\n",
 			"Initialized queue is NOT empty\n");
+
+	// Create a very long queue and validate when terminated (repeat twice)
+
+	for (j = 0; j < VERY_LONG_LIST_LENGTH; j++)
+	{
+		pqueueEnqueue (&sTheQueue, &j, sizeof (int), j);
+	}
+	pqueueTerminate (&sTheQueue);
+	assert (0 == pqueueSize (&sTheQueue),
+			"Terminated queue (from nonempty) size is 0",
+			"Terminated queue (from nonempty) size is NOT 0");
+	assert (pqueueIsEmpty (&sTheQueue),
+			"Terminated queue (from nonempty) is empty\n",
+			"Terminated queue (from nonempty) is NOT empty\n");
+
+	for (j = 0; j < VERY_LONG_LIST_LENGTH; j++)
+	{
+		pqueueEnqueue (&sTheQueue, &j, sizeof (int), j);
+	}
+	pqueueTerminate (&sTheQueue);
 
 	// Add chars to the beginning of the queue using pqueueEnqueue and validate
 	// appropriately
@@ -178,20 +201,20 @@ int main ()
 		pqueueEnqueue (&sTheQueue, &k, sizeof (float), (int) k);
 	}
 
-	for (j = 0; j < 2 * LONG_LIST_LENGTH; j++)
+	for (j = 0; j < DOUBLE * LONG_LIST_LENGTH; j++)
 	{
-		if (0 == j % 2)
+		if (0 == j % EVEN)
 		{
 			pqueueDequeue (&sTheQueue, &intBuffer, sizeof (int), &priorityBuffer);
-			if (j / 2 != intBuffer)
+			if (j / DOUBLE != intBuffer)
 			{
-				assert (j / 2 == intBuffer,
+				assert (j / DOUBLE == intBuffer,
 						"Validated removed element value is correct",
 						"Could not validate (removed element value is NOT correct)");
 			}
-			if (j / 2 != priorityBuffer)
+			if (j / DOUBLE != priorityBuffer)
 			{
-				assert (j / 2 == priorityBuffer,
+				assert (j / DOUBLE == priorityBuffer,
 						"Validated removed priority is correct",
 						"Could not validate (removed priority is NOT correct)");
 			}
@@ -199,22 +222,22 @@ int main ()
 		else
 		{
 			pqueueDequeue (&sTheQueue, &floatBuffer, sizeof (float), &priorityBuffer);
-			if ((float) (j - 1) / 2 != floatBuffer)
+			if ((float) (j - 1) / DOUBLE != floatBuffer)
 			{
-				assert ((float) (j - 1) / 2 == floatBuffer,
+				assert ((float) (j - 1) / DOUBLE == floatBuffer,
 						"Validated removed element value is correct",
 						"Could not validate (removed element value is NOT correct)");
 			}
-			if ((j - 1) / 2 != priorityBuffer)
+			if ((j - 1) / DOUBLE != priorityBuffer)
 			{
-				assert ((j - 1) / 2 == priorityBuffer,
+				assert ((j - 1) / DOUBLE == priorityBuffer,
 						"Validated removed priority is correct",
 						"Could not validate (removed priority is NOT correct)");
 			}
 		}
-		if (2 * LONG_LIST_LENGTH - j - 1 != pqueueSize (&sTheQueue))
+		if (DOUBLE * LONG_LIST_LENGTH - j - 1 != pqueueSize (&sTheQueue))
 		{
-			assert (2 * LONG_LIST_LENGTH - j - 1 == pqueueSize (&sTheQueue),
+			assert (DOUBLE * LONG_LIST_LENGTH - j - 1 == pqueueSize (&sTheQueue),
 					"Validated deleted queue size is correct",
 					"Could not validate (deleted queue size is NOT correct)");
 		}
@@ -223,21 +246,8 @@ int main ()
 	success ("Added elements to the middle/end of the queue and validated "
 			"order\n");
 
-	// Validate a terminated queue (nonempty)
-
-	for (j = 0; j < LONG_LIST_LENGTH; j++)
-	{
-		pqueueEnqueue (&sTheQueue, &j, sizeof (int), j);
-	}
-	pqueueTerminate (&sTheQueue);
-	assert (0 == pqueueSize (&sTheQueue),
-			"Terminated queue (from nonempty) size is 0",
-			"Terminated queue (from nonempty) size is NOT 0");
-	assert (pqueueIsEmpty (&sTheQueue),
-			"Terminated queue (from nonempty) is empty\n",
-			"Terminated queue (from nonempty) is NOT empty\n");
-
 	// Validate pqueueChangePriority on a queue
+
 	for (j = 0; j < LONG_LIST_LENGTH; j++)
 	{
 		pqueueEnqueue (&sTheQueue, &j, sizeof (int), j);

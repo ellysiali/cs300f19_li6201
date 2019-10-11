@@ -74,8 +74,6 @@ void pqueueTerminate (PriorityQueuePtr psQueue)
 		free (sQElementBuffer.pData);
 	}
 }
-// results: If PQ can be terminated, then PQ no longer exists and is empty
-//				   otherwise, ERROR_NO_PQ_TERMINATE
 
 /**************************************************************************
  Function: 	 	pqueueLoadErrorMessages
