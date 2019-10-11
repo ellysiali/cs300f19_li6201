@@ -194,7 +194,9 @@ int main ()
 	{
 		pqueueEnqueue (&sTheQueue, &j, sizeof (int), j);
 	}
+
 	pqueueTerminate (&sTheQueue);
+
 	assert (0 == pqueueSize (&sTheQueue),
 			"Terminated queue (from nonempty) size is 0",
 			"Terminated queue (from nonempty) size is NOT 0");
@@ -202,14 +204,18 @@ int main ()
 			"Terminated queue (from nonempty) is empty\n",
 			"Terminated queue (from nonempty) is NOT empty\n");
 
+	pqueueCreate (&sTheQueue);
+
 	for (j = 0; j < VERY_LONG_QUEUE_LENGTH; j++)
 	{
-		pqueueEnqueue (&sTheQueue, &j, sizeof (int), j);
+		pqueueEnqueue (&sTheQueue, &j, sizeof (int), VERY_LONG_QUEUE_LENGTH - j);
 	}
 	pqueueTerminate (&sTheQueue);
 
 	// Add chars to the beginning of the queue using pqueueEnqueue and validate
 	// appropriately
+
+	pqueueCreate (&sTheQueue);
 
 	for (i = CHAR_START; CHAR_END >= i; i++)
 	{
@@ -276,6 +282,8 @@ int main ()
 
 	// Create a queue using all the same priorities and validate order
 
+	pqueueCreate (&sTheQueue);
+
 	for (j = 0; j < LONG_QUEUE_LENGTH; j++)
 	{
 		pqueueEnqueue (&sTheQueue, &j, sizeof (int), PRIORITY);
@@ -296,6 +304,8 @@ int main ()
 		}
 	}
 	success ("Added elements with the same priority and validated order");
+
+	pqueueTerminate (&sTheQueue);
 
 	// Create a long queue, adding to the middle/end using pqueueEnqueue
 	// (some with the same priority) and validate appropriately
@@ -365,6 +375,8 @@ int main ()
 			"and validated order\n");
 
 	// Validate pqueueChangePriority on a queue
+
+	pqueueCreate (&sTheQueue);
 
 	for (j = 0; j < LONG_QUEUE_LENGTH; j++)
 	{
