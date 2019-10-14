@@ -96,7 +96,7 @@ static void validateEnqueue (PriorityQueuePtr psQueue)
 	float floatBuffer;
 
 	pqueueCreate (psQueue);
-	for (i = 0; i < REPEAT; i++)
+	for (i = 0; REPEAT > i; i++)
 	{
 		pqueueEnqueue (psQueue, &CHAR_CHARACTER, sizeof (char), PRIORITY_2);
 	}
@@ -117,7 +117,7 @@ static void validateEnqueue (PriorityQueuePtr psQueue)
 				"Validated removed priority is correct",
 				"Could not validate (removed priority is NOT correct)");
 	}
-	for (i = 0; i < REPEAT; i++)
+	for (i = 0; REPEAT > i; i++)
 	{
 		pqueueDequeue (psQueue, &charBuffer, sizeof (char), &priorityBuffer);
 		if (CHAR_CHARACTER != charBuffer)
@@ -206,7 +206,7 @@ int main ()
 
 	pqueueCreate (&sTheQueue);
 
-	for (j = 0; j < VERY_LONG_QUEUE_LENGTH; j++)
+	for (j = 0; VERY_LONG_QUEUE_LENGTH > j; j++)
 	{
 		pqueueEnqueue (&sTheQueue, &j, sizeof (int), VERY_LONG_QUEUE_LENGTH - j);
 	}
@@ -284,11 +284,11 @@ int main ()
 
 	pqueueCreate (&sTheQueue);
 
-	for (j = 0; j < LONG_QUEUE_LENGTH; j++)
+	for (j = 0; LONG_QUEUE_LENGTH > j; j++)
 	{
 		pqueueEnqueue (&sTheQueue, &j, sizeof (int), PRIORITY);
 	}
-	for (j = 0; j < LONG_QUEUE_LENGTH; j++)
+	for (j = 0; LONG_QUEUE_LENGTH > j; j++)
 	{
 		pqueueDequeue (&sTheQueue, &intBuffer, sizeof (int), &priorityBuffer);
 		if (j != intBuffer)
@@ -312,16 +312,16 @@ int main ()
 
 	pqueueCreate (&sTheQueue);
 
-	for (j = 0; j < LONG_QUEUE_LENGTH; j++)
+	for (j = 0; LONG_QUEUE_LENGTH > j; j++)
 	{
 		pqueueEnqueue (&sTheQueue, &j, sizeof (int), j);
 	}
-	for (k = 0; k < LONG_QUEUE_LENGTH; k = k + 1)
+	for (k = 0; LONG_QUEUE_LENGTH > k; k = k + 1)
 	{
 		pqueueEnqueue (&sTheQueue, &k, sizeof (float), (int) k);
 	}
 
-	for (j = 0; j < DOUBLE * LONG_QUEUE_LENGTH; j++)
+	for (j = 0; DOUBLE * LONG_QUEUE_LENGTH > j; j++)
 	{
 		if (0 == j % EVEN)
 		{
@@ -392,14 +392,14 @@ int main ()
 
 	pqueueCreate (&sTheQueue);
 
-	for (j = 0; j < LONG_QUEUE_LENGTH; j++)
+	for (j = 0; LONG_QUEUE_LENGTH > j; j++)
 	{
 		pqueueEnqueue (&sTheQueue, &j, sizeof (int), j);
 	}
 
 	pqueueChangePriority (&sTheQueue, PRIORITY_ADD);
 
-	for (j = 0; j < LONG_QUEUE_LENGTH; j++)
+	for (j = 0; LONG_QUEUE_LENGTH > j; j++)
 	{
 		pqueueDequeue (&sTheQueue, &intBuffer, sizeof (int), &priorityBuffer);
 		if (j + PRIORITY_ADD != priorityBuffer)
@@ -410,7 +410,7 @@ int main ()
 		}
 	}
 	success ("Changed priorities (when adding) is correct");
-	for (j = 0; j < LONG_QUEUE_LENGTH; j++)
+	for (j = 0; LONG_QUEUE_LENGTH > j; j++)
 	{
 		pqueueEnqueue (&sTheQueue, &j, sizeof (int), j);
 	}
@@ -418,7 +418,7 @@ int main ()
 	pqueueChangePriority (&sTheQueue, PRIORITY_ADD);
 	pqueueChangePriority (&sTheQueue, PRIORITY_SUB);
 
-	for (j = 0; j < LONG_QUEUE_LENGTH; j++)
+	for (j = 0; LONG_QUEUE_LENGTH > j; j++)
 	{
 		pqueueDequeue (&sTheQueue, &intBuffer, sizeof (int), &priorityBuffer);
 		if (j + PRIORITY_ADD + PRIORITY_SUB != priorityBuffer)
