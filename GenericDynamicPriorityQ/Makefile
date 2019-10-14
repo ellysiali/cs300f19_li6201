@@ -2,7 +2,7 @@
 # File name:  Makefile
 # Author:     Ellysia Li
 # Date:       Oct 15, 2019
-# Class:      CS 300
+# Class:      CS300
 # Assignment: Priority Queue Implementation
 # Purpose: 	  This is the Makefile for the GenericDynamicList    
 ######################################################################
