@@ -342,15 +342,15 @@ int main ()
 		else
 		{
 			pqueueDequeue (&sTheQueue, &floatBuffer, sizeof (float), &priorityBuffer);
-			if ((float) (j - 1) / DOUBLE != floatBuffer)
+			if ( (float) (j - 1) / DOUBLE != floatBuffer)
 			{
-				assert ((float) (j - 1) / DOUBLE == floatBuffer,
+				assert ( (float) (j - 1) / DOUBLE == floatBuffer,
 						"Validated removed element value is correct",
 						"Could not validate (removed element value is NOT correct)");
 			}
-			if ((j - 1) / DOUBLE != priorityBuffer)
+			if ( (j - 1) / DOUBLE != priorityBuffer)
 			{
-				assert ((j - 1) / DOUBLE == priorityBuffer,
+				assert ( (j - 1) / DOUBLE == priorityBuffer,
 						"Validated removed priority is correct",
 						"Could not validate (removed priority is NOT correct)");
 			}
