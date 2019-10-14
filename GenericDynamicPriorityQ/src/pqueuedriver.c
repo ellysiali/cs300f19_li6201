@@ -374,7 +374,21 @@ int main ()
 	success ("Added elements to different combination of data types/priorities "
 			"and validated order\n");
 
-	// Validate pqueueChangePriority on a queue
+	// Validate pqueueChangePriority changes nothing in an empty queue
+
+	pqueueCreate (&sTheQueue);
+
+	pqueueChangePriority (&sTheQueue, PRIORITY_ADD);
+	assert (0 == pqueueSize (&sTheQueue),
+			"Priority updated queue (from empty) size is 0",
+			"Priority updated queue (from empty) size is NOT 0");
+	assert (pqueueIsEmpty (&sTheQueue),
+			"Priority updated queue (from empty) is empty\n",
+			"Priority updated queue (from empty) is NOT empty\n");
+
+	pqueueTerminate (&sTheQueue);
+
+	// Validate pqueueChangePriority on a nonempty queue
 
 	pqueueCreate (&sTheQueue);
 
