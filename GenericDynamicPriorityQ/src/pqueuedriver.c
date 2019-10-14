@@ -180,6 +180,8 @@ int main ()
 
 	puts ("Start Driver\n");
 
+	pqueueLoadErrorMessages ();
+
 	// Validate the initiated queue (after pqueueCreate)
 
 	pqueueCreate (&sTheQueue);
