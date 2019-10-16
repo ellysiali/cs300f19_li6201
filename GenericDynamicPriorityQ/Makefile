@@ -4,7 +4,7 @@
 # Date:       Oct 15, 2019
 # Class:      CS300
 # Assignment: Priority Queue Implementation
-# Purpose: 	  This is the Makefile for the GenericDynamicList    
+# Purpose: 	  This is the Makefile for the GenericDynamicPriorityQueue
 ######################################################################
 
 CC=gcc
