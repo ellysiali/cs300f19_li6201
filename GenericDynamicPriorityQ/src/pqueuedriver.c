@@ -192,7 +192,7 @@ int main ()
 
 	// Create a very long queue and validate when terminated (repeat twice)
 
-	for (j = 0; j < VERY_LONG_QUEUE_LENGTH; j++)
+	for (j = 0; VERY_LONG_QUEUE_LENGTH > j; j++)
 	{
 		pqueueEnqueue (&sTheQueue, &j, sizeof (int), j);
 	}
