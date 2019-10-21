@@ -15,5 +15,8 @@
 
 int main ()
 {
+	puts ("Driver Start");
+
+	puts ("Driver End");
 	return EXIT_SUCCESS;
 }
