@@ -16,14 +16,49 @@
 
 char gszQErrors[NUMBER_OF_Q_ERRORS][MAX_ERROR_Q_CHARS];
 
+/**************************************************************************
+ Function: 	 	processError
+
+ Description: Process the error code passed to this routine
+
+ Parameters:	pszFunctionName - function causing the error
+ 	 	 	 	 	 	 	errorCode 	    - identifies the stack error
+
+ Returned:	 	None
+ *************************************************************************/
+static void processError (const char *pszFunctionName, int errorCode)
+{
+	printf ("Function: %s %s \n ", pszFunctionName, gszQErrors[errorCode]);
+	exit (EXIT_FAILURE);
+}
+
+/**************************************************************************
+ Function: 	 	queueCreate
+
+ Description: Initializes the list in the queue
+
+ Parameters:	psQueue - pointer to the queue
+
+ Returned:	 	None
+ *************************************************************************/
 void queueCreate (QueuePtr psQueue)
 {
-
+	if (NULL == psQueue)
+	{
+		processError ("queueCreate", ERROR_NO_Q_CREATE);
+	}
+	pqueueCreate (psQueue);
 }
-// results: If Q can be created, then Q exists and is empty
-//					otherwise, ERROR_NO_Q_CREATE
 
+/**************************************************************************
+ Function: 	 	queueTerminate
 
+ Description: Terminates the list as well as the data in the queue elements
+
+ Parameters:	psQueue - pointer to the queue
+
+ Returned:	 	None
+ *************************************************************************/
 void queueTerminate (QueuePtr psQueue)
 {
 
@@ -31,35 +66,69 @@ void queueTerminate (QueuePtr psQueue)
 // results: If Q can be terminated, then Q no longer exists and is empty
 //				   otherwise, ERROR_NO_Q_TERMINATE
 
+/**************************************************************************
+ Function: 	 	queueLoadErrorMessages
+
+ Description: Initializes the string of error messages. LOAD_ERRORS is a
+ 	 	 	 	 	 	 	macro defined in the header file.
+
+ Parameters:	None
+
+ Returned:	 	None
+ *************************************************************************/
 void queueLoadErrorMessages ()
 {
-
+	pqueueLoadErrorMessages ();
+	LOAD_Q_ERRORS
 }
-// results:	Loads the error message strings for the error handler to use
-//					No error conditions
 
 /**************************************************************************
-*									Checking number of elements in queue
-**************************************************************************/
+ Function: 	 	queueSize
+
+ Description: Returns the size of the queue
+
+ Parameters:	psQueue - pointer to the queue
+
+ Returned:	 	Size of the queue
+ *************************************************************************/
 int queueSize (const QueuePtr psQueue)
 {
-	return 0;
+	if (NULL == psQueue)
+	{
+		processError ("queueSize", ERROR_INVALID_Q);
+	}
+	return pqueueSize (psQueue);
 }
-// results: Returns the number of elements in the Q
-// 					error code priority: ERROR_INVALID_Q if Q is NULL
-
-bool queueIsEmpty (const QueuePtr psQueue)
-{
-	return true;
-}
-// results: If Q is empty, return true; otherwise, return false
-// 					error code priority: ERROR_INVALID_Q
-
-
 
 /**************************************************************************
-*									Inserting and retrieving values
-**************************************************************************/
+ Function: 	 	queueIsEmpty
+
+ Description: Checks if the queue is empty
+
+ Parameters:	psQueue - pointer to the queue
+
+ Returned:	 	True if queue is empty otherwise false
+ *************************************************************************/
+bool queueIsEmpty (const QueuePtr psQueue)
+{
+	if (NULL == psQueue)
+	{
+		processError ("queueIsEmpty", ERROR_INVALID_Q);
+	}
+	return pqueueIsEmpty (psQueue);
+}
+
+/**************************************************************************
+ Function: 	 	queueEnqueue
+
+ Description: Adds a value to the start of the queue
+
+ Parameters:	psQueue  - pointer to the priority queue
+ 	 	 	 	 	 	 	pBuffer  - pointer to value
+ 	 	 	 	 	 	 	size     - size of value
+
+ Returned:	 	None
+ *************************************************************************/
 void queueEnqueue (QueuePtr psQueue, const void *pBuffer, int size)
 {
 
@@ -68,6 +137,17 @@ void queueEnqueue (QueuePtr psQueue, const void *pBuffer, int size)
 // results: Insert the element into the FIFO queue.
 //					error code priority: ERROR_INVALID_Q, ERROR_NULL_Q_PTR
 
+/**************************************************************************
+ Function: 	 	queueDequeue
+
+ Description: Removes the (oldest) value at the end of the queue
+
+ Parameters:	psQueue   - pointer to the priority queue
+ 	 	 	 	 	 	 	pBuffer   - pointer to store the removed value
+ 	 	 	 	 	 	 	size      - size of the removed value
+
+ Returned:	 	Pointer to the buffer of the removed value
+ *************************************************************************/
 void *queueDequeue (QueuePtr psQueue, void *pBuffer, int size)
 {
 	return pBuffer;
@@ -77,9 +157,18 @@ void *queueDequeue (QueuePtr psQueue, void *pBuffer, int size)
 //					error code priority: ERROR_INVALID_Q, ERROR_NULL_Q_PTR,
 //															 ERROR_EMPTY_Q
 
+
 /**************************************************************************
-*													Peek Operations
-**************************************************************************/
+ Function: 	 	queuePeek
+
+ Description: Peek at the first value's data of the queue
+
+ Parameters:	psQueue  - pointer to the priority queue
+ 	 	 	 	 	 	 	pBuffer  - pointer to store the peeked value
+ 	 	 	 	 	 	 	size     - size of the peeked value
+
+ Returned:	 	Pointer to the buffer of the peeked value
+ *************************************************************************/
 void *queuePeek (QueuePtr psQueue, void *pBuffer, int size)
 {
 	return pBuffer;
