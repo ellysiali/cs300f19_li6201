@@ -12,7 +12,7 @@ CFLAGS=-Wall -g
 
 .PHONY: all clean
 
-all: bin bin/pqueuedriver 
+all: bin bin/pqueuedriver bin/pqdriver1 bin/pqdriver2 bin/pqMemTest
 
 bin: 
 	mkdir -p bin
@@ -25,6 +25,33 @@ bin/pqueuedriver: bin/pqueuedriver.o bin/pqueue.o \
 bin/pqueuedriver.o: src/pqueuedriver.c include/pqueue.h \
 ../GenericDynamicList/include/list.h
 	gcc -c -o bin/pqueuedriver.o src/pqueuedriver.c -g -Wall
+	
+bin/pqdriver1: bin/pqdriver1.o bin/pqueue.o \
+../GenericDynamicList/bin/list.o
+	gcc -o bin/pqdriver1 bin/pqdriver1.o bin/pqueue.o \
+	../GenericDynamicList/bin/list.o -g -Wall
+	
+bin/pqdriver1.o: src/pqdriver1.c include/pqueue.h \
+../GenericDynamicList/include/list.h
+	gcc -c -o bin/pqdriver1.o src/pqdriver1.c -g -Wall
+	
+bin/pqdriver2: bin/pqdriver2.o bin/pqueue.o \
+../GenericDynamicList/bin/list.o
+	gcc -o bin/pqdriver2 bin/pqdriver2.o bin/pqueue.o \
+	../GenericDynamicList/bin/list.o -g -Wall
+	
+bin/pqdriver2.o: src/pqdriver2.c include/pqueue.h \
+../GenericDynamicList/include/list.h
+	gcc -c -o bin/pqdriver2.o src/pqdriver1.c -g -Wall
+	
+bin/pqMemTest: bin/pqMemTest.o bin/pqueue.o \
+../GenericDynamicList/bin/list.o
+	gcc -o bin/pqMemTest bin/pqMemTest.o bin/pqueue.o \
+	../GenericDynamicList/bin/list.o -g -Wall
+	
+bin/pqMemTest.o: src/pqMemTest.c include/pqueue.h \
+../GenericDynamicList/include/list.h
+	gcc -c -o bin/pqMemTest.o src/pqMemTest.c -g -Wall
 
 bin/pqueue.o: src/pqueue.c include/pqueue.h \
 ../GenericDynamicList/include/list.h

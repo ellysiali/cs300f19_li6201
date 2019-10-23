@@ -28,6 +28,10 @@ bin/queue.o: src/queue.c include/queue.h \
 	
 ../GenericDynamicPriorityQ/bin/pqueue.o:
 	cd ../GenericDynamicPriorityQ; make bin/pqueue.o
+
+clean:
+	cd ../GenericDynamicPriorityQ; make clean
+	rm -rf bin/*.o bin/GenericDynamicQ
 	
 valgrind: bin/queuedriver
 	valgrind -v --leak-check=yes --track-origins=yes --leak-check=full \
