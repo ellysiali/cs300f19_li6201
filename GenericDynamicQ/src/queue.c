@@ -47,7 +47,7 @@ void queueCreate (QueuePtr psQueue)
 	{
 		processError ("queueCreate", ERROR_NO_Q_CREATE);
 	}
-	pqueueCreate (psQueue);
+	pqueueCreate (&psQueue->sTheQueue);
 }
 
 /**************************************************************************
@@ -61,10 +61,12 @@ void queueCreate (QueuePtr psQueue)
  *************************************************************************/
 void queueTerminate (QueuePtr psQueue)
 {
-
+	if (NULL == psQueue)
+	{
+		processError ("queueCreate", ERROR_NO_Q_TERMINATE);
+	}
+	pqueueTerminate (&psQueue->sTheQueue);
 }
-// results: If Q can be terminated, then Q no longer exists and is empty
-//				   otherwise, ERROR_NO_Q_TERMINATE
 
 /**************************************************************************
  Function: 	 	queueLoadErrorMessages
@@ -97,7 +99,7 @@ int queueSize (const QueuePtr psQueue)
 	{
 		processError ("queueSize", ERROR_INVALID_Q);
 	}
-	return pqueueSize (psQueue);
+	return pqueueSize (&psQueue->sTheQueue);
 }
 
 /**************************************************************************
@@ -115,7 +117,7 @@ bool queueIsEmpty (const QueuePtr psQueue)
 	{
 		processError ("queueIsEmpty", ERROR_INVALID_Q);
 	}
-	return pqueueIsEmpty (psQueue);
+	return pqueueIsEmpty (&psQueue->sTheQueue);
 }
 
 /**************************************************************************
@@ -131,11 +133,18 @@ bool queueIsEmpty (const QueuePtr psQueue)
  *************************************************************************/
 void queueEnqueue (QueuePtr psQueue, const void *pBuffer, int size)
 {
+	const int PRIORITY = 0;
 
+	if (NULL == psQueue)
+	{
+		processError ("queueEnqueue", ERROR_INVALID_Q);
+	}
+	if (NULL == pBuffer)
+	{
+		processError ("queueEnqueue", ERROR_NULL_Q_PTR);
+	}
+	pqueueEnqueue (&psQueue->sTheQueue, pBuffer, size, PRIORITY);
 }
-// requires: psQueue is not full
-// results: Insert the element into the FIFO queue.
-//					error code priority: ERROR_INVALID_Q, ERROR_NULL_Q_PTR
 
 /**************************************************************************
  Function: 	 	queueDequeue
@@ -150,13 +159,23 @@ void queueEnqueue (QueuePtr psQueue, const void *pBuffer, int size)
  *************************************************************************/
 void *queueDequeue (QueuePtr psQueue, void *pBuffer, int size)
 {
+	int priorityBuffer;
+
+	if (NULL == psQueue)
+	{
+		processError ("queueDequeue", ERROR_INVALID_Q);
+	}
+	if (NULL == pBuffer)
+	{
+		processError ("queueDequeue", ERROR_NULL_Q_PTR);
+	}
+	if (queueIsEmpty (psQueue))
+	{
+		processError ("queueDequeue", ERROR_EMPTY_Q);
+	}
+	pqueueDequeue (&psQueue->sTheQueue, pBuffer, size, &priorityBuffer);
 	return pBuffer;
 }
-// requires: psQueue is not empty
-// results: Remove the element from the front of a non-empty queue
-//					error code priority: ERROR_INVALID_Q, ERROR_NULL_Q_PTR,
-//															 ERROR_EMPTY_Q
-
 
 /**************************************************************************
  Function: 	 	queuePeek
@@ -171,11 +190,20 @@ void *queueDequeue (QueuePtr psQueue, void *pBuffer, int size)
  *************************************************************************/
 void *queuePeek (QueuePtr psQueue, void *pBuffer, int size)
 {
+	int priorityBuffer;
+
+	if (NULL == psQueue)
+	{
+		processError ("queuePeek", ERROR_INVALID_Q);
+	}
+	if (NULL == pBuffer)
+	{
+		processError ("queuePeek", ERROR_NULL_Q_PTR);
+	}
+	if (queueIsEmpty (psQueue))
+	{
+		processError ("queuePeek", ERROR_EMPTY_Q);
+	}
+	pqueuePeek (&psQueue->sTheQueue, pBuffer, size, &priorityBuffer);
 	return pBuffer;
 }
-// requires: psQueue is not empty
-// results: The value of the first element is returned through the
-//					argument list
-// IMPORTANT: Do not remove element from the queue
-// 						error code priority: ERROR_INVALID_Q, ERROR_NULL_Q_PTR,
-//																 ERROR_EMPTY_Q
