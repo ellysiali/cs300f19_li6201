@@ -165,19 +165,18 @@ bool airportQsAreEmpty (const AirportPtr psAirport)
  Description: Adds a landing plane to the landing queue
 
  Parameters:	psAirport - pointer to the airport
- 	 	 	 	 	 	  time			- clock time when plane was added
  	 	 	 	 	 	 	gas 		  - gas (time) remaining for plane
 
  Returned:	 	None
  *************************************************************************/
-void airportAddLandingPlane (AirportPtr psAirport, const int time,
-																									 const int gas)
+void airportAddLandingPlane (AirportPtr psAirport, const int gas)
 {
 	if (NULL == psAirport)
 	{
 		processError ("airportAddLandingPlane", ERROR_INVALID_AIRPORT);
 	}
-	pqueueEnqueue (&psAirport->sLandingQueue, &time, sizeof (int), &gas);
+	pqueueEnqueue (&psAirport->sLandingQueue, &psAirport->clock, sizeof (int),
+																															 &gas);
 }
 
 /**************************************************************************
@@ -186,18 +185,16 @@ void airportAddLandingPlane (AirportPtr psAirport, const int time,
  Description: Adds a takeoff plane to the takeoff queue
 
  Parameters:	psAirport - pointer to the airport
-  	 	 	 	 	 	time			- clock time when plane was added
-
 
  Returned:	 	None
  *************************************************************************/
-void airportAddTakeoffPlane (AirportPtr psAirport, const int time)
+void airportAddTakeoffPlane (AirportPtr psAirport)
 {
 	if (NULL == psAirport)
 	{
 		processError ("airportAddTakeoffPlane", ERROR_INVALID_AIRPORT);
 	}
-	queueEnqueue (&psAirport->sLandingQueue, &time, sizeof (int));
+	queueEnqueue (&psAirport->sLandingQueue, &psAirport->clock, sizeof (int));
 }
 
 /**************************************************************************
@@ -233,7 +230,7 @@ void airportLandPlane (AirportPtr psAirport)
 	}
 	psAirport->sAirportStats.numLandings++;
 	psAirport->sAirportStats.totalFlyingTimeRemaining += gas;
-	psAirport->sAirportStats.totalLandingTime += time;
+	psAirport->sAirportStats.totalLandingTime += psAirport->clock - time;
 }
 
 /**************************************************************************
@@ -258,7 +255,7 @@ void airportTakeoffPlane (AirportPtr psAirport)
 	}
 	queueDequeue (&psAirport->sTakeoffQueue, &time, sizeof (int));
 	psAirport->sAirportStats.numTakeoffs++;
-	psAirport->sAirportStats.totalTakeoffTime += time;
+	psAirport->sAirportStats.totalTakeoffTime += psAirport->clock - time;
 	airportUpdateRunwayStatus (psAirport, TAKEOFF);
 }
 

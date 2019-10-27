@@ -56,6 +56,7 @@ typedef struct AirportStats
 
 typedef struct Airport
 {
+	int clock;
 	Runway ezRunways [NUMBER_OF_RUNWAYS];
 	PriorityQueue sLandingQueue;
 	Queue sTakeoffQueue;
