@@ -165,18 +165,19 @@ bool airportQsAreEmpty (const AirportPtr psAirport)
  Description: Adds a landing plane to the landing queue
 
  Parameters:	psAirport - pointer to the airport
+ 	 	 	 	 	 	  time			- clock time when plane was added
  	 	 	 	 	 	 	gas 		  - gas (time) remaining for plane
 
  Returned:	 	None
  *************************************************************************/
-void airportAddLandingPlane (AirportPtr psAirport, const int gas)
+void airportAddLandingPlane (AirportPtr psAirport, const int time,
+																									 const int gas)
 {
-	const int INITIAL_TIME = 0;
 	if (NULL == psAirport)
 	{
 		processError ("airportAddLandingPlane", ERROR_INVALID_AIRPORT);
 	}
-	pqueueEnqueue (&psAirport->sLandingQueue, &INITIAL_TIME, sizeof (int), &gas);
+	pqueueEnqueue (&psAirport->sLandingQueue, &time, sizeof (int), &gas);
 }
 
 /**************************************************************************
@@ -185,17 +186,18 @@ void airportAddLandingPlane (AirportPtr psAirport, const int gas)
  Description: Adds a takeoff plane to the takeoff queue
 
  Parameters:	psAirport - pointer to the airport
+  	 	 	 	 	 	time			- clock time when plane was added
+
 
  Returned:	 	None
  *************************************************************************/
-void airportAddTakeoffPlane (AirportPtr psAirport)
+void airportAddTakeoffPlane (AirportPtr psAirport, const int time)
 {
-	const int INITIAL_TIME = 0;
 	if (NULL == psAirport)
 	{
 		processError ("airportAddTakeoffPlane", ERROR_INVALID_AIRPORT);
 	}
-	queueEnqueue (&psAirport->sLandingQueue, &INITIAL_TIME, sizeof (int));
+	queueEnqueue (&psAirport->sLandingQueue, &time, sizeof (int));
 }
 
 /**************************************************************************
@@ -352,10 +354,17 @@ extern void airportUpdateRunwayStatus (AirportPtr psAirport, int status)
  *************************************************************************/
 void airportIncrementClock (AirportPtr psAirport)
 {
+	int i;
+	if (NULL == psAirport)
+	{
+		processError ("airportIncrementClock", ERROR_INVALID_AIRPORT);
+	}
 
+	for (i = 0; i < pqueueSize (&psAirport->sLandingQueue); i++)
+	{
+
+	}
 }
-// results: Increment/decrement the time/gas of each airplane by one.
-//					error code priority: ERROR_INVALID_AIRPORT
 
 /**************************************************************************
  Function: 	 	airportGetRunwayStatus

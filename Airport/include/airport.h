@@ -98,12 +98,12 @@ extern bool airportQsAreEmpty (const AirportPtr psAirport);
 /**************************************************************************
 *										Inserting, Deleting, and Updating
 **************************************************************************/
-extern void airportAddLandingPlane (AirportPtr psAirport,
-																		const int gas);
+extern void airportAddLandingPlane (AirportPtr psAirport, const int time,
+																												  const int gas);
 // results: Insert a plane to the landing queue.
 //					error code priority: ERROR_INVALID_AIRPORT
 
-extern void airportAddTakeoffPlane (AirportPtr psAirport);
+extern void airportAddTakeoffPlane (AirportPtr psAirport, const int time);
 // results: Insert a plane to the takeoff queue.
 //					error code priority: ERROR_INVALID_AIRPORT
 
