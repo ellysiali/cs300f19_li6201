@@ -151,10 +151,13 @@ int airportTakeoffQSize (const AirportPtr psAirport)
  *************************************************************************/
 bool airportQsAreEmpty (const AirportPtr psAirport)
 {
-	return true;
+	if (NULL == psAirport)
+	{
+		processError ("airportQsAreEmpty", ERROR_INVALID_AIRPORT);
+	}
+	return 0 == pqueueSize (&psAirport->sLandingQueue) &&
+			   0 == queueSize (&psAirport->sTakeoffQueue);
 }
-// results: If both Q's are empty, return true; otherwise, return false
-// 					error code priority: ERROR_INVALID_AIRPORT
 
 /**************************************************************************
  Function: 	 	airportAddLandingPlane
