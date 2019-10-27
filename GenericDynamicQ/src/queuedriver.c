@@ -1,7 +1,7 @@
 /**************************************************************************
  File name:  queuedriver.c
  Author:     Ellysia Li
- Date:		   Oct 20, 2019
+ Date:		   Oct 31, 2019
  Class:		   CS300
  Assignment: Airport Simulation
  Purpose:    Testing of a Generic Queue backed by a existing Priority
@@ -18,6 +18,12 @@
 #define CHAR_START 65
 #define CHAR_END 90
 #define EVEN 2
+
+typedef struct TestStruct
+{
+	char character;
+	int number;
+} TestStruct;
 
 /****************************************************************************
  Function: 	 	success
@@ -86,6 +92,7 @@ int main ()
 	char i, charBuffer;
 	int j, intBuffer;
 	float floatBuffer;
+	TestStruct sStructBuffer;
 
 	puts ("Driver Start\n");
 	queueLoadErrorMessages ();
@@ -210,6 +217,31 @@ int main ()
 
 	success ("Added and removed different type elements to the queue and "
 			"validated appropriately\n");
+
+	// Add and remove structures to the queue and validate
+
+	queueCreate (&sTheQueue);
+
+	for (i = CHAR_START; CHAR_END > i; i++)
+	{
+		sStructBuffer.character = i;
+		sStructBuffer.number = i;
+		queueEnqueue (&sTheQueue, &sStructBuffer, sizeof (TestStruct));
+	}
+
+	for (i = CHAR_START; CHAR_END > i; i++)
+	{
+		queueDequeue (&sTheQueue, &sStructBuffer, sizeof (TestStruct));
+		if (i != sStructBuffer.character || i != sStructBuffer.number)
+		{
+			assert (i == sStructBuffer.character && i == sStructBuffer.number,
+					"Validated dequeued value is correct",
+					"Could not validate (dequeued values are NOT correct)");
+		}
+	}
+
+	success ("Added and removed structures to the queue and validated "
+			"appropriately\n");
 
 	queueTerminate (&sTheQueue);
 
