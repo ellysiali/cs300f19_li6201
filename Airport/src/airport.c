@@ -417,11 +417,15 @@ bool airportHasEmergency (const AirportPtr psAirport)
  *************************************************************************/
 bool airportRunwayHasOpen (const AirportPtr psAirport)
 {
-	return true;
+	const int FIRST = 0, SECOND = 1, THIRD = 2;
+	if (NULL == psAirport)
+	{
+		processError ("airportRunwayHasOpen", ERROR_INVALID_AIRPORT);
+	}
+	return EMPTY == psAirport->ezRunways[FIRST]
+				 || EMPTY == psAirport->ezRunways[SECOND]
+				 || EMPTY == psAirport->ezRunways[THIRD];
 }
-// results: If at least one runway is empty, return true; otherwise, return
-//          false
-// 					error code priority: ERROR_INVALID_AIRPORT
 
 /**************************************************************************
  Function: 	 	getAverageLandingTime
@@ -434,10 +438,13 @@ bool airportRunwayHasOpen (const AirportPtr psAirport)
  *************************************************************************/
 float getAverageLandingTime (const AirportPtr psAirport)
 {
-	return 0;
+	if (NULL == psAirport)
+	{
+		processError ("getAverageLandingTime", ERROR_INVALID_AIRPORT);
+	}
+	return (float) psAirport->sAirportStats.totalLandingTime
+				 / psAirport->sAirportStats.numLandings;
 }
-// results: Return the average landing waiting time
-// 					error code priority: ERROR_INVALID_AIRPORT
 
 /**************************************************************************
  Function: 	 	getAverageTakeoffTime
@@ -450,10 +457,13 @@ float getAverageLandingTime (const AirportPtr psAirport)
  *************************************************************************/
 float getAverageTakeoffTime (const AirportPtr psAirport)
 {
-	return 0;
+	if (NULL == psAirport)
+	{
+		processError ("getAverageTakeoffTime", ERROR_INVALID_AIRPORT);
+	}
+	return (float) psAirport->sAirportStats.totalTakeoffTime
+				 / psAirport->sAirportStats.numTakeoffs;
 }
-// results: Return the average takeoff waiting time
-// 					error code priority: ERROR_INVALID_AIRPORT
 
 /**************************************************************************
  Function: 	 	getAverageFlyingTimeRemaining
@@ -466,10 +476,12 @@ float getAverageTakeoffTime (const AirportPtr psAirport)
  *************************************************************************/
 float getAverageFlyingTimeRemaining (const AirportPtr psAirport)
 {
-	return 0;
-}
-// results: Return the average flying time remaining
-// 					error code priority: ERROR_INVALID_AIRPORT
+	if (NULL == psAirport)
+	{
+		processError ("getAverageFlyingTimeRemaining", ERROR_INVALID_AIRPORT);
+	}
+	return (float) psAirport->sAirportStats.totalFlyingTimeRemaining
+				 / psAirport->sAirportStats.numLandings;}
 
 /**************************************************************************
  Function: 	 	getNumEmergencyLandings
@@ -482,10 +494,12 @@ float getAverageFlyingTimeRemaining (const AirportPtr psAirport)
  *************************************************************************/
 int getNumEmergencyLandings (const AirportPtr psAirport)
 {
-	return 0;
+	if (NULL == psAirport)
+	{
+		processError ("getNumEmergencyLandings", ERROR_INVALID_AIRPORT);
+	}
+	return psAirport->sAirportStats.numEmergencyLandings;
 }
-// results: Return the number of emergency landings
-// 					error code priority: ERROR_INVALID_AIRPORT
 
 /**************************************************************************
  Function: 	 	getNumCrashes
@@ -498,7 +512,9 @@ int getNumEmergencyLandings (const AirportPtr psAirport)
  *************************************************************************/
 int getNumCrashes (const AirportPtr psAirport)
 {
-	return 0;
+	if (NULL == psAirport)
+	{
+		processError ("getNumCrashes", ERROR_INVALID_AIRPORT);
+	}
+	return psAirport->sAirportStats.numCrashes;
 }
-// results: Return the number of crashes
-// 					error code priority: ERROR_INVALID_AIRPORT
