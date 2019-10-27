@@ -45,10 +45,21 @@ static void processError (const char *pszFunctionName, int errorCode)
  *************************************************************************/
 void airportCreate (AirportPtr psAirport)
 {
+	if (NULL == psAirport)
+	{
+		processError ("airportCreate", ERROR_NO_AIRPORT_CREATE);
+	}
+	psqueueCreate (&psAirport->sLandingQueue);
+	pqueueCreate (&psAirport->sTakeoffQueue);
 
+	psAirport->sAirportStats.numCrashes =
+			psAirport->sAirportStats.numEmergencyLandings =
+					psAirport->sAirportStats.numLandings =
+							psAirport->sAirportStats.numTakeoffs =
+									psAirport->sAirportStats.totalFlyingTimeRemaining =
+											psAirport->sAirportStats.totalLandingTime =
+													psAirport->sAirportStats.totalTakeoffTime = 0;
 }
-// results: If airport can be created, then airport exists and is empty
-//					otherwise, ERROR_NO_AIRPORT_CREATE
 
 /**************************************************************************
  Function: 	 	airportTerminate
