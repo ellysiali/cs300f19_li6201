@@ -115,10 +115,12 @@ void airportLoadErrorMessages ()
  *************************************************************************/
 int airportLandingQSize (const AirportPtr psAirport)
 {
-	return 0;
+	if (NULL == psAirport)
+	{
+		processError ("airportLandingQSize", ERROR_INVALID_AIRPORT);
+	}
+	return pqueueSize (&psAirport->sLandingQueue);
 }
-// results: Returns the number of elements in the LandQ
-// 					error code priority: ERROR_INVALID_AIRPORT if AIRPORT is NULL
 
 /**************************************************************************
  Function: 	 	airportTakeoffQSize
@@ -131,13 +133,15 @@ int airportLandingQSize (const AirportPtr psAirport)
  *************************************************************************/
 int airportTakeoffQSize (const AirportPtr psAirport)
 {
-	return 0;
+	if (NULL == psAirport)
+	{
+		processError ("airportTakeoffQSize", ERROR_INVALID_AIRPORT);
+	}
+	return queueSize (&psAirport->sTakeoffQueue);
 }
-// results: Returns the number of elements in the TakeoffQ
-// 					error code priority: ERROR_INVALID_AIRPORT if AIRPORT is NULL
 
 /**************************************************************************
- Function: 	 	airportTakeoffQSize
+ Function: 	 	airportQsAreEmpty
 
  Description: Checks if both queues are empty
 
