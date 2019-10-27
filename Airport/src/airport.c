@@ -194,7 +194,7 @@ void airportAddTakeoffPlane (AirportPtr psAirport)
 	{
 		processError ("airportAddTakeoffPlane", ERROR_INVALID_AIRPORT);
 	}
-	queueEnqueue (&psAirport->sLandingQueue, &psAirport->clock, sizeof (int));
+	queueEnqueue (&psAirport->sTakeoffQueue, &psAirport->clock, sizeof (int));
 }
 
 /**************************************************************************
@@ -343,7 +343,7 @@ extern void airportUpdateRunwayStatus (AirportPtr psAirport, int status)
 /**************************************************************************
  Function: 	 	airportIncrementClock
 
- Description: Increment/decrement all planes in queues appropriately
+ Description: Increment the clock and decrement gas in landing planes
 
  Parameters:	psAirport - pointer to the airport
 
@@ -351,16 +351,13 @@ extern void airportUpdateRunwayStatus (AirportPtr psAirport, int status)
  *************************************************************************/
 void airportIncrementClock (AirportPtr psAirport)
 {
-	int i;
+	const int DECREMENT = 1;
 	if (NULL == psAirport)
 	{
 		processError ("airportIncrementClock", ERROR_INVALID_AIRPORT);
 	}
-
-	for (i = 0; i < pqueueSize (&psAirport->sLandingQueue); i++)
-	{
-
-	}
+	psAirport->clock++;
+	pqueueChangePriority (&psAirport->sLandingQueue, DECREMENT);
 }
 
 /**************************************************************************
@@ -375,10 +372,12 @@ void airportIncrementClock (AirportPtr psAirport)
  *************************************************************************/
 int airportGetRunwayStatus (const AirportPtr psAirport, const int number)
 {
-	return 0;
+	if (NULL == psAirport)
+	{
+		processError ("airportGetRunwayStatus", ERROR_INVALID_AIRPORT);
+	}
+	return psAirport->ezRunways[number];
 }
-// results: Returns the status of the (number)th runway
-// 					error code priority: ERROR_INVALID_AIRPORT
 
 /**************************************************************************
  Function: 	 	airportHasEmergency
@@ -391,19 +390,21 @@ int airportGetRunwayStatus (const AirportPtr psAirport, const int number)
  *************************************************************************/
 bool airportHasEmergency (const AirportPtr psAirport)
 {
-	if (!pqueueIsEmpty (&psAirport->sLandingQueue))
+	int time = 0, gas = 0;
+	if (NULL == psAirport)
 	{
-		return true;
+		processError ("airportHasEmergency", ERROR_INVALID_AIRPORT);
+	}
+	if (pqueueIsEmpty (&psAirport->sLandingQueue))
+	{
+		return false;
 	}
 	else
 	{
-		return true;
+		pqueuePeek (&psAirport->sLandingQueue, &time, sizeof (int), &gas);
+		return 0 == gas;
 	}
 }
-// requires: psQueue is not empty
-// results: If the land queue has a priority of 0, return true; otherwise,
-//          return false
-// 					error code priority: ERROR_INVALID_AIRPORT
 
 /**************************************************************************
  Function: 	 	airportRunwayHasOpen
