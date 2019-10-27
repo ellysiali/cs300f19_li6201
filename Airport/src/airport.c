@@ -49,8 +49,8 @@ void airportCreate (AirportPtr psAirport)
 	{
 		processError ("airportCreate", ERROR_NO_AIRPORT_CREATE);
 	}
-	psqueueCreate (&psAirport->sLandingQueue);
-	pqueueCreate (&psAirport->sTakeoffQueue);
+	pqueueCreate (&psAirport->sLandingQueue);
+	queueCreate (&psAirport->sTakeoffQueue);
 
 	psAirport->sAirportStats.numCrashes =
 			psAirport->sAirportStats.numEmergencyLandings =
@@ -72,10 +72,21 @@ void airportCreate (AirportPtr psAirport)
  *************************************************************************/
 void airportTerminate (AirportPtr psAirport)
 {
+	if (NULL == psAirport)
+	{
+		processError ("airportTerminate", ERROR_NO_AIRPORT_TERMINATE);
+	}
+	pqueueTerminate (&psAirport->sLandingQueue);
+	queueTerminate (&psAirport->sTakeoffQueue);
 
+	psAirport->sAirportStats.numCrashes =
+			psAirport->sAirportStats.numEmergencyLandings =
+					psAirport->sAirportStats.numLandings =
+							psAirport->sAirportStats.numTakeoffs =
+									psAirport->sAirportStats.totalFlyingTimeRemaining =
+											psAirport->sAirportStats.totalLandingTime =
+													psAirport->sAirportStats.totalTakeoffTime = 0;
 }
-// results: If Q can be terminated, then Q no longer exists and is empty
-//				   otherwise, ERROR_NO_AIRPORT_TERMINATE
 
 /**************************************************************************
  Function: 	 	airportLoadErrorMessages
@@ -89,10 +100,9 @@ void airportTerminate (AirportPtr psAirport)
  *************************************************************************/
 void airportLoadErrorMessages ()
 {
-
+	queueLoadErrorMessages ();
+	LOAD_AIRPORT_ERRORS
 }
-// results:	Loads the error message strings for the error handler to use
-//					No error conditions
 
 /**************************************************************************
  Function: 	 	airportLandingQSize

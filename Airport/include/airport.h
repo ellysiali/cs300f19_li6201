@@ -34,14 +34,14 @@ enum {NO_AIRPORT_ERROR = 0,
 //*************************************************************************
 #define LOAD_AIRPORT_ERRORS strcpy(gszAirportErrors[NO_AIRPORT_ERROR], \
 		"No Error.");\
-strcpy(gszAIRPORTErrors[ERROR_NO_AIRPORT_CREATE], \
+strcpy(gszAirportErrors[ERROR_NO_AIRPORT_CREATE], \
 		"Error: No Airport Create.");\
-strcpy(gszAIRPORTErrors[ERROR_NO_AIRPORT_TERMINATE], \
+strcpy(gszAirportErrors[ERROR_NO_AIRPORT_TERMINATE], \
 		"Error: No Airport Terminate.");\
-strcpy(gszAIRPORTErrors[ERROR_INVALID_AIRPORT], "Error: Invalid Airport.");\
-strcpy(gszAIRPORTErrors[ERROR_FULL_AIRPORT], "Error: Full Airport.");\
-strcpy(gszAIRPORTErrors[ERROR_NULL_AIRPORT_PTR], "Error: NULL Pointer.");\
-strcpy(gszAIRPORTErrors[ERROR_EMPTY_AIRPORT], "Error: Empty Airport.");
+strcpy(gszAirportErrors[ERROR_INVALID_AIRPORT], "Error: Invalid Airport.");\
+strcpy(gszAirportErrors[ERROR_FULL_AIRPORT], "Error: Full Airport.");\
+strcpy(gszAirportErrors[ERROR_NULL_AIRPORT_PTR], "Error: NULL Pointer.");\
+strcpy(gszAirportErrors[ERROR_EMPTY_AIRPORT], "Error: Empty Airport.");
 
 //*************************************************************************
 // User-defined types
