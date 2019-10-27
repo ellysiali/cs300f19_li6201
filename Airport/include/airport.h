@@ -32,7 +32,7 @@ enum {NO_AIRPORT_ERROR = 0,
 //*************************************************************************
 // Error Messages
 //*************************************************************************
-#define LOAD_AIRPORT_ERRORS strcpy(gszAIRPORTErrors[NO_AIRPORT_ERROR], \
+#define LOAD_AIRPORT_ERRORS strcpy(gszAirportErrors[NO_AIRPORT_ERROR], \
 		"No Error.");\
 strcpy(gszAIRPORTErrors[ERROR_NO_AIRPORT_CREATE], \
 		"Error: No Airport Create.");\
@@ -98,7 +98,8 @@ extern bool airportQsAreEmpty (const AirportPtr psAirport);
 /**************************************************************************
 *										Inserting, Deleting, and Updating
 **************************************************************************/
-extern void airportAddLandingPlane (AirportPtr psAirport, const int *pGas);
+extern void airportAddLandingPlane (AirportPtr psAirport,
+																		const int gas);
 // results: Insert a plane to the landing queue.
 //					error code priority: ERROR_INVALID_AIRPORT, ERROR_NULL_AIRPORT_PTR
 
@@ -121,7 +122,8 @@ extern void airportCrashPlane (AirportPtr psAirport, int *pTime);
 //					error code priority: ERROR_INVALID_AIRPORT, ERROR_EMPTY_AIRPORT
 
 extern void airportAssignRunways (AirportPtr psAirport);
-// results: Assign the appropriate planes to runways (if necessary)
+// results: Assign the appropriate planes to runways (if necessary) and update
+//          the queues appropriately
 //					error code priority: ERROR_INVALID_AIRPORT
 
 extern void airportIncrementClock (AirportPtr psAirport);
@@ -142,7 +144,7 @@ extern bool airportHasEmergency (const AirportPtr psAirport);
 //          return false
 // 					error code priority: ERROR_INVALID_AIRPORT, ERROR_EMPTY_AIRPORT
 
-extern bool airportRunwaysAreOpen (const AirportPtr psAirport);
+extern bool airportRunwayIsOpen (const AirportPtr psAirport);
 // results: If at least one runway is empty, return true; otherwise, return
 //          false
 // 					error code priority: ERROR_INVALID_AIRPORT
@@ -164,10 +166,10 @@ extern float getAverageFlyingTimeRemaining (const AirportPtr psAirport);
 // results: Return the average flying time remaining
 // 					error code priority: ERROR_INVALID_AIRPORT
 
-extern float getNumEmergencyLandings (const AirportPtr psAirport);
+extern int getNumEmergencyLandings (const AirportPtr psAirport);
 // results: Return the number of emergency landings
 // 					error code priority: ERROR_INVALID_AIRPORT
 
-extern float getNumCrashes (const AirportPtr psAirport);
+extern int getNumCrashes (const AirportPtr psAirport);
 // results: Return the number of crashes
 // 					error code priority: ERROR_INVALID_AIRPORT
