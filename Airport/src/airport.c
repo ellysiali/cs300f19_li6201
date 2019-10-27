@@ -223,6 +223,11 @@ void airportLandPlane (AirportPtr psAirport)
 	if (0 == gas)
 	{
 		psAirport->sAirportStats.numEmergencyLandings++;
+		airportUpdateRunwayStatus (psAirport, EMERGENCY);
+	}
+	else
+	{
+		airportUpdateRunwayStatus (psAirport, LANDING);
 	}
 	psAirport->sAirportStats.numLandings++;
 	psAirport->sAirportStats.totalFlyingTimeRemaining += gas;
@@ -252,6 +257,7 @@ void airportTakeoffPlane (AirportPtr psAirport)
 	queueDequeue (&psAirport->sTakeoffQueue, &time, sizeof (int));
 	psAirport->sAirportStats.numTakeoffs++;
 	psAirport->sAirportStats.totalTakeoffTime += time;
+	airportUpdateRunwayStatus (psAirport, TAKEOFF);
 }
 
 /**************************************************************************
@@ -295,13 +301,46 @@ void airportAssignRunways (AirportPtr psAirport)
 	}
 	while (airportRunwayHasOpen (psAirport) && !airportQsAreEmpty (psAirport))
 	{
+		if (airportHasEmergency (psAirport)
+				|| pqueueSize (&psAirport->sLandingQueue)
+				   >= queueSize (&psAirport->sTakeoffQueue))
+		{
+			airportLandPlane (psAirport);
+		}
+		else
+		{
+			airportTakeoffPlane (psAirport);
+		}
+	}
+}
 
+/**************************************************************************
+ Function: 	 	airportUpdateRunwayStatus
+
+ Description: Updates the first empty runway to the appropriate status
+
+ Parameters:	psAirport - pointer to the airport
+
+ Returned:	 	None
+ *************************************************************************/
+extern void airportUpdateRunwayStatus (AirportPtr psAirport, int status)
+{
+	int i = 0;
+	if (NULL == psAirport)
+	{
+		processError ("airportUpdateRunwayStatus", ERROR_INVALID_AIRPORT);
+	}
+	if (!airportRunwayHasOpen (psAirport))
+	{
+		processError ("airportUpdateRunwayStatus", ERROR_FULL_RUNWAY);
 	}
 
+	while (EMPTY != airportGetRunwayStatus (psAirport, i))
+	{
+		i++;
+	}
+	psAirport->ezRunways[i] = status;
 }
-// results: Assign the appropriate planes to runways (if necessary)
-//					error code priority: ERROR_INVALID_AIRPORT
-
 /**************************************************************************
  Function: 	 	airportIncrementClock
 
@@ -326,9 +365,9 @@ void airportIncrementClock (AirportPtr psAirport)
  Parameters:	psAirport - pointer to the airport
  	 	 	 	 	 	  number	  - number of the runway to return
 
- Returned:	 	A char representing the status of the runway
+ Returned:	 	An int representing the status of the runway
  *************************************************************************/
-char airportGetRunwayStatus (const AirportPtr psAirport, const int number)
+int airportGetRunwayStatus (const AirportPtr psAirport, const int number)
 {
 	return 0;
 }

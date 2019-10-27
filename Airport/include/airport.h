@@ -23,7 +23,7 @@ enum {NO_AIRPORT_ERROR = 0,
 			ERROR_NO_AIRPORT_CREATE,
 			ERROR_NO_AIRPORT_TERMINATE,
 			ERROR_INVALID_AIRPORT,
-			ERROR_FULL_AIRPORT,
+			ERROR_FULL_RUNWAY,
 			ERROR_NULL_AIRPORT_PTR,
 			ERROR_EMPTY_AIRPORT};
 
@@ -39,7 +39,7 @@ strcpy(gszAirportErrors[ERROR_NO_AIRPORT_CREATE], \
 strcpy(gszAirportErrors[ERROR_NO_AIRPORT_TERMINATE], \
 		"Error: No Airport Terminate.");\
 strcpy(gszAirportErrors[ERROR_INVALID_AIRPORT], "Error: Invalid Airport.");\
-strcpy(gszAirportErrors[ERROR_FULL_AIRPORT], "Error: Full Airport.");\
+strcpy(gszAirportErrors[ERROR_FULL_RUNWAY], "Error: Full Runway.");\
 strcpy(gszAirportErrors[ERROR_NULL_AIRPORT_PTR], "Error: NULL Pointer.");\
 strcpy(gszAirportErrors[ERROR_EMPTY_AIRPORT], "Error: Empty Airport.");
 
@@ -124,6 +124,11 @@ extern void airportAssignRunways (AirportPtr psAirport);
 //          the queues appropriately
 //					error code priority: ERROR_INVALID_AIRPORT
 
+extern void airportUpdateRunwayStatus (AirportPtr psAirport, int status);
+// requires: ezRunways has an empty runway
+// results: Updates the first empty runway to the appropriate status
+//					error code priority: ERROR_INVALID_AIRPORT
+
 extern void airportIncrementClock (AirportPtr psAirport);
 // results: Increment/decrement the time/gas of each airplane by one.
 //					error code priority: ERROR_INVALID_AIRPORT
@@ -131,7 +136,7 @@ extern void airportIncrementClock (AirportPtr psAirport);
 /**************************************************************************
 *													Get/Check/Peek Operations
 **************************************************************************/
-extern char airportGetRunwayStatus (const AirportPtr psAirport,
+extern int airportGetRunwayStatus (const AirportPtr psAirport,
 																		const int number);
 // results: Returns the status of the (number)th runway
 // 					error code priority: ERROR_INVALID_AIRPORT
