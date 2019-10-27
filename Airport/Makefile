@@ -1,7 +1,7 @@
 ######################################################################
 # File name:  Makefile
 # Author:     Ellysia Li
-# Date:       Oct 20, 2019
+# Date:       Oct 26, 2019
 # Class:      CS300
 # Assignment: Airport Simulation
 # Purpose: 	  This is the Makefile for the Airport Simulator
@@ -67,8 +67,8 @@ tarball: clean
 ../GenericDynamicPriorityQ ../GenericDynamicPriorityQ ../Airport
 
 clean:
-	cd ../GenericDynamicList; make clean
-	rm -rf bin/*.o bin/GenericDynamicPriorityQ
+	cd ../GenericDynamicQ; make clean
+	rm -rf bin/*.o bin/Airport
 	
 valgrind: bin/queuedriver
 	valgrind -v --leak-check=yes --track-origins=yes --leak-check=full \
