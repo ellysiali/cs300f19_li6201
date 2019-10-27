@@ -101,24 +101,22 @@ extern bool airportQsAreEmpty (const AirportPtr psAirport);
 extern void airportAddLandingPlane (AirportPtr psAirport,
 																		const int gas);
 // results: Insert a plane to the landing queue.
-//					error code priority: ERROR_INVALID_AIRPORT, ERROR_NULL_AIRPORT_PTR
+//					error code priority: ERROR_INVALID_AIRPORT
 
 extern void airportAddTakeoffPlane (AirportPtr psAirport);
 // results: Insert a plane to the takeoff queue.
 //					error code priority: ERROR_INVALID_AIRPORT
 
-extern void airportLandPlane (AirportPtr psAirport, int *pTime, int *pGas);
+extern void airportLandPlane (AirportPtr psAirport);
 // results: Remove a plane from the landing queue.
-//					error code priority: ERROR_INVALID_AIRPORT,
-//															 ERROR_NULL_AIRPORT_PTR, ERROR_EMPTY_AIRPORT
+//					error code priority: ERROR_INVALID_AIRPORT, ERROR_EMPTY_AIRPORT
 
-extern void airportTakeoffPlane (AirportPtr psAirport, int *pTime);
+extern void airportTakeoffPlane (AirportPtr psAirport);
 // results: Remove a plane from the landing queue.
-//					error code priority: ERROR_INVALID_AIRPORT,
-//															 ERROR_NULL_AIRPORT_PTR, ERROR_EMPTY_AIRPORT
+//					error code priority: ERROR_INVALID_AIRPORT, ERROR_EMPTY_AIRPORT
 
-extern void airportCrashPlane (AirportPtr psAirport, int *pTime);
-// results: Crash a plane from the landing queue.
+extern void airportCrashPlane (AirportPtr psAirport);
+// results: Crash planes from the landing queue.
 //					error code priority: ERROR_INVALID_AIRPORT, ERROR_EMPTY_AIRPORT
 
 extern void airportAssignRunways (AirportPtr psAirport);
@@ -144,7 +142,7 @@ extern bool airportHasEmergency (const AirportPtr psAirport);
 //          return false
 // 					error code priority: ERROR_INVALID_AIRPORT, ERROR_EMPTY_AIRPORT
 
-extern bool airportRunwayIsOpen (const AirportPtr psAirport);
+extern bool airportRunwayHasOpen (const AirportPtr psAirport);
 // results: If at least one runway is empty, return true; otherwise, return
 //          false
 // 					error code priority: ERROR_INVALID_AIRPORT

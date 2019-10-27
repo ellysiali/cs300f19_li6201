@@ -171,26 +171,32 @@ bool airportQsAreEmpty (const AirportPtr psAirport)
  *************************************************************************/
 void airportAddLandingPlane (AirportPtr psAirport, const int gas)
 {
-
+	const int INITIAL_TIME = 0;
+	if (NULL == psAirport)
+	{
+		processError ("airportAddLandingPlane", ERROR_INVALID_AIRPORT);
+	}
+	pqueueEnqueue (&psAirport->sLandingQueue, &INITIAL_TIME, sizeof (int), &gas);
 }
-// results: Insert a plane to the land queue.
-//					error code priority: ERROR_INVALID_AIRPORT, ERROR_NULL_AIRPORT_PTR
 
 /**************************************************************************
  Function: 	 	airportAddTakeoffPlane
 
  Description: Adds a takeoff plane to the takeoff queue
 
- Parameters:	psAirport 	  - pointer to the airport
+ Parameters:	psAirport - pointer to the airport
 
  Returned:	 	None
  *************************************************************************/
 void airportAddTakeoffPlane (AirportPtr psAirport)
 {
-
+	const int INITIAL_TIME = 0;
+	if (NULL == psAirport)
+	{
+		processError ("airportAddTakeoffPlane", ERROR_INVALID_AIRPORT);
+	}
+	queueEnqueue (&psAirport->sLandingQueue, &INITIAL_TIME, sizeof (int));
 }
-// results: Insert a plane to the takeoff queue.
-//					error code priority: ERROR_INVALID_AIRPORT
 
 /**************************************************************************
  Function: 	 	airportLandPlane
@@ -198,18 +204,30 @@ void airportAddTakeoffPlane (AirportPtr psAirport)
  Description: Land a plane from the landing queue
 
  Parameters:	psAirport - pointer to the airport
- 	 	 	 	 	 	 	pTime			- pointer to the waiting time of the plane
- 	 	 	 	 	 	 	pGas			- pointer to the remaining gas (time) of the plane
 
  Returned:	 	None
  *************************************************************************/
-void airportLandPlane (AirportPtr psAirport, int *pTime, int *pGas)
+void airportLandPlane (AirportPtr psAirport)
 {
+	int time, gas;
+	if (NULL == psAirport)
+	{
+		processError ("airportLandPlane", ERROR_INVALID_AIRPORT);
+	}
+	if (pqueueIsEmpty (&psAirport->sLandingQueue))
+	{
+		processError ("airportLandPlane", ERROR_EMPTY_AIRPORT);
+	}
+	pqueueDequeue (&psAirport->sLandingQueue, &time, sizeof (int), &gas);
 
+	if (0 == gas)
+	{
+		psAirport->sAirportStats.numEmergencyLandings++;
+	}
+	psAirport->sAirportStats.numLandings++;
+	psAirport->sAirportStats.totalFlyingTimeRemaining += gas;
+	psAirport->sAirportStats.totalLandingTime += time;
 }
-// results: Remove a plane from the land queue.
-//					error code priority: ERROR_INVALID_AIRPORT,
-//															 ERROR_NULL_AIRPORT_PTR, ERROR_EMPTY_AIRPORT
 
 /**************************************************************************
  Function: 	 	airportTakeoffPlane
@@ -217,17 +235,24 @@ void airportLandPlane (AirportPtr psAirport, int *pTime, int *pGas)
  Description: Land a plane from the landing queue
 
  Parameters:	psAirport - pointer to the airport
- 	 	 	 	 	 	 	pTime			- pointer to the waiting time of the plane
 
  Returned:	 	None
  *************************************************************************/
-void airportTakeoffPlane (AirportPtr psAirport, int *pTime)
+void airportTakeoffPlane (AirportPtr psAirport)
 {
-
+	int time;
+	if (NULL == psAirport)
+	{
+		processError ("airportTakeoffPlane", ERROR_INVALID_AIRPORT);
+	}
+	if (queueIsEmpty (&psAirport->sTakeoffQueue))
+	{
+		processError ("airportTakeoffPlane", ERROR_EMPTY_AIRPORT);
+	}
+	queueDequeue (&psAirport->sTakeoffQueue, &time, sizeof (int));
+	psAirport->sAirportStats.numTakeoffs++;
+	psAirport->sAirportStats.totalTakeoffTime += time;
 }
-// results: Remove a plane from the land queue.
-//					error code priority: ERROR_INVALID_AIRPORT,
-//															 ERROR_NULL_AIRPORT_PTR, ERROR_EMPTY_AIRPORT
 
 /**************************************************************************
  Function: 	 	airportCrashPlane
@@ -235,16 +260,23 @@ void airportTakeoffPlane (AirportPtr psAirport, int *pTime)
  Description: Crash a plane from the landing queue
 
  Parameters:	psAirport - pointer to the airport
- 	 	 	 	 	 	 	pTime			- pointer to the waiting time of the plane
 
  Returned:	 	None
  *************************************************************************/
-void airportCrashPlane (AirportPtr psAirport, int *pTime)
+void airportCrashPlane (AirportPtr psAirport)
 {
-
+	int time, gas;
+	if (NULL == psAirport)
+	{
+		processError ("airportCrashPlane", ERROR_INVALID_AIRPORT);
+	}
+	if (queueIsEmpty (&psAirport->sTakeoffQueue))
+	{
+		processError ("airportCrashPlane", ERROR_EMPTY_AIRPORT);
+	}
+	pqueueDequeue (&psAirport->sLandingQueue, &time, sizeof (int), &gas);
+	psAirport->sAirportStats.numCrashes++;
 }
-// results: Crash a plane from the land queue.
-//					error code priority: ERROR_INVALID_AIRPORT, ERROR_EMPTY_AIRPORT
 
 /**************************************************************************
  Function: 	 	airportAssignRunways
@@ -257,6 +289,14 @@ void airportCrashPlane (AirportPtr psAirport, int *pTime)
  *************************************************************************/
 void airportAssignRunways (AirportPtr psAirport)
 {
+	if (NULL == psAirport)
+	{
+		processError ("airportAssignRunways", ERROR_INVALID_AIRPORT);
+	}
+	while (airportRunwayHasOpen (psAirport) && !airportQsAreEmpty (psAirport))
+	{
+
+	}
 
 }
 // results: Assign the appropriate planes to runways (if necessary)
@@ -321,7 +361,7 @@ bool airportHasEmergency (const AirportPtr psAirport)
 // 					error code priority: ERROR_INVALID_AIRPORT
 
 /**************************************************************************
- Function: 	 	airportRunwayIsOpen
+ Function: 	 	airportRunwayHasOpen
 
  Description: Checks if at least one runway is empty/open
 
@@ -329,7 +369,7 @@ bool airportHasEmergency (const AirportPtr psAirport)
 
  Returned:	 	True if a runway is open; false otherwise
  *************************************************************************/
-bool airportRunwayIsOpen (const AirportPtr psAirport)
+bool airportRunwayHasOpen (const AirportPtr psAirport)
 {
 	return true;
 }
