@@ -1,7 +1,7 @@
 ######################################################################
 # File name:  Makefile
 # Author:     Ellysia Li
-# Date:       Oct 26, 2019
+# Date:       Oct 30, 2019
 # Class:      CS300
 # Assignment: Airport Simulation
 # Purpose: 	  This is the Makefile for the Airport Simulator
@@ -17,11 +17,9 @@ bin:
 bin/airportdriver: bin/airportdriver.o bin/airport.o \
 ../GenericDynamicQ/bin/queue.o \
 ../GenericDynamicPriorityQ/bin/pqueue.o \
-../GenericDynamicList/bin/list.o
 	gcc -o bin/airportdriver bin/airportdriver.o bin/airport.o \
 	../GenericDynamicQ/bin/queue.o \
-	../GenericDynamicPriorityQ/bin/pqueue.o \
-	../GenericDynamicList/bin/list.o -g -Wall
+	../GenericDynamicPriorityQ/bin/pqueue.o -g -Wall
 	
 bin/airportdriver.o: src/airportdriver.c include/airport.h \
 ../GenericDynamicQ/include/queue.h \
