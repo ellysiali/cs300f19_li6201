@@ -16,7 +16,7 @@ bin:
 
 bin/airportdriver: bin/airportdriver.o bin/airport.o \
 ../GenericDynamicQ/bin/queue.o \
-../GenericDynamicPriorityQ/bin/pqueue.o \
+../GenericDynamicPriorityQ/bin/pqueue.o
 	gcc -o bin/airportdriver bin/airportdriver.o bin/airport.o \
 	../GenericDynamicQ/bin/queue.o \
 	../GenericDynamicPriorityQ/bin/pqueue.o -g -Wall
