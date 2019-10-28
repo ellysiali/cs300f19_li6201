@@ -16,14 +16,17 @@ bin:
 
 bin/airportdriver: bin/airportdriver.o bin/airport.o \
 ../GenericDynamicQ/bin/queue.o \
-../GenericDynamicPriorityQ/bin/pqueue.o
+../GenericDynamicPriorityQ/bin/pqueue.o \
+../GenericDynamicList/bin/list.o
 	gcc -o bin/airportdriver bin/airportdriver.o bin/airport.o \
 	../GenericDynamicQ/bin/queue.o \
-	../GenericDynamicPriorityQ/bin/pqueue.o -g -Wall
+	../GenericDynamicPriorityQ/bin/pqueue.o \
+	../GenericDynamicList/bin/list.o -g -Wall
 	
 bin/airportdriver.o: src/airportdriver.c include/airport.h \
 ../GenericDynamicQ/include/queue.h \
-../GenericDynamicPriorityQ/include/pqueue.h
+../GenericDynamicPriorityQ/include/pqueue.h \
+../GenericDynamicList/include/list.h
 	gcc -c -o bin/airportdriver.o src/airportdriver.c -g -Wall
 	
 bin/airportdrivertester: bin/airportdrivertester.o bin/airport.o \
@@ -59,6 +62,10 @@ bin/airport.o: src/airport.c include/airport.h \
 ../GenericDynamicList/include/list.h
 	cd ../GenericDynamicPriorityQ; make bin/pqueue.o
 	
+../GenericDynamicList/bin/list.o: ../GenericDynamicList/src/list.c \
+../GenericDynamicList/include/list.h
+	cd ../GenericDynamicList; make bin/list.o
+
 test1: bin/airportdriver
 	bin/airportdriver data/airport1.txt > bin/airport1_actual.txt
 	diff -s data/airport1_expected.txt bin/airport1_actual.txt
