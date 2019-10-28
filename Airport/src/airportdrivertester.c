@@ -1,7 +1,7 @@
 /**************************************************************************
  File name:  airportdrivertester.c
  Author:     Ellysia Li
- Date:		   Oct 20, 2019
+ Date:		   Oct 30, 2019
  Class:		   CS300
  Assignment: Airport Simulator
  Purpose:    Testing of an Airport Simulator
@@ -169,7 +169,7 @@ int main ()
 	airportAddLandingPlane (&sTheAirport, GAS_VALUE);
 	for (i = 0; INCREMENTED > i; i++)
 	{
-		airportIncrementClock (&sTheAirport);
+		airportDecrementFuel (&sTheAirport);
 	}
 	assert (INCREMENTED == sTheAirport.clock,
 			"Airport clock incremented correctly",

@@ -1,7 +1,7 @@
 /**************************************************************************
  File name:  airport.c
  Author:     Ellysia Li
- Date:		   Oct 20, 2019
+ Date:		   Oct 30, 2019
  Class:		   CS300
  Assignment: Airport Simulator
  Purpose:    Implementation of an Airport Simulator
@@ -177,18 +177,18 @@ bool airportQsAreEmpty (const AirportPtr psAirport)
  Description: Adds a landing plane to the landing queue
 
  Parameters:	psAirport - pointer to the airport
- 	 	 	 	 	 	 	gas 		  - gas (time) remaining for plane
+ 	 	 	 	 	 	 	fuel 		  - fuel (time) remaining for plane
 
  Returned:	 	None
  *************************************************************************/
-void airportAddLandingPlane (AirportPtr psAirport, const int gas)
+void airportAddLandingPlane (AirportPtr psAirport, const int fuel)
 {
 	if (NULL == psAirport)
 	{
 		processError ("airportAddLandingPlane", ERROR_INVALID_AIRPORT);
 	}
 	pqueueEnqueue (&psAirport->sLandingQueue, &psAirport->clock, sizeof (int),
-																															 gas);
+																															 fuel);
 }
 
 /**************************************************************************
@@ -220,7 +220,7 @@ void airportAddTakeoffPlane (AirportPtr psAirport)
  *************************************************************************/
 void airportLandPlane (AirportPtr psAirport)
 {
-	int time, gas;
+	int time, fuel;
 	if (NULL == psAirport)
 	{
 		processError ("airportLandPlane", ERROR_INVALID_AIRPORT);
@@ -229,9 +229,9 @@ void airportLandPlane (AirportPtr psAirport)
 	{
 		processError ("airportLandPlane", ERROR_EMPTY_AIRPORT);
 	}
-	pqueueDequeue (&psAirport->sLandingQueue, &time, sizeof (int), &gas);
+	pqueueDequeue (&psAirport->sLandingQueue, &time, sizeof (int), &fuel);
 
-	if (0 == gas)
+	if (0 == fuel)
 	{
 		psAirport->sAirportStats.numEmergencyLandings++;
 		airportUpdateRunwayStatus (psAirport, EMERGENCY);
@@ -241,7 +241,7 @@ void airportLandPlane (AirportPtr psAirport)
 		airportUpdateRunwayStatus (psAirport, LANDING);
 	}
 	psAirport->sAirportStats.numLandings++;
-	psAirport->sAirportStats.totalFlyingTimeRemaining += gas;
+	psAirport->sAirportStats.totalFlyingTimeRemaining += fuel;
 	psAirport->sAirportStats.totalLandingTime += psAirport->clock - time;
 }
 
@@ -282,16 +282,16 @@ void airportTakeoffPlane (AirportPtr psAirport)
  *************************************************************************/
 void airportCrashPlane (AirportPtr psAirport)
 {
-	int time, gas;
+	int time, fuel;
 	if (NULL == psAirport)
 	{
 		processError ("airportCrashPlane", ERROR_INVALID_AIRPORT);
 	}
-	if (queueIsEmpty (&psAirport->sLandingQueue))
+	if (pqueueIsEmpty (&psAirport->sLandingQueue))
 	{
 		processError ("airportCrashPlane", ERROR_EMPTY_AIRPORT);
 	}
-	pqueueDequeue (&psAirport->sLandingQueue, &time, sizeof (int), &gas);
+	pqueueDequeue (&psAirport->sLandingQueue, &time, sizeof (int), &fuel);
 	psAirport->sAirportStats.numCrashes++;
 }
 
@@ -314,7 +314,7 @@ void airportAssignRunways (AirportPtr psAirport)
 	{
 		if (airportHasEmergency (psAirport)
 				|| pqueueSize (&psAirport->sLandingQueue)
-				   >= queueSize (&psAirport->sTakeoffQueue))
+						>= queueSize (&psAirport->sTakeoffQueue))
 		{
 			airportLandPlane (psAirport);
 		}
@@ -376,15 +376,15 @@ extern void airportResetRunways (AirportPtr psAirport)
 }
 
 /**************************************************************************
- Function: 	 	airportIncrementClock
+ Function: 	 	airportDecrementFuel
 
- Description: Increment the clock and decrement gas in landing planes
+ Description: Decrement fuel in landing planes (and increment airport's clock)
 
  Parameters:	psAirport - pointer to the airport
 
  Returned:	 	None
  *************************************************************************/
-void airportIncrementClock (AirportPtr psAirport)
+void airportDecrementFuel (AirportPtr psAirport)
 {
 	const int DECREMENT = -1;
 	if (NULL == psAirport)
@@ -421,11 +421,11 @@ int airportGetRunwayStatus (const AirportPtr psAirport, const int number)
 
  Parameters:	psAirport - pointer to the airport
 
- Returned:	 	True if a landing plane has no gas; false otherwise
+ Returned:	 	True if a landing plane has no fuel; false otherwise
  *************************************************************************/
 bool airportHasEmergency (const AirportPtr psAirport)
 {
-	int time = 0, gas = 0;
+	int time = 0, fuel = 0;
 	if (NULL == psAirport)
 	{
 		processError ("airportHasEmergency", ERROR_INVALID_AIRPORT);
@@ -436,8 +436,8 @@ bool airportHasEmergency (const AirportPtr psAirport)
 	}
 	else
 	{
-		pqueuePeek (&psAirport->sLandingQueue, &time, sizeof (int), &gas);
-		return 0 == gas;
+		pqueuePeek (&psAirport->sLandingQueue, &time, sizeof (int), &fuel);
+		return 0 == fuel;
 	}
 }
 
