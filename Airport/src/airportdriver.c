@@ -80,7 +80,7 @@ int main ()
   																				'|', "Queue", "Lengths");
   		printf ("%6s%8s%28s%20s%17s\n", "Time |", "Takeoff",
   														   "Landing (Fuel Remaining) |",
-																 "1   2   3  Crash |", "Takeoff  Landing");
+																 "1   2   3  Crash |", /home/CS300Public/2019/airport_samples"Takeoff  Landing");
   		puts ("---- | -------  ------------------------ | --- --- --- ----- | "
   				"-------  -------");
   	}

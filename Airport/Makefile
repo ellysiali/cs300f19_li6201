@@ -61,6 +61,10 @@ bin/airport.o: src/airport.c include/airport.h \
 ../GenericDynamicPriorityQ/include/pqueue.h \
 ../GenericDynamicList/include/list.h
 	cd ../GenericDynamicPriorityQ; make bin/pqueue.o
+	
+test1: bin/airportDriver
+    bin/airportDriver data/airport1.txt > bin/airport1_actual.txt
+    diff -s data/airport1_expected.txt bin/airport1_actual.txt
 
 tarball: clean
 	tar czf ../cs300_4_li6201.tar.gz ../GenericDynamicList \
