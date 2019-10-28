@@ -30,8 +30,8 @@
  Returned:	 	Exit Status
  *************************************************************************/
 
-int main ()
-// int main (int argc, char* argv[])
+//int main ()
+int main (int argc, char* argv[])
 {
 	const char STATUS_CHARS[] = {'-', 'T', 'L', 'E'};
 	Airport sTheAirport;
@@ -43,15 +43,15 @@ int main ()
 	airportCreate (&sTheAirport);
 
   // Check number of arguments
-//  if( argc != 2 )
-//  {
-//    printf("Invalid number of arguments\n");
-//    return EXIT_FAILURE;
-//  }
+  if( argc != 2 )
+  {
+    printf("Invalid number of arguments\n");
+    return EXIT_FAILURE;
+  }
 
 
-	pInFile = fopen("data/airport.txt", "r");
-//  pInFile = fopen(argv[1], "r");
+//	pInFile = fopen("data/airport.txt", "r");
+  pInFile = fopen(argv[1], "r");
 
   if (NULL == pInFile) {
      printf("Could not open file\n");

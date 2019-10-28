@@ -456,14 +456,12 @@ bool airportHasEmergency (const AirportPtr psAirport)
  *************************************************************************/
 bool airportRunwayHasOpen (const AirportPtr psAirport)
 {
-	const int FIRST = 0, SECOND = 1, THIRD = 2;
+	const int THIRD = 2;
 	if (NULL == psAirport)
 	{
 		processError ("airportRunwayHasOpen", ERROR_INVALID_AIRPORT);
 	}
-	return EMPTY == psAirport->ezRunways[FIRST]
-				 || EMPTY == psAirport->ezRunways[SECOND]
-				 || EMPTY == psAirport->ezRunways[THIRD];
+	return EMPTY == psAirport->ezRunways[THIRD];
 }
 
 /**************************************************************************
