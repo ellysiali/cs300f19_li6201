@@ -24,7 +24,6 @@ bin/airportdriver: bin/airportdriver.o bin/airport.o \
 bin/airportdriver.o: src/airportdriver.c include/airport.h \
 ../GenericDynamicQ/include/queue.h \
 ../GenericDynamicPriorityQ/include/pqueue.h \
-../GenericDynamicList/include/list.h
 	gcc -c -o bin/airportdriver.o src/airportdriver.c -g -Wall
 	
 bin/airportdrivertester: bin/airportdrivertester.o bin/airport.o \
