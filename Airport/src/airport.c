@@ -58,6 +58,8 @@ void airportCreate (AirportPtr psAirport)
 		psAirport->ezRunways[i] = EMPTY;
 	}
 
+	psAirport->clock = 0;
+
 	psAirport->sAirportStats.numCrashes =
 			psAirport->sAirportStats.numEmergencyLandings =
 					psAirport->sAirportStats.numLandings =
@@ -90,6 +92,8 @@ void airportTerminate (AirportPtr psAirport)
 	{
 		psAirport->ezRunways[i] = EMPTY;
 	}
+
+	psAirport->clock = 0;
 
 	psAirport->sAirportStats.numCrashes =
 			psAirport->sAirportStats.numEmergencyLandings =

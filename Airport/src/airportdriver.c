@@ -29,18 +29,29 @@
 
  Returned:	 	Exit Status
  *************************************************************************/
+
 int main ()
+// int main (int argc, char* argv[])
 {
 	const char STATUS_CHARS[] = {'-', 'T', 'L', 'E'};
 	Airport sTheAirport;
-	int i, clock, numLandingPlanes, numTakeoffPlanes,
+	int i, clock = 0, numLandingPlanes, numTakeoffPlanes,
 	    landingFuels[NUMBER_OF_RUNWAYS], numCrashes;
 	FILE* pInFile = NULL;
 
 	airportLoadErrorMessages (&sTheAirport);
 	airportCreate (&sTheAirport);
 
+  // Check number of arguments
+//  if( argc != 2 )
+//  {
+//    printf("Invalid number of arguments\n");
+//    return EXIT_FAILURE;
+//  }
+
+
 	pInFile = fopen("data/airport.txt", "r");
+//  pInFile = fopen(argv[1], "r");
 
   if (NULL == pInFile) {
      printf("Could not open file\n");
@@ -80,7 +91,7 @@ int main ()
   																				'|', "Queue", "Lengths");
   		printf ("%6s%8s%28s%20s%17s\n", "Time |", "Takeoff",
   														   "Landing (Fuel Remaining) |",
-																 "1   2   3  Crash |", /home/CS300Public/2019/airport_samples"Takeoff  Landing");
+																 "1   2   3  Crash |", "Takeoff  Landing");
   		puts ("---- | -------  ------------------------ | --- --- --- ----- | "
   				"-------  -------");
   	}
