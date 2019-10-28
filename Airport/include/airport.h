@@ -1,7 +1,7 @@
 /**************************************************************************
  File name:  airport.h
  Author:     Ellysia Li
- Date:		   Oct 20, 2019
+ Date:		   Oct 30, 2019
  Class:		   CS300
  Assignment: Airport Simulation
  Purpose:    This file defines the constants, data structures, and
@@ -129,8 +129,12 @@ extern void airportUpdateRunwayStatus (AirportPtr psAirport, int status);
 // results: Updates the first empty runway to the appropriate status
 //					error code priority: ERROR_INVALID_AIRPORT
 
+extern void airportResetRunways (AirportPtr psAirport);
+// results: Resets runways to empty
+//					error code priority: ERROR_INVALID_AIRPORT
+
 extern void airportIncrementClock (AirportPtr psAirport);
-// results: Increment/decrement the time/gas of each airplane by one.
+// results: Increment/decrement the time/gas of each plane by one.
 //					error code priority: ERROR_INVALID_AIRPORT
 
 /**************************************************************************
@@ -148,11 +152,6 @@ extern bool airportHasEmergency (const AirportPtr psAirport);
 // 					error code priority: ERROR_INVALID_AIRPORT, ERROR_EMPTY_AIRPORT
 
 extern bool airportRunwayHasOpen (const AirportPtr psAirport);
-// results: If at least one runway is empty, return true; otherwise, return
-//          false
-// 					error code priority: ERROR_INVALID_AIRPORT
-
-extern bool airportRunwaysAreOpen (const AirportPtr psAirport);
 // results: If at least one runway is empty, return true; otherwise, return
 //          false
 // 					error code priority: ERROR_INVALID_AIRPORT

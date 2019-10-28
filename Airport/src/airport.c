@@ -45,12 +45,18 @@ static void processError (const char *pszFunctionName, int errorCode)
  *************************************************************************/
 void airportCreate (AirportPtr psAirport)
 {
+	int i;
 	if (NULL == psAirport)
 	{
 		processError ("airportCreate", ERROR_NO_AIRPORT_CREATE);
 	}
 	pqueueCreate (&psAirport->sLandingQueue);
 	queueCreate (&psAirport->sTakeoffQueue);
+
+	for (i = 0; i < NUMBER_OF_RUNWAYS; i++)
+	{
+		psAirport->ezRunways[i] = EMPTY;
+	}
 
 	psAirport->sAirportStats.numCrashes =
 			psAirport->sAirportStats.numEmergencyLandings =
@@ -72,12 +78,18 @@ void airportCreate (AirportPtr psAirport)
  *************************************************************************/
 void airportTerminate (AirportPtr psAirport)
 {
+	int i;
 	if (NULL == psAirport)
 	{
 		processError ("airportTerminate", ERROR_NO_AIRPORT_TERMINATE);
 	}
 	pqueueTerminate (&psAirport->sLandingQueue);
 	queueTerminate (&psAirport->sTakeoffQueue);
+
+	for (i = 0; i < NUMBER_OF_RUNWAYS; i++)
+	{
+		psAirport->ezRunways[i] = EMPTY;
+	}
 
 	psAirport->sAirportStats.numCrashes =
 			psAirport->sAirportStats.numEmergencyLandings =
@@ -176,7 +188,7 @@ void airportAddLandingPlane (AirportPtr psAirport, const int gas)
 		processError ("airportAddLandingPlane", ERROR_INVALID_AIRPORT);
 	}
 	pqueueEnqueue (&psAirport->sLandingQueue, &psAirport->clock, sizeof (int),
-																															 &gas);
+																															 gas);
 }
 
 /**************************************************************************
@@ -275,7 +287,7 @@ void airportCrashPlane (AirportPtr psAirport)
 	{
 		processError ("airportCrashPlane", ERROR_INVALID_AIRPORT);
 	}
-	if (queueIsEmpty (&psAirport->sTakeoffQueue))
+	if (queueIsEmpty (&psAirport->sLandingQueue))
 	{
 		processError ("airportCrashPlane", ERROR_EMPTY_AIRPORT);
 	}
@@ -340,6 +352,29 @@ extern void airportUpdateRunwayStatus (AirportPtr psAirport, int status)
 	}
 	psAirport->ezRunways[i] = status;
 }
+
+/**************************************************************************
+ Function: 	 	airportResetRunways
+
+ Description: Resets all runways to empty
+
+ Parameters:	psAirport - pointer to the airport
+
+ Returned:	 	None
+ *************************************************************************/
+extern void airportResetRunways (AirportPtr psAirport)
+{
+	int i;
+	if (NULL == psAirport)
+	{
+		processError ("airportResetRunways", ERROR_INVALID_AIRPORT);
+	}
+	for (i = 0; i < NUMBER_OF_RUNWAYS; i++)
+	{
+		psAirport->ezRunways[i] = EMPTY;
+	}
+}
+
 /**************************************************************************
  Function: 	 	airportIncrementClock
 
@@ -351,7 +386,7 @@ extern void airportUpdateRunwayStatus (AirportPtr psAirport, int status)
  *************************************************************************/
 void airportIncrementClock (AirportPtr psAirport)
 {
-	const int DECREMENT = 1;
+	const int DECREMENT = -1;
 	if (NULL == psAirport)
 	{
 		processError ("airportIncrementClock", ERROR_INVALID_AIRPORT);
