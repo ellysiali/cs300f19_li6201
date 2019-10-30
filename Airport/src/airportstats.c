@@ -7,7 +7,7 @@
  Purpose:    Implementation of the AirportStats structure
  *************************************************************************/
 
-#include "airportstats.h"
+#include "../include/airportstats.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -79,7 +79,7 @@ void astatsCreate (AirportStatsPtr psAStats)
 
  Returned:	 	None
  *************************************************************************/
-void airportTerminate (AirportStatsPtr psAStats)
+void astatsTerminate (AirportStatsPtr psAStats)
 {
 	if (NULL == psAStats)
 	{
@@ -93,6 +93,132 @@ void airportTerminate (AirportStatsPtr psAStats)
 									psAStats->totalFlyingTimeRemaining =
 											psAStats->totalLandingTime =
 													psAStats->totalTakeoffTime = 0;
+}
+
+/**************************************************************************
+ Function: 	 	astatsIncrementNumLandings
+
+ Description: Increments numLandingPlanes by one
+
+ Parameters:	psAStats - pointer to the airportStats
+
+ Returned:	 	None
+ *************************************************************************/
+void astatsIncrementNumLandings (AirportStatsPtr psAStats)
+{
+	if (NULL == psAStats)
+	{
+		processError ("astatsIncrementNumLandings", ERROR_INVALID_ASTATS);
+	}
+	psAStats->numLandingPlanes++;
+}
+
+/**************************************************************************
+ Function: 	 	astatsIncrementNumTakeoffs
+
+ Description: Increments numTakeoffPlanes by one
+
+ Parameters:	psAStats - pointer to the airportStats
+
+ Returned:	 	None
+ *************************************************************************/
+void astatsIncrementNumTakeoffs (AirportStatsPtr psAStats)
+{
+	if (NULL == psAStats)
+	{
+		processError ("astatsIncrementNumTakeoffs", ERROR_INVALID_ASTATS);
+	}
+	psAStats->numTakeoffPlanes++;
+}
+
+/**************************************************************************
+ Function: 	 	astatsIncrementEmergencies
+
+ Description: Increments numEmergencyLandings by one
+
+ Parameters:	psAStats - pointer to the airportStats
+
+ Returned:	 	None
+ *************************************************************************/
+void astatsIncrementEmergencies (AirportStatsPtr psAStats)
+{
+	if (NULL == psAStats)
+	{
+		processError ("astatsIncrementEmergencies", ERROR_INVALID_ASTATS);
+	}
+	psAStats->numEmergencyLandings++;
+}
+
+/**************************************************************************
+ Function: 	 	astatsIncrementCrashes
+
+ Description: Increments numEmergencyLandings by one
+
+ Parameters:	psAStats - pointer to the airportStats
+
+ Returned:	 	None
+ *************************************************************************/
+void astatsIncrementCrashes (AirportStatsPtr psAStats)
+{
+	if (NULL == psAStats)
+	{
+		processError ("astatsIncrementCrashes", ERROR_INVALID_ASTATS);
+	}
+	psAStats->numCrashes++;
+}
+
+/**************************************************************************
+ Function: 	 	astatsAddTakeoffTime
+
+ Description: Adds to the totalTakeoffTime
+
+ Parameters:	psAStats - pointer to the airportStats
+
+ Returned:	 	None
+ *************************************************************************/
+void astatsAddTakeoffTime (AirportStatsPtr psAStats, const int time)
+{
+	if (NULL == psAStats)
+	{
+		processError ("astatsAddTakeoffTime", ERROR_INVALID_ASTATS);
+	}
+	psAStats->totalTakeoffTime += time;
+}
+
+/**************************************************************************
+ Function: 	 	astatsAddLandingTime
+
+ Description: Adds to the totalTakeoffTime
+
+ Parameters:	psAStats - pointer to the airportStats
+
+ Returned:	 	None
+ *************************************************************************/
+void astatsAddLandingTime (AirportStatsPtr psAStats, const int time)
+{
+	if (NULL == psAStats)
+	{
+		processError ("astatsAddLandingTime", ERROR_INVALID_ASTATS);
+	}
+	psAStats->totalLandingTime += time;
+}
+
+/**************************************************************************
+ Function: 	 	astatsAddFlyingTimeRemaining
+
+ Description: Adds to the totalTakeoffTime
+
+ Parameters:	psAStats - pointer to the airportStats
+
+ Returned:	 	None
+ *************************************************************************/
+void astatsAddFlyingTimeRemaining (AirportStatsPtr psAStats, const int time)
+{
+	if (NULL == psAStats)
+	{
+		processError ("astatsAddFlyingTimeRemaining", ERROR_INVALID_ASTATS);
+	}
+	psAStats->totalFlyingTimeRemaining += time;
 }
 
 /**************************************************************************
@@ -187,3 +313,4 @@ int astatsNumCrashes (const AirportStatsPtr psAStats)
 		processError ("astatsNumCrashes", ERROR_INVALID_ASTATS);
 	}
 	return psAStats->numCrashes;
+}

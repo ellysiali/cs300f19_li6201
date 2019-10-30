@@ -11,7 +11,7 @@
 #define AIRPORT_H_
 
 #include <stdbool.h>
-#include "airportstats.h"
+#include "../include/airportstats.h"
 #include "../../GenericDynamicList/include/list.h"
 #include "../../GenericDynamicPriorityQ/include/pqueue.h"
 #include "../../GenericDynamicQ/include/queue.h"

@@ -14,41 +14,48 @@ all: bin/airportdriver bin/airportdrivertester test1
 bin: 
 	mkdir -p bin
 
-bin/airportdriver: bin/airportdriver.o bin/airport.o \
+bin/airportdriver: bin/airportdriver.o bin/airport.o bin/airportstats.o \
 ../GenericDynamicQ/bin/queue.o \
 ../GenericDynamicPriorityQ/bin/pqueue.o \
 ../GenericDynamicList/bin/list.o
 	gcc -o bin/airportdriver bin/airportdriver.o bin/airport.o \
+	bin/airportstats.o \
 	../GenericDynamicQ/bin/queue.o \
 	../GenericDynamicPriorityQ/bin/pqueue.o \
 	../GenericDynamicList/bin/list.o -g -Wall
 	
 bin/airportdriver.o: src/airportdriver.c include/airport.h \
+include/airportstats.h\
 ../GenericDynamicQ/include/queue.h \
 ../GenericDynamicPriorityQ/include/pqueue.h \
 ../GenericDynamicList/include/list.h
 	gcc -c -o bin/airportdriver.o src/airportdriver.c -g -Wall
 	
 bin/airportdrivertester: bin/airportdrivertester.o bin/airport.o \
+bin/airportstats.o\
 ../GenericDynamicQ/bin/queue.o \
 ../GenericDynamicPriorityQ/bin/pqueue.o \
 ../GenericDynamicList/bin/list.o
 	gcc -o bin/airportdrivertester bin/airportdrivertester.o \
-	bin/airport.o ../GenericDynamicQ/bin/queue.o \
+	bin/airport.o bin/airportstats.o ../GenericDynamicQ/bin/queue.o \
 	../GenericDynamicPriorityQ/bin/pqueue.o \
 	../GenericDynamicList/bin/list.o -g -Wall
 	
 bin/airportdrivertester.o: src/airportdrivertester.c include/airport.h \
+include/airportstats.h\
 ../GenericDynamicQ/include/queue.h \
 ../GenericDynamicPriorityQ/include/pqueue.h \
 ../GenericDynamicList/include/list.h
 	gcc -c -o bin/airportdrivertester.o src/airportdrivertester.c -g -Wall
 
-bin/airport.o: src/airport.c include/airport.h \
+bin/airport.o: src/airport.c include/airport.h include/airportstats.h \
 ../GenericDynamicQ/include/queue.h \
 ../GenericDynamicPriorityQ/include/pqueue.h \
 ../GenericDynamicList/include/list.h
 	gcc -c -o bin/airport.o src/airport.c -g -Wall
+	
+bin/airportstats.o: src/airportstats.c include/airportstats.h
+	gcc -c -o bin/airportstats.o src/airportstats.c -g -Wall
 	
 ../GenericDynamicQ/bin/queue.o: \
 ../GenericDynamicQ/src/queue.c ../GenericDynamicQ/include/queue.h \

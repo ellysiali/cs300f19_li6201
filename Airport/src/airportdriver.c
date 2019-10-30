@@ -11,6 +11,7 @@
 #include <stdlib.h>
 
 #include "../include/airport.h"
+#include "../include/airportstats.h"
 #include "../../GenericDynamicList/include/list.h"
 #include "../../GenericDynamicPriorityQ/include/pqueue.h"
 #include "../../GenericDynamicQ/include/queue.h"

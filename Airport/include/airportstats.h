@@ -10,6 +10,8 @@
 
 #ifndef AIRPORTSTATS_H_
 #define AIRPORTSTATS_H_
+#include <string.h>
+
 
 //*************************************************************************
 // Constants
@@ -28,11 +30,11 @@ enum {NO_ASTATS_ERROR = 0,
 //*************************************************************************
 #define LOAD_ASTATS_ERRORS strcpy(gszAStatsErrors[NO_ASTATS_ERROR], \
 		"No Error.");\
-strcpy(gszAirportErrors[ERROR_NO_ASTATS_CREATE], \
+strcpy(gszAStatsErrors[ERROR_NO_ASTATS_CREATE], \
 		"Error: No Airport Create.");\
-strcpy(gszAirportErrors[ERROR_NO_ASTATS_TERMINATE], \
+strcpy(gszAStatsErrors[ERROR_NO_ASTATS_TERMINATE], \
 		"Error: No Airport Terminate.");\
-strcpy(gszAirportErrors[ERROR_INVALID_ASTATS], "Error: Invalid Airport.");
+strcpy(gszAStatsErrors[ERROR_INVALID_ASTATS], "Error: Invalid Airport.");
 
 //*************************************************************************
 // User-defined types
@@ -46,7 +48,7 @@ typedef struct AirportStats
 typedef AirportStats* AirportStatsPtr;
 
 /**************************************************************************
-* Functions
+*										Allocation and Deallocation
 **************************************************************************/
 extern void astatsLoadErrorMessages ();
 // results:	Loads the error message strings for the error handler to use
@@ -60,6 +62,34 @@ extern void astatsTerminate (AirportStatsPtr psAStats);
 // results: If Q can be terminated, then Q no longer exists and is empty
 //				   otherwise, ERROR_NO_ASTATS_TERMINATE
 
+/**************************************************************************
+*										Inserting, Deleting, and Updating
+**************************************************************************/
+extern void astatsIncrementNumLandings (AirportStatsPtr psAStats);
+// results: Increments number of landings by one
+
+extern void astatsIncrementNumTakeoffs (AirportStatsPtr psAStats);
+// results: Increments number of takeoffs by one
+
+extern void astatsIncrementEmergencies (AirportStatsPtr psAStats);
+// results: Increments number of emergency landings by one
+
+extern void astatsIncrementCrashes (AirportStatsPtr psAStats);
+// results: Increments number of crashes by one
+
+extern void astatsAddTakeoffTime (AirportStatsPtr psAStats, const int time);
+// results: Add to the total takeoff time
+
+extern void astatsAddLandingTime (AirportStatsPtr psAStats, const int time);
+// results: Add to the total landing time
+
+extern void astatsAddFlyingTimeRemaining (AirportStatsPtr psAStats,
+																					const int time);
+// results: Add to the total flying time remaining
+
+/**************************************************************************
+*													Get Statistics
+**************************************************************************/
 extern float astatsAverageLandingTime (const AirportStatsPtr psAStats);
 // results: Return the average landing waiting time
 // 					error code priority: ERROR_NO_ASTATS_CREATE

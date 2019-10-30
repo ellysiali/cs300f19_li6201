@@ -12,6 +12,7 @@
 #include <stdlib.h>
 
 #include "../include/airport.h"
+#include "../include/airportstats.h"
 #include "../../GenericDynamicList/include/list.h"
 #include "../../GenericDynamicPriorityQ/include/pqueue.h"
 #include "../../GenericDynamicQ/include/queue.h"
@@ -59,13 +60,7 @@ void airportCreate (AirportPtr psAirport)
 	}
 	psAirport->availableRunway = 0;
 
-	psAirport->sAirportStats.numCrashes =
-			psAirport->sAirportStats.numEmergencyLandings =
-					psAirport->sAirportStats.numLandingPlanes =
-							psAirport->sAirportStats.numTakeoffPlanes =
-									psAirport->sAirportStats.totalFlyingTimeRemaining =
-											psAirport->sAirportStats.totalLandingTime =
-													psAirport->sAirportStats.totalTakeoffTime = 0;
+	astatsCreate (&psAirport->sAirportStats);
 }
 
 /**************************************************************************
@@ -93,13 +88,7 @@ void airportTerminate (AirportPtr psAirport)
 	}
 	psAirport->availableRunway = 0;
 
-	psAirport->sAirportStats.numCrashes =
-			psAirport->sAirportStats.numEmergencyLandings =
-					psAirport->sAirportStats.numLandingPlanes =
-							psAirport->sAirportStats.numTakeoffPlanes =
-									psAirport->sAirportStats.totalFlyingTimeRemaining =
-											psAirport->sAirportStats.totalLandingTime =
-													psAirport->sAirportStats.totalTakeoffTime = 0;
+	astatsTerminate (&psAirport->sAirportStats);
 }
 
 /**************************************************************************
@@ -114,7 +103,7 @@ void airportTerminate (AirportPtr psAirport)
  *************************************************************************/
 void airportLoadErrorMessages ()
 {
-	astatsLoadErrorMessages ();
+//	astatsLoadErrorMessages ();
 	queueLoadErrorMessages ();
 	LOAD_AIRPORT_ERRORS
 }
@@ -193,7 +182,7 @@ void airportAddLandingPlane (AirportPtr psAirport, const int time,
 		processError ("airportAddLandingPlane", ERROR_INVALID_AIRPORT);
 	}
 	pqueueEnqueue (&psAirport->sLandingQueue, &time, sizeof (int), fuel);
-	psAirport->sAirportStats.numLandingPlanes++;
+	astatsIncrementNumLandings (&psAirport->sAirportStats);
 }
 
 /**************************************************************************
@@ -213,7 +202,7 @@ void airportAddTakeoffPlane (AirportPtr psAirport, const int time)
 		processError ("airportAddTakeoffPlane", ERROR_INVALID_AIRPORT);
 	}
 	queueEnqueue (&psAirport->sTakeoffQueue, &time, sizeof (int));
-	psAirport->sAirportStats.numTakeoffPlanes++;
+	astatsIncrementNumTakeoffs(&psAirport->sAirportStats);
 }
 
 /**************************************************************************
@@ -241,15 +230,15 @@ void airportLandPlane (AirportPtr psAirport, const int clock)
 
 	if (0 == fuel)
 	{
-		psAirport->sAirportStats.numEmergencyLandings++;
+		astatsIncrementEmergencies(&psAirport->sAirportStats);
 		psAirport->ezRunways[psAirport->availableRunway] = EMERGENCY;
 	}
 	else
 	{
 		psAirport->ezRunways[psAirport->availableRunway] = LANDING;
 	}
-	psAirport->sAirportStats.totalFlyingTimeRemaining += fuel;
-	psAirport->sAirportStats.totalLandingTime += clock - time + 1;
+	astatsAddFlyingTimeRemaining(&psAirport->sAirportStats, fuel);
+	astatsAddLandingTime(&psAirport->sAirportStats, clock - time + 1);
 	psAirport->availableRunway++;
 }
 
@@ -276,7 +265,7 @@ void airportTakeoffPlane (AirportPtr psAirport, const int clock)
 		processError ("airportTakeoffPlane", ERROR_EMPTY_AIRPORT);
 	}
 	queueDequeue (&psAirport->sTakeoffQueue, &time, sizeof (int));
-	psAirport->sAirportStats.totalTakeoffTime += clock - time + 1;
+	astatsAddTakeoffTime(&psAirport->sAirportStats, clock - time + 1);
 	psAirport->ezRunways[psAirport->availableRunway] = TAKEOFF;
 	psAirport->availableRunway++;
 }
@@ -302,9 +291,9 @@ void airportCrashPlane (AirportPtr psAirport, const int clock)
 		processError ("airportCrashPlane", ERROR_EMPTY_AIRPORT);
 	}
 	pqueueDequeue (&psAirport->sLandingQueue, &time, sizeof (int), &fuel);
-	psAirport->sAirportStats.numCrashes++;
-	psAirport->sAirportStats.totalFlyingTimeRemaining += fuel;
-	psAirport->sAirportStats.totalLandingTime += clock - time + 1;
+	astatsIncrementCrashes(&psAirport->sAirportStats);
+	astatsAddFlyingTimeRemaining(&psAirport->sAirportStats, fuel);
+	astatsAddLandingTime(&psAirport->sAirportStats, clock - time + 1);
 }
 
 /**************************************************************************
@@ -487,8 +476,7 @@ float airportAverageLandingTime (const AirportPtr psAirport)
 	{
 		processError ("airportAverageLandingTime", ERROR_INVALID_AIRPORT);
 	}
-	return (float) psAirport->sAirportStats.totalLandingTime
-				 / psAirport->sAirportStats.numLandingPlanes;
+	return astatsAverageLandingTime (&psAirport->sAirportStats);
 }
 
 /**************************************************************************
@@ -506,8 +494,7 @@ float airportAverageTakeoffTime (const AirportPtr psAirport)
 	{
 		processError ("airportAverageTakeoffTime", ERROR_INVALID_AIRPORT);
 	}
-	return (float) psAirport->sAirportStats.totalTakeoffTime
-				 / psAirport->sAirportStats.numTakeoffPlanes;
+	return astatsAverageTakeoffTime (&psAirport->sAirportStats);
 }
 
 /**************************************************************************
@@ -525,8 +512,7 @@ float airportAverageFlyingTimeRemaining (const AirportPtr psAirport)
 	{
 		processError ("airportAverageFlyingTimeRemaining", ERROR_INVALID_AIRPORT);
 	}
-	return (float) psAirport->sAirportStats.totalFlyingTimeRemaining
-				 / psAirport->sAirportStats.numLandingPlanes;
+	return astatsAverageFlyingTimeRemaining (&psAirport->sAirportStats);
 }
 
 /**************************************************************************
@@ -544,7 +530,7 @@ int airportNumEmergencyLandings (const AirportPtr psAirport)
 	{
 		processError ("airportNumEmergencyLandings", ERROR_INVALID_AIRPORT);
 	}
-	return psAirport->sAirportStats.numEmergencyLandings;
+	return astatsNumEmergencyLandings (&psAirport->sAirportStats);
 }
 
 /**************************************************************************
@@ -562,5 +548,5 @@ int airportNumCrashes (const AirportPtr psAirport)
 	{
 		processError ("airportNumCrashes", ERROR_INVALID_AIRPORT);
 	}
-	return psAirport->sAirportStats.numCrashes;
+	return astatsNumCrashes (&psAirport->sAirportStats);
 }
