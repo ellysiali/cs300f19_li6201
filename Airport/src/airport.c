@@ -202,7 +202,7 @@ void airportAddTakeoffPlane (AirportPtr psAirport, const int time)
 		processError ("airportAddTakeoffPlane", ERROR_INVALID_AIRPORT);
 	}
 	queueEnqueue (&psAirport->sTakeoffQueue, &time, sizeof (int));
-	astatsIncrementNumTakeoffs(&psAirport->sAirportStats);
+	astatsIncrementNumTakeoffs (&psAirport->sAirportStats);
 }
 
 /**************************************************************************
@@ -230,15 +230,15 @@ void airportLandPlane (AirportPtr psAirport, const int clock)
 
 	if (0 == fuel)
 	{
-		astatsIncrementEmergencies(&psAirport->sAirportStats);
+		astatsIncrementEmergencies (&psAirport->sAirportStats);
 		psAirport->ezRunways[psAirport->availableRunway] = EMERGENCY;
 	}
 	else
 	{
 		psAirport->ezRunways[psAirport->availableRunway] = LANDING;
 	}
-	astatsAddFlyingTimeRemaining(&psAirport->sAirportStats, fuel);
-	astatsAddLandingTime(&psAirport->sAirportStats, clock - time + 1);
+	astatsAddFlyingTimeRemaining (&psAirport->sAirportStats, fuel);
+	astatsAddLandingTime (&psAirport->sAirportStats, clock - time + 1);
 	psAirport->availableRunway++;
 }
 
@@ -265,7 +265,7 @@ void airportTakeoffPlane (AirportPtr psAirport, const int clock)
 		processError ("airportTakeoffPlane", ERROR_EMPTY_AIRPORT);
 	}
 	queueDequeue (&psAirport->sTakeoffQueue, &time, sizeof (int));
-	astatsAddTakeoffTime(&psAirport->sAirportStats, clock - time + 1);
+	astatsAddTakeoffTime (&psAirport->sAirportStats, clock - time + 1);
 	psAirport->ezRunways[psAirport->availableRunway] = TAKEOFF;
 	psAirport->availableRunway++;
 }
@@ -291,9 +291,9 @@ void airportCrashPlane (AirportPtr psAirport, const int clock)
 		processError ("airportCrashPlane", ERROR_EMPTY_AIRPORT);
 	}
 	pqueueDequeue (&psAirport->sLandingQueue, &time, sizeof (int), &fuel);
-	astatsIncrementCrashes(&psAirport->sAirportStats);
-	astatsAddFlyingTimeRemaining(&psAirport->sAirportStats, fuel);
-	astatsAddLandingTime(&psAirport->sAirportStats, clock - time + 1);
+	astatsIncrementCrashes (&psAirport->sAirportStats);
+	astatsAddFlyingTimeRemaining (&psAirport->sAirportStats, fuel);
+	astatsAddLandingTime (&psAirport->sAirportStats, clock - time + 1);
 }
 
 /**************************************************************************
@@ -371,7 +371,7 @@ extern void airportResetRunways (AirportPtr psAirport)
 	{
 		processError ("airportResetRunways", ERROR_INVALID_AIRPORT);
 	}
-	for (i = 0; i < NUMBER_OF_RUNWAYS; i++)
+	for (i = 0; NUMBER_OF_RUNWAYS > i; i++)
 	{
 		psAirport->ezRunways[i] = EMPTY;
 	}

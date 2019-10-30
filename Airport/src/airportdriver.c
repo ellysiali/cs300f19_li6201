@@ -34,15 +34,17 @@
 int main (int argc, char* argv[])
 {
 	const char STATUS_CHARS[] = {'-', 'T', 'L', 'E'};
+	int i, clock = 1,
+			numLandingPlanes, numTakeoffPlanes, oldNumCrashes,
+	    landingFuels[NUMBER_OF_RUNWAYS];
 	Airport sTheAirport;
-	int i, clock = 1, numLandingPlanes, numTakeoffPlanes,
-	    landingFuels[NUMBER_OF_RUNWAYS], oldNumCrashes;
 	FILE* pInFile = NULL;
 
 	airportLoadErrorMessages (&sTheAirport);
 	airportCreate (&sTheAirport);
 
   // Check number of arguments
+
   if( argc != 2 )
   {
     printf("Invalid number of arguments\n");
@@ -58,7 +60,7 @@ int main (int argc, char* argv[])
      return EXIT_FAILURE;
   }
 
-  // Airport Simulation
+  // Airport Simulation:
 
   while (!feof(pInFile) || !airportQsAreEmpty (&sTheAirport))
   {
@@ -66,7 +68,7 @@ int main (int argc, char* argv[])
 
   	numTakeoffPlanes = numLandingPlanes = 0;
   	oldNumCrashes = airportNumCrashes (&sTheAirport);
-  	for (i = 0; i < NUMBER_OF_RUNWAYS; i++)
+  	for (i = 0; NUMBER_OF_RUNWAYS > i; i++)
   	{
   		landingFuels[i] = 0;
   	}
@@ -78,11 +80,11 @@ int main (int argc, char* argv[])
 		{
 			fscanf (pInFile, "%d %d %d %d %d", &numTakeoffPlanes, &numLandingPlanes,
 					&landingFuels[FIRST], &landingFuels[SECOND], &landingFuels[THIRD]);
-			for (i = 0; i < numTakeoffPlanes; i++)
+			for (i = 0; numTakeoffPlanes > i; i++)
 			{
 				airportAddTakeoffPlane (&sTheAirport, clock);
 			}
-			for (i = 0; i < numLandingPlanes; i++)
+			for (i = 0; numLandingPlanes > i; i++)
 			{
 				airportAddLandingPlane (&sTheAirport, clock, landingFuels[i]);
 			}
@@ -112,7 +114,7 @@ int main (int argc, char* argv[])
   					"| -------  -------");
   	}
 		printf ("%4d |%8d%9d |", clock, numTakeoffPlanes, numLandingPlanes);
-		for (i = 0; i < NUMBER_OF_RUNWAYS; i++)
+		for (i = 0; NUMBER_OF_RUNWAYS > i; i++)
 		{
 			if (0 == landingFuels[i])
 			{
@@ -124,7 +126,7 @@ int main (int argc, char* argv[])
 			}
 		}
 		printf (" |");
-		for (i = 0; i < NUMBER_OF_RUNWAYS; i++)
+		for (i = 0; NUMBER_OF_RUNWAYS > i; i++)
 		{
 			printf ("%3c ", STATUS_CHARS[airportGetRunwayStatus (&sTheAirport, i)]);
 		}
@@ -149,10 +151,9 @@ int main (int argc, char* argv[])
   				 airportNumEmergencyLandings (&sTheAirport));
   printf ("Number of crashes: %d", airportNumCrashes (&sTheAirport));
 
-
 	airportTerminate (&sTheAirport);
 
-  fclose(pInFile);
+  fclose (pInFile);
 
 	return EXIT_SUCCESS;
 }

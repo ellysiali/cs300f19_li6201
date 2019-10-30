@@ -12,7 +12,6 @@
 #define AIRPORTSTATS_H_
 #include <string.h>
 
-
 //*************************************************************************
 // Constants
 //*************************************************************************
@@ -88,7 +87,7 @@ extern void astatsAddFlyingTimeRemaining (AirportStatsPtr psAStats,
 // results: Add to the total flying time remaining
 
 /**************************************************************************
-*													Get Statistics
+*															Statistics
 **************************************************************************/
 extern float astatsAverageLandingTime (const AirportStatsPtr psAStats);
 // results: Return the average landing waiting time
