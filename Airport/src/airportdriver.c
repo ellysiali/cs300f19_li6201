@@ -30,70 +30,85 @@
  Returned:	 	Exit Status
  *************************************************************************/
 
-int main ()
-//int main (int argc, char* argv[])
+int main (int argc, char* argv[])
 {
 	const char STATUS_CHARS[] = {'-', 'T', 'L', 'E'};
 	Airport sTheAirport;
-	int i, clock = 0, numLandingPlanes, numTakeoffPlanes,
-	    landingFuels[NUMBER_OF_RUNWAYS], numCrashes;
+	int i, clock = 1, numLandingPlanes, numTakeoffPlanes,
+	    landingFuels[NUMBER_OF_RUNWAYS], oldNumCrashes;
 	FILE* pInFile = NULL;
 
 	airportLoadErrorMessages (&sTheAirport);
 	airportCreate (&sTheAirport);
 
-//  // Check number of arguments
-//  if( argc != 2 )
-//  {
-//    printf("Invalid number of arguments\n");
-//    return EXIT_FAILURE;
-//  }
+  // Check number of arguments
+  if( argc != 2 )
+  {
+    printf("Invalid number of arguments\n");
+    return EXIT_FAILURE;
+  }
 
+  // Check valid file
 
-	pInFile = fopen("data/airport.txt", "r");
-//  pInFile = fopen(argv[1], "r");
+  pInFile = fopen(argv[1], "r");
 
   if (NULL == pInFile) {
      printf("Could not open file\n");
      return EXIT_FAILURE;
   }
 
+  // Airport Simulation
+
   while (!feof(pInFile) || !airportQsAreEmpty (&sTheAirport))
   {
-  	numCrashes = numTakeoffPlanes = numLandingPlanes = 0;
+  	// Reset values
+
+  	numTakeoffPlanes = numLandingPlanes = 0;
+  	oldNumCrashes = airportNumCrashes (&sTheAirport);
+  	for (i = 0; i < NUMBER_OF_RUNWAYS; i++)
+  	{
+  		landingFuels[i] = 0;
+  	}
   	airportResetRunways (&sTheAirport);
+
+  	// Read line of data & add new planes
+
   	if (!feof(pInFile))
 		{
 			fscanf (pInFile, "%d %d %d %d %d", &numTakeoffPlanes, &numLandingPlanes,
 					&landingFuels[FIRST], &landingFuels[SECOND], &landingFuels[THIRD]);
 			for (i = 0; i < numTakeoffPlanes; i++)
 			{
-				airportAddTakeoffPlane (&sTheAirport);
+				airportAddTakeoffPlane (&sTheAirport, clock);
 			}
 			for (i = 0; i < numLandingPlanes; i++)
 			{
-				airportAddLandingPlane (&sTheAirport, landingFuels[i]);
+				airportAddLandingPlane (&sTheAirport, clock, landingFuels[i]);
 			}
 		}
+
+  	// Decrement fuel
+
   	airportDecrementFuel (&sTheAirport);
-  	airportAssignRunways (&sTheAirport);
 
-  	while (airportHasEmergency (&sTheAirport))
-  	{
-  		airportCrashPlane (&sTheAirport);
-  		numCrashes++;
-  	}
+  	// Handle emergencies (land and then crash zero-fuel planes)
 
-  	// print results
-  	if (0 == clock % REPRINT_HEADER)
+  	airportHandleEmergencies (&sTheAirport, clock);
+
+  	// Assign remaining runways
+
+  	airportAssignRunways (&sTheAirport, clock);
+
+  	// Print Results
+
+  	if (1 == clock % REPRINT_HEADER)
   	{
-  		printf ("%6c%23s%13c%13s%7c%8s%9s\n", '|', "Planes Added", '|', "Runways",
-  																				'|', "Queue", "Lengths");
-  		printf ("%6s%8s%28s%20s%17s\n", "Time |", "Takeoff",
-  														   "Landing (Fuel Remaining) |",
-																 "1   2   3  Crash |", "Takeoff  Landing");
-  		puts ("---- | -------  ------------------------ | --- --- --- ----- | "
-  				"-------  -------");
+  		puts ("     |           Planes Added            |      Runways      "
+  					"|   Queue  Lengths");
+  		puts ("Time | Takeoff  Landing (Fuel Remaining) |  1   2   3  Crash "
+  					"| Takeoff  Landing");
+  		puts ("---- | -------  ------------------------ | --- --- --- ----- "
+  					"| -------  -------");
   	}
 		printf ("%4d |%8d%9d |", clock, numTakeoffPlanes, numLandingPlanes);
 		for (i = 0; i < NUMBER_OF_RUNWAYS; i++)
@@ -112,24 +127,26 @@ int main ()
 		{
 			printf ("%3c ", STATUS_CHARS[airportGetRunwayStatus (&sTheAirport, i)]);
 		}
-		printf ("%6d |%8d", numCrashes, airportTakeoffQSize (&sTheAirport));
-		printf ("%9d\n", airportLandingQSize (&sTheAirport));
+		printf ("%6d |%8d%9d\n", airportNumCrashes (&sTheAirport) - oldNumCrashes,
+														 airportTakeoffQSize (&sTheAirport),
+														 airportLandingQSize (&sTheAirport));
 
+		// Increment clock
 
   	clock++;
   }
 
-  // print statistics; use %g or %d
+  // Print Statistics
 
   printf ("\nAverage takeoff waiting time: %g\n",
-  				getAverageTakeoffTime (&sTheAirport));
+  				airportAverageTakeoffTime (&sTheAirport));
   printf ("Average landing waiting time: %g\n",
-  				getAverageLandingTime (&sTheAirport));
+  				airportAverageLandingTime (&sTheAirport));
   printf ("Average flying time remaining on landing: %g\n",
-  				getAverageFlyingTimeRemaining (&sTheAirport));
+  				airportAverageFlyingTimeRemaining (&sTheAirport));
   printf ("Number of planes landing with zero fuel: %d\n",
-  				 getNumEmergencyLandings (&sTheAirport));
-  printf ("Number of crashes: %d\n", getNumCrashes (&sTheAirport));
+  				 airportNumEmergencyLandings (&sTheAirport));
+  printf ("Number of crashes: %d", airportNumCrashes (&sTheAirport));
 
 
 	airportTerminate (&sTheAirport);

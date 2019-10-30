@@ -89,7 +89,7 @@ static void assert (bool bExpression, char *pTrue, char *pFalse)
 int main ()
 {
 	Airport sTheAirport;
-	int i, time, gas;
+	int i, clock = 0, time, gas;
 
 	puts ("Driver Start");
 
@@ -112,8 +112,8 @@ int main ()
 	assert (0 == sTheAirport.sAirportStats.totalTakeoffTime &&
 				  0 == sTheAirport.sAirportStats.totalLandingTime &&
 					0 == sTheAirport.sAirportStats.totalFlyingTimeRemaining &&
-					0 == sTheAirport.sAirportStats.numTakeoffs &&
-					0 == sTheAirport.sAirportStats.numLandings &&
+					0 == sTheAirport.sAirportStats.numTakeoffPlanes &&
+					0 == sTheAirport.sAirportStats.numLandingPlanes &&
 					0 == sTheAirport.sAirportStats.numEmergencyLandings &&
 					0 == sTheAirport.sAirportStats.numCrashes,
 					"Initial airport statistics are zero\n",
@@ -123,8 +123,8 @@ int main ()
 
 	for (i = 0; VERY_LONG_QUEUE_LENGTH > i; i++)
 	{
-		airportAddLandingPlane (&sTheAirport, GAS_VALUE);
-		airportAddTakeoffPlane (&sTheAirport);
+		airportAddLandingPlane (&sTheAirport, clock, GAS_VALUE);
+		airportAddTakeoffPlane (&sTheAirport, clock);
 
 		if (i + 1 != airportLandingQSize (&sTheAirport))
 		{
@@ -156,35 +156,32 @@ int main ()
 	assert (0 == sTheAirport.sAirportStats.totalTakeoffTime &&
 				  0 == sTheAirport.sAirportStats.totalLandingTime &&
 					0 == sTheAirport.sAirportStats.totalFlyingTimeRemaining &&
-					0 == sTheAirport.sAirportStats.numTakeoffs &&
-					0 == sTheAirport.sAirportStats.numLandings &&
+					0 == sTheAirport.sAirportStats.numTakeoffPlanes &&
+					0 == sTheAirport.sAirportStats.numLandingPlanes &&
 					0 == sTheAirport.sAirportStats.numEmergencyLandings &&
 					0 == sTheAirport.sAirportStats.numCrashes,
 					"Terminated airport statistics are zero\n",
 					"Terminated airport statistics are NOT zero\n");
 
-	// Validate airportIncrementClock works correctly
+	// Validate airportDecrementFuel works correctly
 
 	airportCreate (&sTheAirport);
-	airportAddLandingPlane (&sTheAirport, GAS_VALUE);
+	airportAddLandingPlane (&sTheAirport, clock, GAS_VALUE);
 	for (i = 0; INCREMENTED > i; i++)
 	{
 		airportDecrementFuel (&sTheAirport);
 	}
-	assert (INCREMENTED == sTheAirport.clock,
-			"Airport clock incremented correctly",
-			"Airport clock NOT incremented correctly");
 	pqueuePeek (&sTheAirport.sLandingQueue, &time, sizeof (int), &gas);
 	assert (GAS_VALUE - INCREMENTED == gas,
-			"Landing plane incremented correctly\n",
-			"Landing plane NOT incremented correctly\n");
+			"Landing plane decremented correctly\n",
+			"Landing plane NOT decremented correctly\n");
 	airportTerminate (&sTheAirport);
 
 	// Validate airportAssignRunways when only one landing plane
 
 	airportCreate (&sTheAirport);
-	airportAddLandingPlane (&sTheAirport, GAS_VALUE);
-	airportAssignRunways (&sTheAirport);
+	airportAddLandingPlane (&sTheAirport, clock, GAS_VALUE);
+	airportAssignRunways (&sTheAirport, clock);
 
 	if (!airportQsAreEmpty (&sTheAirport))
 	{
@@ -210,11 +207,11 @@ int main ()
 				"Single plane landed correctly",
 				"Single plane NOT landed correctly (runway 3 error)");
 	}
-	if (SINGLE != sTheAirport.sAirportStats.numLandings &&
+	if (SINGLE != sTheAirport.sAirportStats.numLandingPlanes &&
 			GAS_VALUE != sTheAirport.sAirportStats.totalFlyingTimeRemaining &&
 			0 != sTheAirport.sAirportStats.totalLandingTime)
 	{
-		assert (SINGLE == sTheAirport.sAirportStats.numLandings &&
+		assert (SINGLE == sTheAirport.sAirportStats.numLandingPlanes &&
 				GAS_VALUE == sTheAirport.sAirportStats.totalFlyingTimeRemaining &&
 				0 == sTheAirport.sAirportStats.totalLandingTime,
 				"Single plane landed correctly",
@@ -245,8 +242,8 @@ int main ()
 
 	// Validate airportAssignRunways when only one takeoff plane
 
-	airportAddTakeoffPlane (&sTheAirport);
-	airportAssignRunways (&sTheAirport);
+	airportAddTakeoffPlane (&sTheAirport, clock);
+	airportAssignRunways (&sTheAirport, clock);
 
 	if (!airportQsAreEmpty (&sTheAirport))
 	{
@@ -272,21 +269,25 @@ int main ()
 				"Single plane took off correctly",
 				"Single plane did NOT takeoff correctly (runway 3 error)");
 	}
-	if (SINGLE != sTheAirport.sAirportStats.numTakeoffs &&
+	if (SINGLE != sTheAirport.sAirportStats.numTakeoffPlanes &&
 			0 != sTheAirport.sAirportStats.totalTakeoffTime)
 	{
-		assert (SINGLE == sTheAirport.sAirportStats.numTakeoffs &&
+		assert (SINGLE == sTheAirport.sAirportStats.numTakeoffPlanes &&
 				0 == sTheAirport.sAirportStats.totalTakeoffTime,
 				"Single plane took off correctly",
 				"Single plane did NOT takeoff correctly (statistic error)");
 	}
 
+	airportTerminate (&sTheAirport);
+
 	// Validate airportAssignRunways when one plane of each
 
+	airportCreate (&sTheAirport);
+
 	airportResetRunways (&sTheAirport);
-	airportAddLandingPlane (&sTheAirport, GAS_VALUE);
-	airportAddTakeoffPlane (&sTheAirport);
-	airportAssignRunways (&sTheAirport);
+	airportAddLandingPlane (&sTheAirport, clock, GAS_VALUE);
+	airportAddTakeoffPlane (&sTheAirport, clock);
+	airportAssignRunways (&sTheAirport, clock);
 
 	if (!airportQsAreEmpty (&sTheAirport))
 	{
@@ -312,26 +313,30 @@ int main ()
 				"Planes assigned correctly",
 				"Planes NOT assigned correctly (runway 3 error)");
 	}
-	if (SINGLE != sTheAirport.sAirportStats.numLandings &&
-			SINGLE != sTheAirport.sAirportStats.numTakeoffs &&
+	if (SINGLE != sTheAirport.sAirportStats.numLandingPlanes &&
+			SINGLE != sTheAirport.sAirportStats.numTakeoffPlanes &&
 			GAS_VALUE != sTheAirport.sAirportStats.totalFlyingTimeRemaining &&
 			0 != sTheAirport.sAirportStats.totalLandingTime &&
 			0 != sTheAirport.sAirportStats.totalTakeoffTime)
 	{
-		assert (SINGLE == sTheAirport.sAirportStats.numLandings &&
-				SINGLE == sTheAirport.sAirportStats.numTakeoffs &&
+		assert (SINGLE == sTheAirport.sAirportStats.numLandingPlanes &&
+				SINGLE == sTheAirport.sAirportStats.numTakeoffPlanes &&
 				GAS_VALUE == sTheAirport.sAirportStats.totalFlyingTimeRemaining &&
-				0 == sTheAirport.sAirportStats.totalLandingTime &&
-				0 == sTheAirport.sAirportStats.totalTakeoffTime,
+				SINGLE == sTheAirport.sAirportStats.totalLandingTime &&
+				SINGLE == sTheAirport.sAirportStats.totalTakeoffTime,
 				"Planes assigned correctly",
 				"Planes NOT assigned correctly (statistic error)");
 	}
 
-	// Validate airportAssignRunways for an emergency landing
+	airportTerminate (&sTheAirport);
+
+	// Validate airportHandleEmergencies for an emergency landing
+
+	airportCreate (&sTheAirport);
 
 	airportResetRunways (&sTheAirport);
-	airportAddLandingPlane (&sTheAirport, GAS_EMPTY);
-	airportAssignRunways (&sTheAirport);
+	airportAddLandingPlane (&sTheAirport, clock, GAS_EMPTY);
+	airportHandleEmergencies (&sTheAirport, clock);
 
 	if (!airportQsAreEmpty (&sTheAirport))
 	{
@@ -364,11 +369,14 @@ int main ()
 				"Single plane emergency NOT landed correctly (statistic error)");
 	}
 
-	// Validate airportCrashPlane
+	// Validate airportHandleEmergencies for a crashed plane
 
 	airportResetRunways (&sTheAirport);
-	airportAddLandingPlane (&sTheAirport, GAS_EMPTY);
-	airportCrashPlane (&sTheAirport);
+	for (i = 0; NUMBER_OF_RUNWAYS + 1 > i; i++)
+	{
+		airportAddLandingPlane (&sTheAirport, clock, GAS_EMPTY);
+	}
+	airportHandleEmergencies (&sTheAirport, clock);
 	if (!airportQsAreEmpty (&sTheAirport))
 	{
 		assert (airportQsAreEmpty (&sTheAirport),

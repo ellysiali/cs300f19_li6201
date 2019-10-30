@@ -51,13 +51,13 @@ typedef enum Runway {EMPTY = 0, TAKEOFF, LANDING, EMERGENCY} Runway;
 typedef struct AirportStats
 {
 		int totalTakeoffTime, totalLandingTime, totalFlyingTimeRemaining,
-		    numTakeoffs, numLandings, numEmergencyLandings, numCrashes;
+		    numTakeoffPlanes, numLandingPlanes, numEmergencyLandings, numCrashes;
 } AirportStats;
 
 typedef struct Airport
 {
-	int clock;
 	Runway ezRunways [NUMBER_OF_RUNWAYS];
+	int availableRunway;
 	PriorityQueue sLandingQueue;
 	Queue sTakeoffQueue;
 	AirportStats sAirportStats;
@@ -99,27 +99,32 @@ extern bool airportQsAreEmpty (const AirportPtr psAirport);
 /**************************************************************************
 *										Inserting, Deleting, and Updating
 **************************************************************************/
-extern void airportAddLandingPlane (AirportPtr psAirport, const int fuel);
+extern void airportAddLandingPlane (AirportPtr psAirport, const int time,
+																													const int fuel);
 // results: Insert a plane to the landing queue.
 //					error code priority: ERROR_INVALID_AIRPORT
 
-extern void airportAddTakeoffPlane (AirportPtr psAirport);
+extern void airportAddTakeoffPlane (AirportPtr psAirport, const int time);
 // results: Insert a plane to the takeoff queue.
 //					error code priority: ERROR_INVALID_AIRPORT
 
-extern void airportLandPlane (AirportPtr psAirport);
+extern void airportLandPlane (AirportPtr psAirport, const int clock);
 // results: Remove a plane from the landing queue.
 //					error code priority: ERROR_INVALID_AIRPORT, ERROR_EMPTY_AIRPORT
 
-extern void airportTakeoffPlane (AirportPtr psAirport);
+extern void airportTakeoffPlane (AirportPtr psAirport, const int clock);
 // results: Remove a plane from the landing queue.
 //					error code priority: ERROR_INVALID_AIRPORT, ERROR_EMPTY_AIRPORT
 
-extern void airportCrashPlane (AirportPtr psAirport);
+extern void airportCrashPlane (AirportPtr psAirport, const int clock);
 // results: Crash planes from the landing queue.
 //					error code priority: ERROR_INVALID_AIRPORT, ERROR_EMPTY_AIRPORT
 
-extern void airportAssignRunways (AirportPtr psAirport);
+extern void airportHandleEmergencies (AirportPtr psAirport, const int clock);
+// results: Lands or crashes all emergency planes from the landing queue.
+//					error code priority: ERROR_INVALID_AIRPORT
+
+extern void airportAssignRunways (AirportPtr psAirport, const int clock);
 // results: Assign the appropriate planes to runways (if necessary) and update
 //          the queues appropriately
 //					error code priority: ERROR_INVALID_AIRPORT
@@ -156,22 +161,22 @@ extern bool airportRunwayHasOpen (const AirportPtr psAirport);
 //          false
 // 					error code priority: ERROR_INVALID_AIRPORT
 
-extern float getAverageLandingTime (const AirportPtr psAirport);
+extern float airportAverageLandingTime (const AirportPtr psAirport);
 // results: Return the average landing waiting time
 // 					error code priority: ERROR_INVALID_AIRPORT
 
-extern float getAverageTakeoffTime (const AirportPtr psAirport);
+extern float airportAverageTakeoffTime (const AirportPtr psAirport);
 // results: Return the average takeoff waiting time
 // 					error code priority: ERROR_INVALID_AIRPORT
 
-extern float getAverageFlyingTimeRemaining (const AirportPtr psAirport);
+extern float airportAverageFlyingTimeRemaining (const AirportPtr psAirport);
 // results: Return the average flying time remaining
 // 					error code priority: ERROR_INVALID_AIRPORT
 
-extern int getNumEmergencyLandings (const AirportPtr psAirport);
+extern int airportNumEmergencyLandings (const AirportPtr psAirport);
 // results: Return the number of emergency landings
 // 					error code priority: ERROR_INVALID_AIRPORT
 
-extern int getNumCrashes (const AirportPtr psAirport);
+extern int airportNumCrashes (const AirportPtr psAirport);
 // results: Return the number of crashes
 // 					error code priority: ERROR_INVALID_AIRPORT
