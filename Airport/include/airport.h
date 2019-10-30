@@ -7,8 +7,11 @@
  Purpose:    This file defines the constants, data structures, and
              function prototypes for implementing an airport simulator
  *************************************************************************/
+#ifndef AIRPORT_H_
+#define AIRPORT_H_
 
 #include <stdbool.h>
+#include "airportstats.h"
 #include "../../GenericDynamicList/include/list.h"
 #include "../../GenericDynamicPriorityQ/include/pqueue.h"
 #include "../../GenericDynamicQ/include/queue.h"
@@ -48,12 +51,6 @@ strcpy(gszAirportErrors[ERROR_EMPTY_AIRPORT], "Error: Empty Airport.");
 //*************************************************************************
 typedef enum Runway {EMPTY = 0, TAKEOFF, LANDING, EMERGENCY} Runway;
 
-typedef struct AirportStats
-{
-		int totalTakeoffTime, totalLandingTime, totalFlyingTimeRemaining,
-		    numTakeoffPlanes, numLandingPlanes, numEmergencyLandings, numCrashes;
-} AirportStats;
-
 typedef struct Airport
 {
 	Runway ezRunways [NUMBER_OF_RUNWAYS];
@@ -71,7 +68,6 @@ typedef Airport* AirportPtr;
 extern void airportCreate (AirportPtr psAirport);
 // results: If airport can be created, then airport exists and is empty
 //					otherwise, ERROR_NO_AIRPORT_CREATE
-
 
 extern void airportTerminate (AirportPtr psAirport);
 // results: If Q can be terminated, then Q no longer exists and is empty
@@ -180,3 +176,6 @@ extern int airportNumEmergencyLandings (const AirportPtr psAirport);
 extern int airportNumCrashes (const AirportPtr psAirport);
 // results: Return the number of crashes
 // 					error code priority: ERROR_INVALID_AIRPORT
+
+#endif /* AIRPORT_H_ */
+

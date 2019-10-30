@@ -1,0 +1,83 @@
+/**************************************************************************
+ File name:  airportstats.h
+ Author:     Ellysia Li
+ Date:		   Oct 30, 2019
+ Class:		   CS300
+ Assignment: Airport Simulation
+ Purpose:    This file defines the constants, data structures, and
+             function prototypes for the airport stats structure
+ *************************************************************************/
+
+#ifndef AIRPORTSTATS_H_
+#define AIRPORTSTATS_H_
+
+//*************************************************************************
+// Constants
+//*************************************************************************
+#define MAX_ERROR_ASTATS_CHARS 64
+
+enum {NO_ASTATS_ERROR = 0,
+			ERROR_NO_ASTATS_CREATE,
+			ERROR_NO_ASTATS_TERMINATE,
+			ERROR_INVALID_ASTATS};
+
+#define NUMBER_OF_ASTATS_ERRORS ERROR_INVALID_ASTATS - NO_ASTATS_ERROR + 1
+
+//*************************************************************************
+// Error Messages
+//*************************************************************************
+#define LOAD_ASTATS_ERRORS strcpy(gszAStatsErrors[NO_ASTATS_ERROR], \
+		"No Error.");\
+strcpy(gszAirportErrors[ERROR_NO_ASTATS_CREATE], \
+		"Error: No Airport Create.");\
+strcpy(gszAirportErrors[ERROR_NO_ASTATS_TERMINATE], \
+		"Error: No Airport Terminate.");\
+strcpy(gszAirportErrors[ERROR_INVALID_ASTATS], "Error: Invalid Airport.");
+
+//*************************************************************************
+// User-defined types
+//*************************************************************************
+typedef struct AirportStats
+{
+		int totalTakeoffTime, totalLandingTime, totalFlyingTimeRemaining,
+		    numTakeoffPlanes, numLandingPlanes, numEmergencyLandings, numCrashes;
+} AirportStats;
+
+typedef AirportStats* AirportStatsPtr;
+
+/**************************************************************************
+* Functions
+**************************************************************************/
+extern void astatsLoadErrorMessages ();
+// results:	Loads the error message strings for the error handler to use
+//					No error conditions
+
+extern void astatsCreate (AirportStatsPtr psAStats);
+// results: If airport can be created, then airport exists and is empty
+//					otherwise, ERROR_NO_ASTATS_CREATE
+
+extern void astatsTerminate (AirportStatsPtr psAStats);
+// results: If Q can be terminated, then Q no longer exists and is empty
+//				   otherwise, ERROR_NO_ASTATS_TERMINATE
+
+extern float astatsAverageLandingTime (const AirportStatsPtr psAStats);
+// results: Return the average landing waiting time
+// 					error code priority: ERROR_NO_ASTATS_CREATE
+
+extern float astatsAverageTakeoffTime (const AirportStatsPtr psAStats);
+// results: Return the average takeoff waiting time
+// 					error code priority: ERROR_INVALID_ASTATS
+
+extern float astatsAverageFlyingTimeRemaining (const AirportStatsPtr psAStats);
+// results: Return the average flying time remaining
+// 					error code priority: ERROR_INVALID_ASTATS
+
+extern int astatsNumEmergencyLandings (const AirportStatsPtr psAStats);
+// results: Return the number of emergency landings
+// 					error code priority: ERROR_INVALID_ASTATS
+
+extern int astatsNumCrashes (const AirportStatsPtr psAStats);
+// results: Return the number of crashes
+// 					error code priority: ERROR_INVALID_ASTATS
+
+#endif /* AIRPORTSTATS_H_ */

@@ -114,6 +114,7 @@ void airportTerminate (AirportPtr psAirport)
  *************************************************************************/
 void airportLoadErrorMessages ()
 {
+	astatsLoadErrorMessages ();
 	queueLoadErrorMessages ();
 	LOAD_AIRPORT_ERRORS
 }
@@ -525,7 +526,8 @@ float airportAverageFlyingTimeRemaining (const AirportPtr psAirport)
 		processError ("airportAverageFlyingTimeRemaining", ERROR_INVALID_AIRPORT);
 	}
 	return (float) psAirport->sAirportStats.totalFlyingTimeRemaining
-				 / psAirport->sAirportStats.numLandingPlanes;}
+				 / psAirport->sAirportStats.numLandingPlanes;
+}
 
 /**************************************************************************
  Function: 	 	airportNumEmergencyLandings

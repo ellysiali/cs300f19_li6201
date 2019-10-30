@@ -392,6 +392,8 @@ int main ()
 
 	success ("Validated minimal test cases for removing airplanes from queues\n");
 
+	airportTerminate (&sTheAirport);
+
 	puts ("Driver End");
 
 	return EXIT_SUCCESS;
