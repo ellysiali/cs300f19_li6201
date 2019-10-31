@@ -90,7 +90,7 @@ static void assert (bool bExpression, char *pTrue, char *pFalse)
 int main ()
 {
 	Airport sTheAirport;
-	int i, clock = 1, time, gas;
+	int i, time, gas;
 
 	puts ("Driver Start");
 
@@ -115,8 +115,8 @@ int main ()
 
 	for (i = 0; VERY_LONG_QUEUE_LENGTH > i; i++)
 	{
-		airportAddLandingPlane (&sTheAirport, clock, GAS_VALUE);
-		airportAddTakeoffPlane (&sTheAirport, clock);
+		airportAddLandingPlane (&sTheAirport, GAS_VALUE);
+		airportAddTakeoffPlane (&sTheAirport);
 
 		if (i + 1 != airportLandingQSize (&sTheAirport))
 		{
@@ -149,7 +149,7 @@ int main ()
 	// Validate airportDecrementFuel works correctly
 
 	airportCreate (&sTheAirport);
-	airportAddLandingPlane (&sTheAirport, clock, GAS_VALUE);
+	airportAddLandingPlane (&sTheAirport, GAS_VALUE);
 	for (i = 0; INCREMENTED > i; i++)
 	{
 		airportDecrementFuel (&sTheAirport);
@@ -163,8 +163,8 @@ int main ()
 	// Validate airportAssignRunways when only one landing plane
 
 	airportCreate (&sTheAirport);
-	airportAddLandingPlane (&sTheAirport, clock, GAS_VALUE);
-	airportAssignRunways (&sTheAirport, clock);
+	airportAddLandingPlane (&sTheAirport, GAS_VALUE);
+	airportAssignRunways (&sTheAirport);
 
 	if (!airportQsAreEmpty (&sTheAirport))
 	{
@@ -215,8 +215,8 @@ int main ()
 
 	// Validate airportAssignRunways when only one takeoff plane
 
-	airportAddTakeoffPlane (&sTheAirport, clock);
-	airportAssignRunways (&sTheAirport, clock);
+	airportAddTakeoffPlane (&sTheAirport);
+	airportAssignRunways (&sTheAirport);
 
 	if (!airportQsAreEmpty (&sTheAirport))
 	{
@@ -250,9 +250,9 @@ int main ()
 	airportCreate (&sTheAirport);
 
 	airportResetRunways (&sTheAirport);
-	airportAddLandingPlane (&sTheAirport, clock, GAS_VALUE);
-	airportAddTakeoffPlane (&sTheAirport, clock);
-	airportAssignRunways (&sTheAirport, clock);
+	airportAddLandingPlane (&sTheAirport, GAS_VALUE);
+	airportAddTakeoffPlane (&sTheAirport);
+	airportAssignRunways (&sTheAirport);
 
 	if (!airportQsAreEmpty (&sTheAirport))
 	{
@@ -286,8 +286,8 @@ int main ()
 	airportCreate (&sTheAirport);
 
 	airportResetRunways (&sTheAirport);
-	airportAddLandingPlane (&sTheAirport, clock, GAS_EMPTY);
-	airportHandleEmergencies (&sTheAirport, clock);
+	airportAddLandingPlane (&sTheAirport, GAS_EMPTY);
+	airportHandleEmergencies (&sTheAirport);
 
 	if (!airportQsAreEmpty (&sTheAirport))
 	{
@@ -319,9 +319,9 @@ int main ()
 	airportResetRunways (&sTheAirport);
 	for (i = 0; NUMBER_OF_RUNWAYS + 1 > i; i++)
 	{
-		airportAddLandingPlane (&sTheAirport, clock, GAS_EMPTY);
+		airportAddLandingPlane (&sTheAirport, GAS_EMPTY);
 	}
-	airportHandleEmergencies (&sTheAirport, clock);
+	airportHandleEmergencies (&sTheAirport);
 	if (!airportQsAreEmpty (&sTheAirport))
 	{
 		assert (airportQsAreEmpty (&sTheAirport),

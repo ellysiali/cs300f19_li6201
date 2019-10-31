@@ -1,7 +1,7 @@
 /**************************************************************************
  File name:  airport.c
  Author:     Ellysia Li
- Date:		   Oct 30, 2019
+ Date:		   Oct 31, 2019
  Class:		   CS300
  Assignment: Airport Simulator
  Purpose:    Implementation of an Airport Simulator
@@ -19,15 +19,15 @@
 
 char gszAirportErrors[NUMBER_OF_AIRPORT_ERRORS][MAX_ERROR_AIRPORT_CHARS];
 
-static void airportLandPlane (AirportPtr psAirport, const int clock);
+static void airportLandPlane (AirportPtr psAirport);
 // results: Remove a plane from the landing queue.
 //					error code priority: ERROR_INVALID_AIRPORT, ERROR_EMPTY_AIRPORT
 
-static void airportTakeoffPlane (AirportPtr psAirport, const int clock);
+static void airportTakeoffPlane (AirportPtr psAirport);
 // results: Remove a plane from the landing queue.
 //					error code priority: ERROR_INVALID_AIRPORT, ERROR_EMPTY_AIRPORT
 
-static void airportCrashPlane (AirportPtr psAirport, const int clock);
+static void airportCrashPlane (AirportPtr psAirport);
 // results: Crash planes from the landing queue.
 //					error code priority: ERROR_INVALID_AIRPORT, ERROR_EMPTY_AIRPORT
 
@@ -82,6 +82,7 @@ void airportCreate (AirportPtr psAirport)
 		psAirport->ezRunways[i] = EMPTY;
 	}
 	psAirport->availableRunway = 0;
+	psAirport->clock = 1;
 
 	astatsCreate (&psAirport->sAirportStats);
 }
@@ -110,6 +111,7 @@ void airportTerminate (AirportPtr psAirport)
 		psAirport->ezRunways[i] = EMPTY;
 	}
 	psAirport->availableRunway = 0;
+	psAirport->clock = 1;
 
 	astatsTerminate (&psAirport->sAirportStats);
 }
@@ -192,19 +194,18 @@ bool airportQsAreEmpty (const AirportPtr psAirport)
  Description: Adds a landing plane to the landing queue
 
  Parameters:	psAirport - pointer to the airport
-   	 	 	 	 	 	time 	  	- current time in system (initial time plane added)
  	 	 	 	 	 	 	fuel 		  - fuel (time) remaining for plane
 
  Returned:	 	None
  *************************************************************************/
-void airportAddLandingPlane (AirportPtr psAirport, const int time,
-																									 const int fuel)
+void airportAddLandingPlane (AirportPtr psAirport, const int fuel)
 {
 	if (NULL == psAirport)
 	{
 		processError ("airportAddLandingPlane", ERROR_INVALID_AIRPORT);
 	}
-	pqueueEnqueue (&psAirport->sLandingQueue, &time, sizeof (int), fuel);
+	pqueueEnqueue (&psAirport->sLandingQueue, &psAirport->clock,
+								 sizeof (int), fuel);
 	astatsIncrementNumLandings (&psAirport->sAirportStats);
 }
 
@@ -214,17 +215,16 @@ void airportAddLandingPlane (AirportPtr psAirport, const int time,
  Description: Adds a takeoff plane to the takeoff queue
 
  Parameters:	psAirport - pointer to the airport
-  	 	 	 	 	 	time 	  	- current time in system (initial time plane added)
 
  Returned:	 	None
  *************************************************************************/
-void airportAddTakeoffPlane (AirportPtr psAirport, const int time)
+void airportAddTakeoffPlane (AirportPtr psAirport)
 {
 	if (NULL == psAirport)
 	{
 		processError ("airportAddTakeoffPlane", ERROR_INVALID_AIRPORT);
 	}
-	queueEnqueue (&psAirport->sTakeoffQueue, &time, sizeof (int));
+	queueEnqueue (&psAirport->sTakeoffQueue, &psAirport->clock, sizeof (int));
 	astatsIncrementNumTakeoffs (&psAirport->sAirportStats);
 }
 
@@ -234,11 +234,10 @@ void airportAddTakeoffPlane (AirportPtr psAirport, const int time)
  Description: Land a plane from the landing queue
 
  Parameters:	psAirport - pointer to the airport
- 	 	 	 	 	 	 	clock 	  - current time in system
 
  Returned:	 	None
  *************************************************************************/
-void airportLandPlane (AirportPtr psAirport, const int clock)
+void airportLandPlane (AirportPtr psAirport)
 {
 	int time, fuel;
 	if (NULL == psAirport)
@@ -261,7 +260,7 @@ void airportLandPlane (AirportPtr psAirport, const int clock)
 		psAirport->ezRunways[psAirport->availableRunway] = LANDING;
 	}
 	astatsAddFlyingTimeRemaining (&psAirport->sAirportStats, fuel);
-	astatsAddLandingTime (&psAirport->sAirportStats, clock - time + 1);
+	astatsAddLandingTime (&psAirport->sAirportStats, psAirport->clock - time + 1);
 	psAirport->availableRunway++;
 }
 
@@ -271,12 +270,10 @@ void airportLandPlane (AirportPtr psAirport, const int clock)
  Description: Land a plane from the landing queue
 
  Parameters:	psAirport - pointer to the airport
-  	 	 	 	 	 	clock 	  - current time in system
-
 
  Returned:	 	None
  *************************************************************************/
-void airportTakeoffPlane (AirportPtr psAirport, const int clock)
+void airportTakeoffPlane (AirportPtr psAirport)
 {
 	int time;
 	if (NULL == psAirport)
@@ -288,7 +285,7 @@ void airportTakeoffPlane (AirportPtr psAirport, const int clock)
 		processError ("airportTakeoffPlane", ERROR_EMPTY_AIRPORT);
 	}
 	queueDequeue (&psAirport->sTakeoffQueue, &time, sizeof (int));
-	astatsAddTakeoffTime (&psAirport->sAirportStats, clock - time + 1);
+	astatsAddTakeoffTime (&psAirport->sAirportStats, psAirport->clock - time + 1);
 	psAirport->ezRunways[psAirport->availableRunway] = TAKEOFF;
 	psAirport->availableRunway++;
 }
@@ -302,7 +299,7 @@ void airportTakeoffPlane (AirportPtr psAirport, const int clock)
 
  Returned:	 	None
  *************************************************************************/
-void airportCrashPlane (AirportPtr psAirport, const int clock)
+void airportCrashPlane (AirportPtr psAirport)
 {
 	int time, fuel;
 	if (NULL == psAirport)
@@ -316,7 +313,7 @@ void airportCrashPlane (AirportPtr psAirport, const int clock)
 	pqueueDequeue (&psAirport->sLandingQueue, &time, sizeof (int), &fuel);
 	astatsIncrementCrashes (&psAirport->sAirportStats);
 	astatsAddFlyingTimeRemaining (&psAirport->sAirportStats, fuel);
-	astatsAddLandingTime (&psAirport->sAirportStats, clock - time + 1);
+	astatsAddLandingTime (&psAirport->sAirportStats, psAirport->clock - time + 1);
 }
 
 /**************************************************************************
@@ -325,11 +322,10 @@ void airportCrashPlane (AirportPtr psAirport, const int clock)
  Description: Land or crash all emergency planes
 
  Parameters:	psAirport - pointer to the airport
- 	 	 	 	 	 	 	clock 	  - current time in system
 
  Returned:	 	None
  *************************************************************************/
-void airportHandleEmergencies (AirportPtr psAirport, const int clock)
+void airportHandleEmergencies (AirportPtr psAirport)
 {
 	if (NULL == psAirport)
 	{
@@ -339,11 +335,11 @@ void airportHandleEmergencies (AirportPtr psAirport, const int clock)
 	{
 		if (airportRunwayHasOpen (psAirport))
 		{
-			airportLandPlane (psAirport, clock);
+			airportLandPlane (psAirport);
 		}
 		else
 		{
-			airportCrashPlane (psAirport, clock);
+			airportCrashPlane (psAirport);
 		}
 	}
 }
@@ -354,11 +350,10 @@ void airportHandleEmergencies (AirportPtr psAirport, const int clock)
  Description: Assign planes to the runways until runways full or queues empty
 
  Parameters:	psAirport - pointer to the airport
- 	 	 	 	 	 	 	clock 	  - current time in system
 
  Returned:	 	None
  *************************************************************************/
-void airportAssignRunways (AirportPtr psAirport, const int clock)
+void airportAssignRunways (AirportPtr psAirport)
 {
 	if (NULL == psAirport)
 	{
@@ -369,11 +364,11 @@ void airportAssignRunways (AirportPtr psAirport, const int clock)
 		if (pqueueSize (&psAirport->sLandingQueue)
 						>= queueSize (&psAirport->sTakeoffQueue))
 		{
-			airportLandPlane (psAirport, clock);
+			airportLandPlane (psAirport);
 		}
 		else
 		{
-			airportTakeoffPlane (psAirport, clock);
+			airportTakeoffPlane (psAirport);
 		}
 	}
 }
@@ -418,6 +413,42 @@ void airportDecrementFuel (AirportPtr psAirport)
 		processError ("airportDecrementFuel", ERROR_INVALID_AIRPORT);
 	}
 	pqueueChangePriority (&psAirport->sLandingQueue, DECREMENT);
+}
+
+/**************************************************************************
+ Function: 	 	airportIncrementClock
+
+ Description: Increment the clock
+
+ Parameters:	psAirport - pointer to the airport
+
+ Returned:	 	None
+ *************************************************************************/
+void airportIncrementClock (AirportPtr psAirport)
+{
+	if (NULL == psAirport)
+	{
+		processError ("airportIncrementClock", ERROR_INVALID_AIRPORT);
+	}
+	psAirport->clock++;
+}
+
+/**************************************************************************
+ Function: 	 	airportgetClock
+
+ Description: Return the time on the clock
+
+ Parameters:	psAirport - pointer to the airport
+
+ Returned:	 	An int representing the clock time
+ *************************************************************************/
+int airportGetClock (const AirportPtr psAirport)
+{
+	if (NULL == psAirport)
+	{
+		processError ("airportgetClock", ERROR_INVALID_AIRPORT);
+	}
+	return psAirport->clock;
 }
 
 /**************************************************************************

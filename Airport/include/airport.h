@@ -1,7 +1,7 @@
 /**************************************************************************
  File name:  airport.h
  Author:     Ellysia Li
- Date:		   Oct 30, 2019
+ Date:		   Oct 31, 2019
  Class:		   CS300
  Assignment: Airport Simulation
  Purpose:    This file defines the constants, data structures, and
@@ -54,7 +54,7 @@ typedef enum Runway {EMPTY = 0, TAKEOFF, LANDING, EMERGENCY} Runway;
 typedef struct Airport
 {
 	Runway ezRunways [NUMBER_OF_RUNWAYS];
-	int availableRunway;
+	int availableRunway, clock;
 	PriorityQueue sLandingQueue;
 	Queue sTakeoffQueue;
 	AirportStats sAirportStats;
@@ -95,20 +95,19 @@ extern bool airportQsAreEmpty (const AirportPtr psAirport);
 /**************************************************************************
 *										Inserting, Deleting, and Updating
 **************************************************************************/
-extern void airportAddLandingPlane (AirportPtr psAirport, const int time,
-																													const int fuel);
+extern void airportAddLandingPlane (AirportPtr psAirport, const int fuel);
 // results: Insert a plane to the landing queue.
 //					error code priority: ERROR_INVALID_AIRPORT
 
-extern void airportAddTakeoffPlane (AirportPtr psAirport, const int time);
+extern void airportAddTakeoffPlane (AirportPtr psAirport);
 // results: Insert a plane to the takeoff queue.
 //					error code priority: ERROR_INVALID_AIRPORT
 
-extern void airportHandleEmergencies (AirportPtr psAirport, const int clock);
+extern void airportHandleEmergencies (AirportPtr psAirport);
 // results: Lands or crashes all emergency planes from the landing queue.
 //					error code priority: ERROR_INVALID_AIRPORT
 
-extern void airportAssignRunways (AirportPtr psAirport, const int clock);
+extern void airportAssignRunways (AirportPtr psAirport);
 // results: Assign the appropriate planes to runways (if necessary) and update
 //          the queues appropriately
 //					error code priority: ERROR_INVALID_AIRPORT
@@ -126,9 +125,17 @@ extern void airportDecrementFuel (AirportPtr psAirport);
 // results: decrement the fuel of each plane by one.
 //					error code priority: ERROR_INVALID_AIRPORT
 
+extern void airportIncrementClock (AirportPtr psAirport);
+// results: increment the clock by one.
+//					error code priority: ERROR_INVALID_AIRPORT
+
 /**************************************************************************
 *														Get Operations
 **************************************************************************/
+extern int airportGetClock (const AirportPtr psAirport);
+// results: Returns the time on the clock
+// 					error code priority: ERROR_INVALID_AIRPORT
+
 extern int airportGetRunwayStatus (const AirportPtr psAirport,
 																		const int number);
 // results: Returns the status of the (number)th runway

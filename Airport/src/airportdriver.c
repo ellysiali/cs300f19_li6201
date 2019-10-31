@@ -1,7 +1,7 @@
 /**************************************************************************
  File name:  airportdriver.c
  Author:     Ellysia Li
- Date:		   Oct 30, 2019
+ Date:		   Oct 31, 2019
  Class:		   CS300
  Assignment: Airport Simulator
  Purpose:    Running of an Airport Simulator
@@ -34,9 +34,8 @@
 int main (int argc, char* argv[])
 {
 	const char STATUS_CHARS[] = {'-', 'T', 'L', 'E'};
-	int i, clock = 1,
-			numLandingPlanes, numTakeoffPlanes, oldNumCrashes,
-	    landingFuels[NUMBER_OF_RUNWAYS];
+	int i, numLandingPlanes, numTakeoffPlanes, oldNumCrashes,
+		  landingFuels[NUMBER_OF_RUNWAYS];
 	Airport sTheAirport;
 	FILE* pInFile = NULL;
 
@@ -82,11 +81,11 @@ int main (int argc, char* argv[])
 					&landingFuels[FIRST], &landingFuels[SECOND], &landingFuels[THIRD]);
 			for (i = 0; numTakeoffPlanes > i; i++)
 			{
-				airportAddTakeoffPlane (&sTheAirport, clock);
+				airportAddTakeoffPlane (&sTheAirport);
 			}
 			for (i = 0; numLandingPlanes > i; i++)
 			{
-				airportAddLandingPlane (&sTheAirport, clock, landingFuels[i]);
+				airportAddLandingPlane (&sTheAirport, landingFuels[i]);
 			}
 		}
 
@@ -96,15 +95,15 @@ int main (int argc, char* argv[])
 
   	// Handle emergencies (land and then crash zero-fuel planes)
 
-  	airportHandleEmergencies (&sTheAirport, clock);
+  	airportHandleEmergencies (&sTheAirport);
 
   	// Assign remaining runways
 
-  	airportAssignRunways (&sTheAirport, clock);
+  	airportAssignRunways (&sTheAirport);
 
   	// Print Results
 
-  	if (1 == clock % REPRINT_HEADER)
+  	if (1 == airportGetClock (&sTheAirport) % REPRINT_HEADER)
   	{
   		puts ("     |           Planes Added            |      Runways      "
   					"|   Queue  Lengths");
@@ -113,7 +112,8 @@ int main (int argc, char* argv[])
   		puts ("---- | -------  ------------------------ | --- --- --- ----- "
   					"| -------  -------");
   	}
-		printf ("%4d |%8d%9d |", clock, numTakeoffPlanes, numLandingPlanes);
+		printf ("%4d |%8d%9d |", airportGetClock (&sTheAirport), numTakeoffPlanes,
+														 numLandingPlanes);
 		for (i = 0; NUMBER_OF_RUNWAYS > i; i++)
 		{
 			if (0 == landingFuels[i])
@@ -136,7 +136,7 @@ int main (int argc, char* argv[])
 
 		// Increment clock
 
-  	clock++;
+		airportIncrementClock (&sTheAirport);
   }
 
   // Print Statistics

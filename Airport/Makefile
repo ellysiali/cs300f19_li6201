@@ -1,7 +1,7 @@
 ######################################################################
 # File name:  Makefile
 # Author:     Ellysia Li
-# Date:       Oct 30, 2019
+# Date:       Oct 31, 2019
 # Class:      CS300
 # Assignment: Airport Simulation
 # Purpose: 	  This is the Makefile for the Airport Simulator
@@ -9,7 +9,7 @@
 
 .PHONY: all clean
 
-all: bin/airportdriver bin/airportdrivertester test1
+all: bin/airportdriver bin/airportdrivertester
 
 bin: 
 	mkdir -p bin
@@ -25,7 +25,7 @@ bin/airportdriver: bin/airportdriver.o bin/airport.o bin/airportstats.o \
 	../GenericDynamicList/bin/list.o -g -Wall
 	
 bin/airportdriver.o: src/airportdriver.c include/airport.h \
-include/airportstats.h\
+include/airportstats.h \
 ../GenericDynamicQ/include/queue.h \
 ../GenericDynamicPriorityQ/include/pqueue.h \
 ../GenericDynamicList/include/list.h
@@ -57,20 +57,13 @@ bin/airport.o: src/airport.c include/airport.h include/airportstats.h \
 bin/airportstats.o: src/airportstats.c include/airportstats.h
 	gcc -c -o bin/airportstats.o src/airportstats.c -g -Wall
 	
-../GenericDynamicQ/bin/queue.o: \
-../GenericDynamicQ/src/queue.c ../GenericDynamicQ/include/queue.h \
-../GenericDynamicPriorityQ/include/pqueue.h \
-../GenericDynamicList/include/list.h
+../GenericDynamicQ/bin/queue.o:
 	cd ../GenericDynamicQ; make bin/queue.o	
 	
-../GenericDynamicPriorityQ/bin/pqueue.o: \
-../GenericDynamicPriorityQ/src/pqueue.c \
-../GenericDynamicPriorityQ/include/pqueue.h \
-../GenericDynamicList/include/list.h
+../GenericDynamicPriorityQ/bin/pqueue.o:
 	cd ../GenericDynamicPriorityQ; make bin/pqueue.o
 	
-../GenericDynamicList/bin/list.o: ../GenericDynamicList/src/list.c \
-../GenericDynamicList/include/list.h
+../GenericDynamicList/bin/list.o:
 	cd ../GenericDynamicList; make bin/list.o
 
 test1: bin/airportdriver

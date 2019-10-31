@@ -25,22 +25,17 @@ bin/queuedriver: bin/queuedriver.o bin/queue.o \
 	../GenericDynamicList/bin/list.o -g -Wall
 	
 bin/queuedriver.o: src/queuedriver.c include/queue.h \
-../GenericDynamicPriorityQ/include/pqueue.h \
-../GenericDynamicList/include/list.h
+../GenericDynamicPriorityQ/include/pqueue.h
 	gcc -c -o bin/queuedriver.o src/queuedriver.c -g -Wall
 
 bin/queue.o: src/queue.c include/queue.h \
-../GenericDynamicPriorityQ/include/pqueue.h \
-../GenericDynamicList/include/list.h
+../GenericDynamicPriorityQ/include/pqueue.h
 	gcc -c -o bin/queue.o src/queue.c -g -Wall
 	
 ../GenericDynamicPriorityQ/bin/pqueue.o: \
 ../GenericDynamicPriorityQ/include/pqueue.h \
-../GenericDynamicPriorityQ/src/pqueue.c \
-../GenericDynamicList/include/list.h \
-../GenericDynamicList/src/list.c
+../GenericDynamicList/include/list.h
 	cd ../GenericDynamicPriorityQ; make bin/pqueue.o
-	cd ../GenericDynamicList; make bin/list.o
 
 clean:
 	cd ../GenericDynamicPriorityQ; make clean
