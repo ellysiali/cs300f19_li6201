@@ -1,7 +1,7 @@
 ######################################################################
 # File name:  Makefile
 # Author:     Ellysia Li
-# Date:       Oct 20, 2019
+# Date:       Oct 31, 2019
 # Class:      CS300
 # Assignment: Airport Simulation
 # Purpose: 	  This is the Makefile for the General Queue

@@ -75,7 +75,7 @@ test2: bin/airportdriver
 	
 tarball: clean
 	tar czf ../cs300_4_li6201.tar.gz ../GenericDynamicList \
-	../GenericDynamicPriorityQ ../GenericDynamicPriorityQ ../Airport
+	../GenericDynamicPriorityQ ../GenericDynamicQ ../Airport
 
 clean:
 	cd ../GenericDynamicQ; make clean
