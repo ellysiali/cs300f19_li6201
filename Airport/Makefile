@@ -81,6 +81,6 @@ clean:
 	cd ../GenericDynamicQ; make clean
 	rm -rf bin/*.o bin/Airport
 	
-valgrind: bin/queuedriver
+valgrind: bin/airportdriver
 	valgrind -v --leak-check=yes --track-origins=yes --leak-check=full \
 	--show-leak-kinds=all bin/airportdriver data/airport.txt

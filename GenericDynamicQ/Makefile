@@ -32,10 +32,11 @@ bin/queue.o: src/queue.c include/queue.h \
 ../GenericDynamicPriorityQ/include/pqueue.h
 	gcc -c -o bin/queue.o src/queue.c -g -Wall
 	
-../GenericDynamicPriorityQ/bin/pqueue.o: \
-../GenericDynamicPriorityQ/include/pqueue.h \
-../GenericDynamicList/include/list.h
+../GenericDynamicPriorityQ/bin/pqueue.o:
 	cd ../GenericDynamicPriorityQ; make bin/pqueue.o
+	
+../GenericDynamicList/bin/list.o:
+	cd ../GenericDynamicList; make bin/list.o
 
 clean:
 	cd ../GenericDynamicPriorityQ; make clean
