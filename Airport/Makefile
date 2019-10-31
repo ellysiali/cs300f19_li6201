@@ -70,6 +70,9 @@ test1: bin/airportdriver
 	bin/airportdriver data/airport1.txt > bin/airport1_actual.txt
 	diff -s data/airport1_expected.txt bin/airport1_actual.txt
 	
+test2: bin/airportdriver
+	bin/airportdriver data/airport.txt
+	
 tarball: clean
 	tar czf ../cs300_4_li6201.tar.gz ../GenericDynamicList \
 	../GenericDynamicPriorityQ ../GenericDynamicPriorityQ ../Airport
