@@ -12,7 +12,6 @@
 #include <stdlib.h>
 
 #include "../include/queue.h"
-#include "../../GenericDynamicPriorityQ/include/pqueue.h"
 
 char gszQErrors[NUMBER_OF_Q_ERRORS][MAX_ERROR_Q_CHARS];
 

@@ -19,6 +19,29 @@
 
 char gszAirportErrors[NUMBER_OF_AIRPORT_ERRORS][MAX_ERROR_AIRPORT_CHARS];
 
+static void airportLandPlane (AirportPtr psAirport, const int clock);
+// results: Remove a plane from the landing queue.
+//					error code priority: ERROR_INVALID_AIRPORT, ERROR_EMPTY_AIRPORT
+
+static void airportTakeoffPlane (AirportPtr psAirport, const int clock);
+// results: Remove a plane from the landing queue.
+//					error code priority: ERROR_INVALID_AIRPORT, ERROR_EMPTY_AIRPORT
+
+static void airportCrashPlane (AirportPtr psAirport, const int clock);
+// results: Crash planes from the landing queue.
+//					error code priority: ERROR_INVALID_AIRPORT, ERROR_EMPTY_AIRPORT
+
+static bool airportHasEmergency (const AirportPtr psAirport);
+// requires: psQueue is not empty
+// results: If the landing queue has a priority of 0, return true; otherwise,
+//          return false
+// 					error code priority: ERROR_INVALID_AIRPORT, ERROR_EMPTY_AIRPORT
+
+static bool airportRunwayHasOpen (const AirportPtr psAirport);
+// results: If at least one runway is empty, return true; otherwise, return
+//          false
+// 					error code priority: ERROR_INVALID_AIRPORT
+
 /**************************************************************************
  Function: 	 	processError
 

@@ -104,18 +104,6 @@ extern void airportAddTakeoffPlane (AirportPtr psAirport, const int time);
 // results: Insert a plane to the takeoff queue.
 //					error code priority: ERROR_INVALID_AIRPORT
 
-extern void airportLandPlane (AirportPtr psAirport, const int clock);
-// results: Remove a plane from the landing queue.
-//					error code priority: ERROR_INVALID_AIRPORT, ERROR_EMPTY_AIRPORT
-
-extern void airportTakeoffPlane (AirportPtr psAirport, const int clock);
-// results: Remove a plane from the landing queue.
-//					error code priority: ERROR_INVALID_AIRPORT, ERROR_EMPTY_AIRPORT
-
-extern void airportCrashPlane (AirportPtr psAirport, const int clock);
-// results: Crash planes from the landing queue.
-//					error code priority: ERROR_INVALID_AIRPORT, ERROR_EMPTY_AIRPORT
-
 extern void airportHandleEmergencies (AirportPtr psAirport, const int clock);
 // results: Lands or crashes all emergency planes from the landing queue.
 //					error code priority: ERROR_INVALID_AIRPORT
@@ -139,22 +127,11 @@ extern void airportDecrementFuel (AirportPtr psAirport);
 //					error code priority: ERROR_INVALID_AIRPORT
 
 /**************************************************************************
-*													Get/Check/Peek Operations
+*														Get Operations
 **************************************************************************/
 extern int airportGetRunwayStatus (const AirportPtr psAirport,
 																		const int number);
 // results: Returns the status of the (number)th runway
-// 					error code priority: ERROR_INVALID_AIRPORT
-
-extern bool airportHasEmergency (const AirportPtr psAirport);
-// requires: psQueue is not empty
-// results: If the landing queue has a priority of 0, return true; otherwise,
-//          return false
-// 					error code priority: ERROR_INVALID_AIRPORT, ERROR_EMPTY_AIRPORT
-
-extern bool airportRunwayHasOpen (const AirportPtr psAirport);
-// results: If at least one runway is empty, return true; otherwise, return
-//          false
 // 					error code priority: ERROR_INVALID_AIRPORT
 
 extern float airportAverageLandingTime (const AirportPtr psAirport);
