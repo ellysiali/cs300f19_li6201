@@ -524,7 +524,7 @@ bool airportRunwayHasOpen (const AirportPtr psAirport)
 
  Returned:	 	The average landing waiting time
  *************************************************************************/
-float airportAverageLandingTime (const AirportPtr psAirport)
+double airportAverageLandingTime (const AirportPtr psAirport)
 {
 	if (NULL == psAirport)
 	{
@@ -542,7 +542,7 @@ float airportAverageLandingTime (const AirportPtr psAirport)
 
  Returned:	 	The average takeoff waiting time
  *************************************************************************/
-float airportAverageTakeoffTime (const AirportPtr psAirport)
+double airportAverageTakeoffTime (const AirportPtr psAirport)
 {
 	if (NULL == psAirport)
 	{
@@ -560,7 +560,7 @@ float airportAverageTakeoffTime (const AirportPtr psAirport)
 
  Returned:	 	The average flying time remaining
  *************************************************************************/
-float airportAverageFlyingTimeRemaining (const AirportPtr psAirport)
+double airportAverageFlyingTimeRemaining (const AirportPtr psAirport)
 {
 	if (NULL == psAirport)
 	{

@@ -230,7 +230,7 @@ void astatsAddFlyingTimeRemaining (AirportStatsPtr psAStats, const int time)
 
  Returned:	 	The average landing waiting time
  *************************************************************************/
-float astatsAverageLandingTime (const AirportStatsPtr psAStats)
+double astatsAverageLandingTime (const AirportStatsPtr psAStats)
 {
 	if (NULL == psAStats)
 	{
@@ -250,7 +250,7 @@ float astatsAverageLandingTime (const AirportStatsPtr psAStats)
 
  Returned:	 	The average takeoff waiting time
  *************************************************************************/
-float astatsAverageTakeoffTime (const AirportStatsPtr psAStats)
+double astatsAverageTakeoffTime (const AirportStatsPtr psAStats)
 {
 	if (NULL == psAStats)
 	{
@@ -269,7 +269,7 @@ float astatsAverageTakeoffTime (const AirportStatsPtr psAStats)
 
  Returned:	 	The average flying time remaining
  *************************************************************************/
-float astatsAverageFlyingTimeRemaining (const AirportStatsPtr psAStats)
+double astatsAverageFlyingTimeRemaining (const AirportStatsPtr psAStats)
 {
 	if (NULL == psAStats)
 	{
