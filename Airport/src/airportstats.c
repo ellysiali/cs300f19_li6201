@@ -1,7 +1,7 @@
 /**************************************************************************
  File name:  airport.c
  Author:     Ellysia Li
- Date:		   Oct 30, 2019
+ Date:		   Oct 31, 2019
  Class:		   CS300
  Assignment: Airport Simulator
  Purpose:    Implementation of the AirportStats structure
@@ -83,7 +83,7 @@ void astatsTerminate (AirportStatsPtr psAStats)
 {
 	if (NULL == psAStats)
 	{
-		processError ("airportTerminate", ERROR_NO_ASTATS_TERMINATE);
+		processError ("astatsTerminate", ERROR_NO_ASTATS_TERMINATE);
 	}
 
 	psAStats->numCrashes =

@@ -128,7 +128,7 @@ void airportTerminate (AirportPtr psAirport)
  *************************************************************************/
 void airportLoadErrorMessages ()
 {
-//	astatsLoadErrorMessages ();
+	astatsLoadErrorMessages ();
 	queueLoadErrorMessages ();
 	LOAD_AIRPORT_ERRORS
 }

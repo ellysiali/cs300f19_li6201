@@ -178,7 +178,7 @@ int main ()
 
 	// Add and remove different types into the same queue and validate
 
-	for (j = 0; j < LONG_QUEUE_LENGTH; j++)
+	for (j = 0; LONG_QUEUE_LENGTH > j; j++)
 	{
 		if (0 == j % EVEN)
 		{
@@ -191,7 +191,7 @@ int main ()
 		}
 	}
 
-	for (j = 0; j < LONG_QUEUE_LENGTH; j++)
+	for (j = 0; LONG_QUEUE_LENGTH > j; j++)
 	{
 		if (0 == j % EVEN)
 		{
