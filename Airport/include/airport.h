@@ -26,7 +26,7 @@ enum {NO_AIRPORT_ERROR = 0,
 			ERROR_NO_AIRPORT_CREATE,
 			ERROR_NO_AIRPORT_TERMINATE,
 			ERROR_INVALID_AIRPORT,
-			ERROR_FULL_RUNWAY,
+			ERROR_INVALID_RUNWAY,
 			ERROR_NULL_AIRPORT_PTR,
 			ERROR_EMPTY_AIRPORT};
 
@@ -42,7 +42,7 @@ strcpy(gszAirportErrors[ERROR_NO_AIRPORT_CREATE], \
 strcpy(gszAirportErrors[ERROR_NO_AIRPORT_TERMINATE], \
 		"Error: No Airport Terminate.");\
 strcpy(gszAirportErrors[ERROR_INVALID_AIRPORT], "Error: Invalid Airport.");\
-strcpy(gszAirportErrors[ERROR_FULL_RUNWAY], "Error: Full Runway.");\
+strcpy(gszAirportErrors[ERROR_INVALID_RUNWAY], "Error: Full Runway.");\
 strcpy(gszAirportErrors[ERROR_NULL_AIRPORT_PTR], "Error: NULL Pointer.");\
 strcpy(gszAirportErrors[ERROR_EMPTY_AIRPORT], "Error: Empty Airport.");
 
@@ -141,15 +141,15 @@ extern int airportGetRunwayStatus (const AirportPtr psAirport,
 // results: Returns the status of the (number)th runway
 // 					error code priority: ERROR_INVALID_AIRPORT
 
-extern float airportAverageLandingTime (const AirportPtr psAirport);
+extern double airportAverageLandingTime (const AirportPtr psAirport);
 // results: Return the average landing waiting time
 // 					error code priority: ERROR_INVALID_AIRPORT
 
-extern float airportAverageTakeoffTime (const AirportPtr psAirport);
+extern double airportAverageTakeoffTime (const AirportPtr psAirport);
 // results: Return the average takeoff waiting time
 // 					error code priority: ERROR_INVALID_AIRPORT
 
-extern float airportAverageFlyingTimeRemaining (const AirportPtr psAirport);
+extern double airportAverageFlyingTimeRemaining (const AirportPtr psAirport);
 // results: Return the average flying time remaining
 // 					error code priority: ERROR_INVALID_AIRPORT
 

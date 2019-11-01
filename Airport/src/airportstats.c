@@ -236,9 +236,14 @@ double astatsAverageLandingTime (const AirportStatsPtr psAStats)
 	{
 		processError ("airportAverageLandingTime", ERROR_INVALID_ASTATS);
 	}
-
-	return (float) psAStats->totalLandingTime
-				 / psAStats->numLandingPlanes;
+	if (0 == psAStats->numLandingPlanes)
+	{
+		return 0;
+	}
+	else
+	{
+		return (float) psAStats->totalLandingTime / psAStats->numLandingPlanes;
+	}
 }
 
 /**************************************************************************
@@ -256,8 +261,14 @@ double astatsAverageTakeoffTime (const AirportStatsPtr psAStats)
 	{
 		processError ("astatsAverageTakeoffTime", ERROR_INVALID_ASTATS);
 	}
-	return (float) psAStats->totalTakeoffTime
-				 / psAStats->numTakeoffPlanes;
+	if (0 == psAStats->numTakeoffPlanes)
+	{
+		return 0;
+	}
+	else
+	{
+		return (float) psAStats->totalTakeoffTime / psAStats->numTakeoffPlanes;
+	}
 }
 
 /**************************************************************************
@@ -275,8 +286,15 @@ double astatsAverageFlyingTimeRemaining (const AirportStatsPtr psAStats)
 	{
 		processError ("astatsAverageFlyingTimeRemaining", ERROR_INVALID_ASTATS);
 	}
-	return (float) psAStats->totalFlyingTimeRemaining
-				 / psAStats->numLandingPlanes;
+	if (0 == psAStats->numLandingPlanes)
+	{
+		return 0;
+	}
+	else
+	{
+		return (float) psAStats->totalFlyingTimeRemaining
+				/ psAStats->numLandingPlanes;
+	}
 }
 
 /**************************************************************************

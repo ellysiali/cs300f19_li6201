@@ -467,6 +467,10 @@ int airportGetRunwayStatus (const AirportPtr psAirport, const int number)
 	{
 		processError ("airportGetRunwayStatus", ERROR_INVALID_AIRPORT);
 	}
+	if (NUMBER_OF_RUNWAYS <= number)
+	{
+		processError ("airportGetRunwayStatus", ERROR_INVALID_RUNWAY);
+	}
 	return psAirport->ezRunways[number];
 }
 

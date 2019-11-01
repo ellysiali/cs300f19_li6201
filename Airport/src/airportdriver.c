@@ -101,7 +101,7 @@ int main (int argc, char* argv[])
 
   	airportAssignRunways (&sTheAirport);
 
-  	// Print Results
+  	// Print results
 
   	if (1 == airportGetClock (&sTheAirport) % REPRINT_HEADER)
   	{
