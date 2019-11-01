@@ -27,7 +27,7 @@ enum {NO_ASTATS_ERROR = 0,
 //*************************************************************************
 // Error Messages
 //*************************************************************************
-#define LOAD_ASTATS_ERRORS strcpy(gszAStatsErrors[NO_ASTATS_ERROR], \
+#define LOAD_ASTATS_ERRORS strcpy (gszAStatsErrors[NO_ASTATS_ERROR], \
 		"No Error.");\
 strcpy(gszAStatsErrors[ERROR_NO_ASTATS_CREATE], \
 		"Error: No Airport Create.");\
@@ -89,15 +89,15 @@ extern void astatsAddFlyingTimeRemaining (AirportStatsPtr psAStats,
 /**************************************************************************
 *															Statistics
 **************************************************************************/
-extern float astatsAverageLandingTime (const AirportStatsPtr psAStats);
+extern double astatsAverageLandingTime (const AirportStatsPtr psAStats);
 // results: Return the average landing waiting time
 // 					error code priority: ERROR_NO_ASTATS_CREATE
 
-extern float astatsAverageTakeoffTime (const AirportStatsPtr psAStats);
+extern double astatsAverageTakeoffTime (const AirportStatsPtr psAStats);
 // results: Return the average takeoff waiting time
 // 					error code priority: ERROR_INVALID_ASTATS
 
-extern float astatsAverageFlyingTimeRemaining (const AirportStatsPtr psAStats);
+extern double astatsAverageFlyingTimeRemaining (const AirportStatsPtr psAStats);
 // results: Return the average flying time remaining
 // 					error code priority: ERROR_INVALID_ASTATS
 

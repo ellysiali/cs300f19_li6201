@@ -35,7 +35,7 @@ enum {NO_AIRPORT_ERROR = 0,
 //*************************************************************************
 // Error Messages
 //*************************************************************************
-#define LOAD_AIRPORT_ERRORS strcpy(gszAirportErrors[NO_AIRPORT_ERROR], \
+#define LOAD_AIRPORT_ERRORS strcpy (gszAirportErrors[NO_AIRPORT_ERROR], \
 		"No Error.");\
 strcpy(gszAirportErrors[ERROR_NO_AIRPORT_CREATE], \
 		"Error: No Airport Create.");\

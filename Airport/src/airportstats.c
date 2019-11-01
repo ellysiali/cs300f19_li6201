@@ -1,5 +1,5 @@
 /**************************************************************************
- File name:  airport.c
+ File name:  airportstats.c
  Author:     Ellysia Li
  Date:		   Oct 31, 2019
  Class:		   CS300

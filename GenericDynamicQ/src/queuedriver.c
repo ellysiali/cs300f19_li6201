@@ -147,7 +147,7 @@ int main ()
 			assert (!queueIsEmpty (&sTheQueue), "Validated queue is not empty",
 					"Could not validate (queue is empty)");
 		}
-		queuePeek (&sTheQueue, &charBuffer, sizeof(char));
+		queuePeek (&sTheQueue, &charBuffer, sizeof (char));
 		if (CHAR_START != charBuffer)
 		{
 			assert (i == charBuffer, "Validated first (peeked) element is correct",
