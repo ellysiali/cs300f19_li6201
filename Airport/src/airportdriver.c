@@ -44,24 +44,24 @@ int main (int argc, char* argv[])
 
   // Check number of arguments
 
-  if( argc != 2 )
+  if ( argc != 2 )
   {
-    printf("Invalid number of arguments\n");
+    printf ("Invalid number of arguments\n");
     return EXIT_FAILURE;
   }
 
   // Check valid file
 
-  pInFile = fopen(argv[1], "r");
+  pInFile = fopen (argv[1], "r");
 
   if (NULL == pInFile) {
-     printf("Could not open file\n");
+     printf ("Could not open file\n");
      return EXIT_FAILURE;
   }
 
   // Airport Simulation:
 
-  while (!feof(pInFile) || !airportQsAreEmpty (&sTheAirport))
+  while (!feof (pInFile) || !airportQsAreEmpty (&sTheAirport))
   {
   	// Reset values
 
@@ -75,7 +75,7 @@ int main (int argc, char* argv[])
 
   	// Read line of data & add new planes
 
-  	if (!feof(pInFile))
+  	if (!feof (pInFile))
 		{
 			fscanf (pInFile, "%d %d %d %d %d", &numTakeoffPlanes, &numLandingPlanes,
 					&landingFuels[FIRST], &landingFuels[SECOND], &landingFuels[THIRD]);
