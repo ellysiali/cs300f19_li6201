@@ -7,6 +7,9 @@
 # Purpose: 	  This is the Makefile for the Airport Simulator
 ######################################################################
 
+CC=gcc
+CFLAGS=-Wall -g
+
 .PHONY: all clean
 
 all: bin/airportdriver bin/airportdrivertester
@@ -18,44 +21,44 @@ bin/airportdriver: bin/airportdriver.o bin/airport.o bin/airportstats.o \
 ../GenericDynamicQ/bin/queue.o \
 ../GenericDynamicPriorityQ/bin/pqueue.o \
 ../GenericDynamicList/bin/list.o
-	gcc -o bin/airportdriver bin/airportdriver.o bin/airport.o \
+	${CC} ${CFLAGS} -o bin/airportdriver bin/airportdriver.o bin/airport.o \
 	bin/airportstats.o \
 	../GenericDynamicQ/bin/queue.o \
 	../GenericDynamicPriorityQ/bin/pqueue.o \
-	../GenericDynamicList/bin/list.o -g -Wall
+	../GenericDynamicList/bin/list.o
 	
 bin/airportdriver.o: src/airportdriver.c include/airport.h \
 include/airportstats.h \
 ../GenericDynamicQ/include/queue.h \
 ../GenericDynamicPriorityQ/include/pqueue.h \
 ../GenericDynamicList/include/list.h
-	gcc -c -o bin/airportdriver.o src/airportdriver.c -g -Wall
+	${CC} ${CFLAGS} -c -o bin/airportdriver.o src/airportdriver.c
 	
 bin/airportdrivertester: bin/airportdrivertester.o bin/airport.o \
 bin/airportstats.o\
 ../GenericDynamicQ/bin/queue.o \
 ../GenericDynamicPriorityQ/bin/pqueue.o \
 ../GenericDynamicList/bin/list.o
-	gcc -o bin/airportdrivertester bin/airportdrivertester.o \
+	${CC} ${CFLAGS} -o bin/airportdrivertester bin/airportdrivertester.o \
 	bin/airport.o bin/airportstats.o ../GenericDynamicQ/bin/queue.o \
 	../GenericDynamicPriorityQ/bin/pqueue.o \
-	../GenericDynamicList/bin/list.o -g -Wall
+	../GenericDynamicList/bin/list.o
 	
 bin/airportdrivertester.o: src/airportdrivertester.c include/airport.h \
 include/airportstats.h\
 ../GenericDynamicQ/include/queue.h \
 ../GenericDynamicPriorityQ/include/pqueue.h \
 ../GenericDynamicList/include/list.h
-	gcc -c -o bin/airportdrivertester.o src/airportdrivertester.c -g -Wall
+	${CC} ${CFLAGS} -c -o bin/airportdrivertester.o src/airportdrivertester.c
 
 bin/airport.o: src/airport.c include/airport.h include/airportstats.h \
 ../GenericDynamicQ/include/queue.h \
 ../GenericDynamicPriorityQ/include/pqueue.h \
 ../GenericDynamicList/include/list.h
-	gcc -c -o bin/airport.o src/airport.c -g -Wall
+	${CC} ${CFLAGS} -c -o bin/airport.o src/airport.c
 	
 bin/airportstats.o: src/airportstats.c include/airportstats.h
-	gcc -c -o bin/airportstats.o src/airportstats.c -g -Wall
+	${CC} ${CFLAGS} -c -o bin/airportstats.o src/airportstats.c
 	
 ../GenericDynamicQ/bin/queue.o:
 	cd ../GenericDynamicQ; make bin/queue.o	

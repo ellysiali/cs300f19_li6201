@@ -7,7 +7,7 @@
 # Purpose: 	  This is the Makefile for the General Queue
 ######################################################################
 
-CC=gcc
+CC= gcc
 CFLAGS=-Wall -g
 
 .PHONY: all clean
@@ -20,17 +20,17 @@ bin:
 bin/queuedriver: bin/queuedriver.o bin/queue.o \
 ../GenericDynamicPriorityQ/bin/pqueue.o \
 ../GenericDynamicList/bin/list.o
-	gcc -o bin/queuedriver bin/queuedriver.o bin/queue.o \
+	${CC} ${CFLAGS} -o bin/queuedriver bin/queuedriver.o bin/queue.o \
 	../GenericDynamicPriorityQ/bin/pqueue.o \
-	../GenericDynamicList/bin/list.o -g -Wall
+	../GenericDynamicList/bin/list.o
 	
 bin/queuedriver.o: src/queuedriver.c include/queue.h \
 ../GenericDynamicPriorityQ/include/pqueue.h
-	gcc -c -o bin/queuedriver.o src/queuedriver.c -g -Wall
+	${CC} ${CFLAGS} -c -o bin/queuedriver.o src/queuedriver.c 
 
 bin/queue.o: src/queue.c include/queue.h \
 ../GenericDynamicPriorityQ/include/pqueue.h
-	gcc -c -o bin/queue.o src/queue.c -g -Wall
+	${CC} ${CFLAGS} -c -o bin/queue.o src/queue.c 
 	
 ../GenericDynamicPriorityQ/bin/pqueue.o:
 	cd ../GenericDynamicPriorityQ; make bin/pqueue.o
