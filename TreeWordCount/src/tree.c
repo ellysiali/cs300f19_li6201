@@ -229,14 +229,14 @@ extern bool trUpdate (TreeNodePtr psTree, const char* key, int value)
 
 	if (0 < compare)
 	{
-		bFound = trUpdate (&psTree->psLeft, key, value);
+		bFound = trUpdate (psTree->psLeft, key, value);
 	}
 	else
 	{
-		bFound = trUpdate (&psTree->psLeft, key, value);
+		bFound = trUpdate (psTree->psRight, key, value);
 	}
 
-	return true;
+	return bFound;
 }
 // results: if the tree is valid, and the key does exist in the
 //					tree, update the node with the new value passed in and return
@@ -278,19 +278,19 @@ extern bool trFind (const TreeNodePtr psTree, const char* key, int *pValue)
 	if (0 == compare)
 	{
 		bFound = true;
-		strncpy (pValue, psTree->szWord, WORD_MAX);
+		memcpy (pValue, &psTree->count, sizeof (int));
 	}
 
 	if (0 < compare)
 	{
-		bFound = trUpdate (&psTree->psLeft, key, pValue);
+		bFound = trFind (psTree->psLeft, key, pValue);
 	}
 	else
 	{
-		bFound = trUpdate (&psTree->psLeft, key, pValue);
+		bFound = trFind (psTree->psLeft, key, pValue);
 	}
 
-	return true;
+	return bFound;
 }
 // results: if the tree is valid, and the key does exist in the
 //					tree, return the value through pValue and return true.
@@ -310,18 +310,22 @@ extern bool trFind (const TreeNodePtr psTree, const char* key, int *pValue)
  *************************************************************************/
 extern void trPrintInOrder(const TreeNodePtr psTree)
 {
+	if (NULL == psTree)
+	{
+		processError ("trPrintInOrder", TR_NO_MEMORY_ERROR);
+	}
 
-	// Walk the tree in order and free
+	// Walk the tree in order and print after walking left
+
 	if (NULL != psTree->psLeft)
 	{
 		trPrintInOrder (psTree->psLeft);
 	}
-	printf ("%s %d", psTree->szWord, psTree->count);
+
+	printf ("%s %d\n", psTree->szWord, psTree->count);
+
 	if (NULL != psTree->psRight)
 	{
-		trTerminate (psTree->psRight);
+		trPrintInOrder (psTree->psRight);
 	}
 }
-// results: if the tree is valid, print the key and value for each node
-//					in key order (ascending).
-//					error code priority: TR_NO_MEMORY_ERROR

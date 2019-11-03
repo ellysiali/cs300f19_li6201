@@ -54,6 +54,9 @@ int main ()
 	printf ("C's right child has key: %s\n", psRoot->psRight->psRight->szWord);
 	trInsert (&psRoot, "Ab", 1);
 	printf ("A's right child has key: %s\n", psRoot->psLeft->psRight->szWord);
+
+	trPrintInOrder (psRoot);
+
 	trTerminate (&psRoot);
 
 	if (psRoot != NULL)
