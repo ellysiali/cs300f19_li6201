@@ -13,5 +13,10 @@
 
 int main ()
 {
+	TreeNodePtr psRoot;
+
+	trLoadErrorMessages ();
+//	trCreate (&psRoot);
+
 	return 0;
 }

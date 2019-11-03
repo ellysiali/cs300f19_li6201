@@ -56,10 +56,15 @@ extern void trLoadErrorMessages ()
  *************************************************************************/
 extern void trCreate (TreeNodePtr *hsTree)
 {
-
+	if (NULL == hsTree)
+	{
+		processError ("trCreate", TR_NO_CREATE_ERROR);
+	}
+	*hsTree = (TreeNodePtr) malloc (sizeof (TreeNode));
+	(*hsTree)->count = 0;
+	(*hsTree)->psLeft = NULL;
+	(*hsTree)->psRight = NULL;
 }
-// results: If the tree can be created, then the tree exists and is empty;
-//					otherwise, TR_NO_CREATE_ERROR if psTree is NULL
 
 /**************************************************************************
  Function: 	 	trTerminate
@@ -72,7 +77,24 @@ extern void trCreate (TreeNodePtr *hsTree)
  *************************************************************************/
 extern void trTerminate (TreeNodePtr *hsTree)
 {
+	if (NULL == hsTree)
+	{
+		processError ("trCreate", TR_NO_TERMINATE_ERROR);
+	}
 
+	// Walk the tree post order
+	// Probably should double-check works
+
+	while (NULL != (*hsTree)->psLeft)
+	{
+		trTerminate (&(*hsTree)->psLeft);
+	}
+	while (NULL != (*hsTree)->psRight)
+	{
+		trTerminate (&(*hsTree)->psRight);
+	}
+	free (*hsTree);
+	*hsTree = NULL;
 }
 // results: If the tree can be terminated, then the tree no longer exists
 //				  and is empty; otherwise, TR_NO_TERMINATE_ERROR
@@ -88,10 +110,12 @@ extern void trTerminate (TreeNodePtr *hsTree)
  *************************************************************************/
 extern bool trIsEmpty (const TreeNodePtr psTree)
 {
-	return true;
+	if (NULL == psTree)
+	{
+		processError ("trIsEmpty", TR_NO_MEMORY_ERROR);
+	}
+	return 0 == psTree->count;
 }
-// results: If tree is empty, return true; otherwise, return false
-// 					error code priority: TR_NO_MEMORY_ERROR
 
 /**************************************************************************
  Function: 	 	trInsert
@@ -115,7 +139,7 @@ extern bool trInsert (TreeNodePtr *hsTree, const char* key, int value)
 //					error code priority: TR_NO_MEMORY_ERROR
 
 /**************************************************************************
- Function: 	 	trInsert
+ Function: 	 	trUpdate
 
  Description: Updates a node on the tree
 
