@@ -13,6 +13,7 @@
 
 int main ()
 {
+	int valueBuffer;
 	TreeNodePtr psRoot;
 
 	trLoadErrorMessages ();
@@ -56,6 +57,43 @@ int main ()
 	printf ("A's right child has key: %s\n", psRoot->psLeft->psRight->szWord);
 
 	trPrintInOrder (psRoot);
+
+	if (!trInsert (&psRoot, "Cd", 1))
+	{
+		puts ("Returned false in trInsert successfully");
+	}
+
+	trUpdate (psRoot, "B", 2);
+	printf ("B has count of: %d\n", psRoot->count);
+	trUpdate (psRoot, "A", 3);
+	printf ("A has count of: %d\n", psRoot->psLeft->count);
+	trUpdate (psRoot, "C", 4);
+	printf ("C has count of: %d\n", psRoot->psRight->count);
+	trUpdate (psRoot, "Cd", 5);
+	printf ("Cd has count of: %d\n", psRoot->psRight->psRight->count);
+	trUpdate (psRoot, "Ab", 6);
+	printf ("Ab has count of: %d\n", psRoot->psLeft->psRight->count);
+
+	if (!trUpdate (psRoot, "XX", 1))
+	{
+		puts ("Returned false in trUpdate successfully");
+	}
+
+	trFind (psRoot, "B", &valueBuffer);
+	printf ("B has a found count of: %d\n", valueBuffer);
+	trFind (psRoot, "A", &valueBuffer);
+	printf ("A has a found count of: %d\n", valueBuffer);
+	trFind (psRoot, "C", &valueBuffer);
+	printf ("C has a found count of: %d\n", valueBuffer);
+	trFind (psRoot, "Cd", &valueBuffer);
+	printf ("Cd has a found count of: %d\n", valueBuffer);
+	trFind (psRoot, "Ab", &valueBuffer);
+	printf ("Ab has a found count of: %d\n", valueBuffer);
+
+	if (!trFind (psRoot, "1", &valueBuffer))
+	{
+		puts ("Returned false in trFind successfully");
+	}
 
 	trTerminate (&psRoot);
 
