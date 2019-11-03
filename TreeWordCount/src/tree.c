@@ -82,7 +82,7 @@ extern void trTerminate (TreeNodePtr *hsTree)
 		processError ("trCreate", TR_NO_TERMINATE_ERROR);
 	}
 
-	// Walk the tree post order
+	// Walk the tree post order and free
 
 	if (NULL != (*hsTree)->psLeft)
 	{
@@ -153,7 +153,7 @@ extern bool trInsert (TreeNodePtr *hsTree, const char* key, int value)
 		bValid = false;
 	}
 
-	// Check if step to left child or insert node (when child is NULL)
+	// Step to left child or insert node (when child is NULL)
 
 	if (0 < compare)
 	{
@@ -190,7 +190,6 @@ extern bool trInsert (TreeNodePtr *hsTree, const char* key, int value)
 			(*hsTree)->psRight->psRight = NULL;
 		}
 	}
-
 	return bValid;
 }
 
@@ -208,6 +207,35 @@ extern bool trInsert (TreeNodePtr *hsTree, const char* key, int value)
  *************************************************************************/
 extern bool trUpdate (TreeNodePtr psTree, const char* key, int value)
 {
+	// Double-check works
+	bool bFound;
+	int compare;
+	if (NULL == psTree)
+	{
+		processError ("trUpdate", TR_NO_MEMORY_ERROR);
+	}
+	if (NULL == psTree)
+	{
+		return false;
+	}
+
+	compare = strncmp (psTree->szWord, key, WORD_MAX);
+
+	if (0 == compare)
+	{
+		bFound = true;
+		psTree->count = value;
+	}
+
+	if (0 < compare)
+	{
+		bFound = trUpdate (&psTree->psLeft, key, value);
+	}
+	else
+	{
+		bFound = trUpdate (&psTree->psLeft, key, value);
+	}
+
 	return true;
 }
 // results: if the tree is valid, and the key does exist in the
@@ -229,6 +257,39 @@ extern bool trUpdate (TreeNodePtr psTree, const char* key, int value)
  *************************************************************************/
 extern bool trFind (const TreeNodePtr psTree, const char* key, int *pValue)
 {
+	// Double-check works
+	bool bFound;
+	int compare;
+	if (NULL == psTree)
+	{
+		processError ("trFind", TR_NO_MEMORY_ERROR);
+	}
+	if (NULL == pValue)
+	{
+		processError ("trFind", TR_NO_BUFFER_ERROR);
+	}
+	if (NULL == psTree)
+	{
+		return false;
+	}
+
+	compare = strncmp (psTree->szWord, key, WORD_MAX);
+
+	if (0 == compare)
+	{
+		bFound = true;
+		strncpy (pValue, psTree->szWord, WORD_MAX);
+	}
+
+	if (0 < compare)
+	{
+		bFound = trUpdate (&psTree->psLeft, key, pValue);
+	}
+	else
+	{
+		bFound = trUpdate (&psTree->psLeft, key, pValue);
+	}
+
 	return true;
 }
 // results: if the tree is valid, and the key does exist in the
@@ -250,6 +311,16 @@ extern bool trFind (const TreeNodePtr psTree, const char* key, int *pValue)
 extern void trPrintInOrder(const TreeNodePtr psTree)
 {
 
+	// Walk the tree in order and free
+	if (NULL != psTree->psLeft)
+	{
+		trPrintInOrder (psTree->psLeft);
+	}
+	printf ("%s %d", psTree->szWord, psTree->count);
+	if (NULL != psTree->psRight)
+	{
+		trTerminate (psTree->psRight);
+	}
 }
 // results: if the tree is valid, print the key and value for each node
 //					in key order (ascending).
