@@ -83,21 +83,18 @@ extern void trTerminate (TreeNodePtr *hsTree)
 	}
 
 	// Walk the tree post order
-	// Probably should double-check works
 
-	while (NULL != (*hsTree)->psLeft)
+	if (NULL != (*hsTree)->psLeft)
 	{
 		trTerminate (&(*hsTree)->psLeft);
 	}
-	while (NULL != (*hsTree)->psRight)
+	if (NULL != (*hsTree)->psRight)
 	{
 		trTerminate (&(*hsTree)->psRight);
 	}
 	free (*hsTree);
 	*hsTree = NULL;
 }
-// results: If the tree can be terminated, then the tree no longer exists
-//				  and is empty; otherwise, TR_NO_TERMINATE_ERROR
 
 /**************************************************************************
  Function: 	 	trIsEmpty
@@ -130,13 +127,72 @@ extern bool trIsEmpty (const TreeNodePtr psTree)
  *************************************************************************/
 extern bool trInsert (TreeNodePtr *hsTree, const char* key, int value)
 {
-	return false;
+	bool bValid;
+	int compare;
+
+	if (NULL == hsTree)
+	{
+		processError ("trInsert", TR_NO_MEMORY_ERROR);
+	}
+
+	// Check first if tree is empty
+
+	if (trIsEmpty (*hsTree))
+	{
+		strncpy ((*hsTree)->szWord, key, WORD_MAX);
+		(*hsTree)->count += value;
+		return true;
+	}
+
+	compare = strncmp ((*hsTree)->szWord, key, WORD_MAX);
+
+	// Check if key is valid
+
+	if (0 == compare)
+	{
+		bValid = false;
+	}
+
+	// Check if step to left child or insert node (when child is NULL)
+
+	if (0 < compare)
+	{
+		if (NULL != (*hsTree)->psLeft)
+		{
+			bValid = trInsert (&(*hsTree)->psLeft, key, value);
+		}
+		else
+		{
+			bValid = true;
+			(*hsTree)->psLeft = (TreeNodePtr) malloc (sizeof (TreeNode));
+			(*hsTree)->psLeft->count = value;
+			strncpy ((*hsTree)->psLeft->szWord, key, WORD_MAX);
+			(*hsTree)->psLeft->psLeft = NULL;
+			(*hsTree)->psLeft->psRight = NULL;
+		}
+	}
+
+	// Check if step to right child or insert node (when child is NULL)
+
+	else if (0 > compare)
+	{
+		if (NULL != (*hsTree)->psRight)
+		{
+			bValid = trInsert (&(*hsTree)->psRight, key, value);
+		}
+		else
+		{
+			bValid = true;
+			(*hsTree)->psRight = (TreeNodePtr) malloc (sizeof (TreeNode));
+			(*hsTree)->psRight->count = value;
+			strncpy ((*hsTree)->psRight->szWord, key, WORD_MAX);
+			(*hsTree)->psRight->psLeft = NULL;
+			(*hsTree)->psRight->psRight = NULL;
+		}
+	}
+
+	return bValid;
 }
-// results: if the tree is valid, and the key does not exist in the
-//					tree, insert the key/value and return true
-//					If the key does exist in the tree return false and
-//					do not alter the tree
-//					error code priority: TR_NO_MEMORY_ERROR
 
 /**************************************************************************
  Function: 	 	trUpdate
