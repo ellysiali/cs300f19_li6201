@@ -19,8 +19,10 @@ int main ()
 	trLoadErrorMessages ();
 
 	trCreate (&psRoot);
+	trTerminate (&psRoot);
+	trCreate (&psRoot);
 	puts ("Created Tree");
-	if (psRoot->count != 0 || psRoot->psLeft != NULL || psRoot->psRight != NULL)
+	if (psRoot != NULL)
 	{
 		puts ("Error: trCreate invalid");
 	}

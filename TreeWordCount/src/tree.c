@@ -60,10 +60,7 @@ extern void trCreate (TreeNodePtr *hsTree)
 	{
 		processError ("trCreate", TR_NO_CREATE_ERROR);
 	}
-	*hsTree = (TreeNodePtr) malloc (sizeof (TreeNode));
-	(*hsTree)->count = 0;
-	(*hsTree)->psLeft = NULL;
-	(*hsTree)->psRight = NULL;
+	(*hsTree) = NULL;
 }
 
 /**************************************************************************
@@ -79,21 +76,24 @@ extern void trTerminate (TreeNodePtr *hsTree)
 {
 	if (NULL == hsTree)
 	{
-		processError ("trCreate", TR_NO_TERMINATE_ERROR);
+		processError ("trTerminate", TR_NO_TERMINATE_ERROR);
 	}
 
 	// Walk the tree post order and free
 
-	if (NULL != (*hsTree)->psLeft)
+	if (NULL != *hsTree)
 	{
-		trTerminate (&(*hsTree)->psLeft);
+		if (NULL != (*hsTree)->psLeft)
+		{
+			trTerminate (&(*hsTree)->psLeft);
+		}
+		if (NULL != (*hsTree)->psRight)
+		{
+			trTerminate (&(*hsTree)->psRight);
+		}
+		free (*hsTree);
+		*hsTree = NULL;
 	}
-	if (NULL != (*hsTree)->psRight)
-	{
-		trTerminate (&(*hsTree)->psRight);
-	}
-	free (*hsTree);
-	*hsTree = NULL;
 }
 
 /**************************************************************************
@@ -107,11 +107,7 @@ extern void trTerminate (TreeNodePtr *hsTree)
  *************************************************************************/
 extern bool trIsEmpty (const TreeNodePtr psTree)
 {
-	if (NULL == psTree)
-	{
-		processError ("trIsEmpty", TR_NO_MEMORY_ERROR);
-	}
-	return 0 == psTree->count;
+	return NULL == psTree;
 }
 
 /**************************************************************************
@@ -139,8 +135,11 @@ extern bool trInsert (TreeNodePtr *hsTree, const char* key, int value)
 
 	if (trIsEmpty (*hsTree))
 	{
+		(*hsTree) = (TreeNodePtr) malloc (sizeof (TreeNode));
+		(*hsTree)->count = value;
 		strncpy ((*hsTree)->szWord, key, WORD_MAX);
-		(*hsTree)->count += value;
+		(*hsTree)->psLeft = NULL;
+		(*hsTree)->psRight = NULL;
 		return true;
 	}
 
@@ -207,11 +206,12 @@ extern bool trInsert (TreeNodePtr *hsTree, const char* key, int value)
  *************************************************************************/
 extern bool trUpdate (TreeNodePtr psTree, const char* key, int value)
 {
-	bool bFound;
+	bool bFound = false;
 	int compare;
+
 	if (NULL == psTree)
 	{
-		processError ("trUpdate", TR_NO_MEMORY_ERROR);
+		return false;
 	}
 
 	compare = strncmp (psTree->szWord, key, WORD_MAX);
@@ -221,28 +221,13 @@ extern bool trUpdate (TreeNodePtr psTree, const char* key, int value)
 		bFound = true;
 		psTree->count = value;
 	}
-
-	else if (0 < compare)
+	else if (0 < compare && NULL != psTree->psLeft)
 	{
-		if (NULL != psTree->psLeft)
-		{
-			bFound = trUpdate (psTree->psLeft, key, value);
-		}
-		else
-		{
-			bFound = false;
-		}
+		bFound = trUpdate (psTree->psLeft, key, value);
 	}
-	else
+	else if (NULL != psTree->psRight)
 	{
-		if (NULL != psTree->psRight)
-		{
-			bFound = trUpdate (psTree->psRight, key, value);
-		}
-		else
-		{
-			bFound = false;
-		}
+		bFound = trUpdate (psTree->psRight, key, value);
 	}
 
 	return bFound;
@@ -260,15 +245,17 @@ extern bool trUpdate (TreeNodePtr psTree, const char* key, int value)
  *************************************************************************/
 extern bool trFind (const TreeNodePtr psTree, const char* key, int *pValue)
 {
-	bool bFound;
+	bool bFound = false;
 	int compare;
-	if (NULL == psTree)
-	{
-		processError ("trFind", TR_NO_MEMORY_ERROR);
-	}
+
 	if (NULL == pValue)
 	{
 		processError ("trFind", TR_NO_BUFFER_ERROR);
+	}
+
+	if (NULL == psTree)
+	{
+		return false;
 	}
 
 	compare = strncmp (psTree->szWord, key, WORD_MAX);
@@ -278,28 +265,13 @@ extern bool trFind (const TreeNodePtr psTree, const char* key, int *pValue)
 		bFound = true;
 		memcpy (pValue, &psTree->count, sizeof (int));
 	}
-
-	if (0 < compare)
+	else if (0 < compare && NULL != psTree->psLeft)
 	{
-		if (NULL != psTree->psLeft)
-		{
-			bFound = trFind (psTree->psLeft, key, pValue);
-		}
-		else
-		{
-			bFound = false;
-		}
+		bFound = trFind (psTree->psLeft, key, pValue);
 	}
-	else
+	else if (NULL != psTree->psRight)
 	{
-		if (NULL != psTree->psRight)
-		{
-			bFound = trFind (psTree->psRight, key, pValue);
-		}
-		else
-		{
-			bFound = false;
-		}
+		bFound = trFind (psTree->psRight, key, pValue);
 	}
 
 	return bFound;
@@ -316,11 +288,6 @@ extern bool trFind (const TreeNodePtr psTree, const char* key, int *pValue)
  *************************************************************************/
 extern void trPrintInOrder(const TreeNodePtr psTree)
 {
-	if (NULL == psTree)
-	{
-		processError ("trPrintInOrder", TR_NO_MEMORY_ERROR);
-	}
-
 	// Walk the tree in order and print after walking left
 
 	if (NULL != psTree->psLeft)
