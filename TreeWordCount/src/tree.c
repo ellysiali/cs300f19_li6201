@@ -130,6 +130,10 @@ extern bool trInsert (TreeNodePtr *hsTree, const char* key, int value)
 	{
 		processError ("trInsert", TR_NO_MEMORY_ERROR);
 	}
+	if (NULL == key)
+	{
+		processError ("trInsert", TR_NO_BUFFER_ERROR);
+	}
 
 	// Check first if tree is empty
 
@@ -209,6 +213,11 @@ extern bool trUpdate (TreeNodePtr psTree, const char* key, int value)
 	bool bFound = false;
 	int compare;
 
+	if (NULL == key)
+	{
+		processError ("trUpdate", TR_NO_BUFFER_ERROR);
+	}
+
 	if (NULL == psTree)
 	{
 		return false;
@@ -249,6 +258,10 @@ extern bool trFind (const TreeNodePtr psTree, const char* key, int *pValue)
 	int compare;
 
 	if (NULL == pValue)
+	{
+		processError ("trFind", TR_NO_BUFFER_ERROR);
+	}
+	if (NULL == key)
 	{
 		processError ("trFind", TR_NO_BUFFER_ERROR);
 	}
