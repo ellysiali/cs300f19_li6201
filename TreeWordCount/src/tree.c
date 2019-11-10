@@ -202,7 +202,7 @@ extern bool trInsert (TreeNodePtr *hsTree, const char* key, int value)
  Description: Updates a node on the tree
 
  Parameters:	psTree - pointer to the root of the tree
- 	 	 	 	 	 	 	key		 - key to search for/update
+ 	 	 	 	 	 	 	key		 - pointer to the key to search for/update
  	 	 	 	 	 	 	value  - the value to update to
 
  Returned:	 	True if the key is in the tree and has been updated;
@@ -247,7 +247,7 @@ extern bool trUpdate (TreeNodePtr psTree, const char* key, int value)
  Description: Finds a node on the tree
 
  Parameters:	psTree - pointer to the root of the tree
- 	 	 	 	 	 	 	key		 - key to search for
+ 	 	 	 	 	 	 	key		 - pointer to the key to search for
  	 	 	 	 	 	 	pvalue - the pointer used to pass back the node value
 
  Returned:	 	True if the key is in the tree; false otherwise
