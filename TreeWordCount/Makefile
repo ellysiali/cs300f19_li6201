@@ -39,7 +39,7 @@ tarball: clean
 clean:
 	rm -rf bin/*.o bin/TreeWordCount
 
-valgrind: bin/TreeWordCount
+valgrind: bin/wordCountDriver
 	valgrind -v --leak-check=yes --track-origins=yes --leak-check=full \
 	--show-leak-kinds=all bin/wordCountDriver data/words.txt
 	
