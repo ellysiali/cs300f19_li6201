@@ -1,7 +1,7 @@
 ######################################################################
 # File name:  Makefile
 # Author:     Ellysia Li
-# Date:		  Nov 11, 2019
+# Date:		  Nov 10, 2019
 # Class:      CS 300
 # Assignment: Trees
 # Purpose: 	  This is the Makefile for TreeWordCount

@@ -4,7 +4,7 @@
  Date:		 	 Nov 10, 2019
  Class:		   CS300
  Assignment: Trees
- Purpose:    Implementation of a word counter
+ Purpose:    Implementation of a word counter using the binary search tree
  *************************************************************************/
 
 #include <stdio.h>

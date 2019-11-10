@@ -116,7 +116,7 @@ extern bool trIsEmpty (const TreeNodePtr psTree)
  Description: Inserts a node into the tree
 
  Parameters:	hsTree - handle to the tree
- 	 	 	 	 	 	 	key		 - the key for the node
+ 	 	 	 	 	 	 	key		 - the pointer to the key for the node
  	 	 	 	 	 	 	value  - the value of the node
 
  Returned:	 	True if the key is not in the tree; false otherwise
@@ -299,7 +299,7 @@ extern bool trFind (const TreeNodePtr psTree, const char* key, int *pValue)
 
  Returned:	 	None
  *************************************************************************/
-extern void trPrintInOrder(const TreeNodePtr psTree)
+extern void trPrintInOrder (const TreeNodePtr psTree)
 {
 	// Walk the tree in order and print after walking left
 
