@@ -20,7 +20,7 @@ int main (int argc, char* argv[])
 
 	// Check number of arguments
 
-	if (argc != 2)
+	if (2 != argc)
 	{
 		printf ("Invalid number of arguments\n");
 		return EXIT_FAILURE;

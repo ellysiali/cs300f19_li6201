@@ -248,7 +248,7 @@ extern bool trUpdate (TreeNodePtr psTree, const char* key, int value)
 
  Parameters:	psTree - pointer to the root of the tree
  	 	 	 	 	 	 	key		 - pointer to the key to search for
- 	 	 	 	 	 	 	pvalue - the pointer used to pass back the node value
+ 	 	 	 	 	 	 	pValue - the pointer used to pass back the node value
 
  Returned:	 	True if the key is in the tree; false otherwise
  *************************************************************************/
