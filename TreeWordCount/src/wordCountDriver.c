@@ -53,5 +53,7 @@ int main (int argc, char* argv[])
 
 	trTerminate (&psRoot);
 
+  fclose (pInFile);
+
 	return EXIT_SUCCESS;
 }
