@@ -11,6 +11,7 @@
 #ifndef HT_H_
 #define HT_H_
 
+#include <stdlib.h>
 #include <stdbool.h>
 #include "../../GenericDynamicList/include/list.h"
 
@@ -43,12 +44,14 @@ strcpy(gszHTErrors[ERROR_EMPTY_HT], "Error: Empty Hash Table.");
 // User-defined types
 //*************************************************************************
 typedef struct HashTable *HashTablePtr;
+typedef void (*UserFunction) (void*, void*);
 typedef struct HashTable
 {
 	ListPtr psTable;
 	int tableSize;
-//	void (*InsertFunction) (*void, *void);
-
+	UserFunction pHashFunction;
+	UserFunction pCompareFunction;
+	UserFunction pPrintFunction;
 } HashTable;
 
 typedef struct HashTableElement
@@ -56,9 +59,6 @@ typedef struct HashTableElement
 	void* pKey;
 	void* pData;
 } HashTableElement;
-
-//typedef void (*InsertFunction) (*void, *void);
-
 
 /**************************************************************************
 *										Allocation and Deallocation
@@ -89,19 +89,19 @@ extern bool htIsEmpty (const HashTablePtr psHTable);
 /**************************************************************************
 *									Inserting, retrieving,and updating values
 **************************************************************************/
-extern void htInsert (HashTablePtr psHTable, const void *pKey,
+extern bool htInsert (HashTablePtr psHTable, const void *pKey,
 																						 const void *pData);
 // requires:
 // results: Insert the data and key into the hash table.
 //					error code priority: ERROR_INVALID_HT, ERROR_NULL_HT_PTR
 
-extern void *htDelete (HashTablePtr psHTable, const void *pKey, void *pData);
+extern bool htDelete (HashTablePtr psHTable, const void *pKey, void *pData);
 // requires: psHTable is not empty
 // results: Remove the data and key from the hash table, returning the data
 //					error code priority: ERROR_INVALID_HT, ERROR_NULL_HT_PTR,
 //															 ERROR_EMPTY_HT
 
-extern void *htUpdate (HashTablePtr psHTable, const void *pKey,
+extern bool htUpdate (HashTablePtr psHTable, const void *pKey,
 		 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	const void *pData);
 // requires: psQueue is not empty
 // results: Updates the data from a given key in the hash table
@@ -111,12 +111,12 @@ extern void *htUpdate (HashTablePtr psHTable, const void *pKey,
 /**************************************************************************
 *													Peek and Print Operations
 **************************************************************************/
-extern void *htFind (HashTablePtr psHTable, const void *pKey, void *pData);
+extern bool htFind (HashTablePtr psHTable, const void *pKey, void *pData);
 // results: Find and return the data for a given key in the hash table
 // 						error code priority: ERROR_INVALID_HT, ERROR_NULL_HT_PTR,
 //																 ERROR_EMPTY_HT
 
-extern void *htPrint (HashTablePtr psHTable, void *pBuffer, int size);
+extern void htPrint (HashTablePtr psHTable);
 // requires: psQueue is not empty
 // results: Debugging purposes; print out each bucket and its chain;
 //					if the chain is empty, print out NULL
