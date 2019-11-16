@@ -9,15 +9,15 @@
 
 .PHONY: all clean
 
-all: bin bin/invoice 
+all: bin bin/invoice
 
 bin: 
 	mkdir -p bin
 
 bin/invoice: bin/invoice.o \
 ../HashTable/bin/ht.o ../GenericDynamicList/bin/list.o
-	gcc -o bin/invoice \
-	../HashTable/bin/ht.o ../GenericDynamicList/bin/list.o -g -Wall
+	gcc -o bin/invoice bin/invoice.o ../HashTable/bin/ht.o \
+	../GenericDynamicList/bin/list.o -g -Wall
 	
 bin/invoice.o: src/invoice.c include/invoice.h \
 ../HashTable/include/ht.h ../GenericDynamicList/include/list.h

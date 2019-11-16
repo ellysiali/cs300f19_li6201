@@ -44,14 +44,18 @@ strcpy(gszHTErrors[ERROR_EMPTY_HT], "Error: Empty Hash Table.");
 // User-defined types
 //*************************************************************************
 typedef struct HashTable *HashTablePtr;
-typedef void (*UserFunction) (void*, void*);
+
+typedef int (*HashFunction) (void*, void*);
+typedef bool (*CompareFunction) (void*, void*);
+typedef void (*PrintFunction) (void*, void*);
+
 typedef struct HashTable
 {
 	ListPtr psTable;
 	int tableSize;
-	UserFunction pHashFunction;
-	UserFunction pCompareFunction;
-	UserFunction pPrintFunction;
+	HashFunction pHashFunction;
+	CompareFunction pCompareFunction;
+	PrintFunction pPrintFunction;
 } HashTable;
 
 typedef struct HashTableElement
@@ -63,7 +67,9 @@ typedef struct HashTableElement
 /**************************************************************************
 *										Allocation and Deallocation
 **************************************************************************/
-extern void htCreate (HashTablePtr psHTable);
+extern void htCreate (HashTablePtr psHTable, UserFunction pHashFunction,
+		 	 	 	 	 	 	 	 	 	UserFunction pCompareFunction,
+											UserFunction pPrintFunction);
 // results: If HT can be created, then HT exists and is empty
 //					otherwise, ERROR_NO_HT_CREATE
 
@@ -102,7 +108,7 @@ extern bool htDelete (HashTablePtr psHTable, const void *pKey, void *pData);
 //															 ERROR_EMPTY_HT
 
 extern bool htUpdate (HashTablePtr psHTable, const void *pKey,
-		 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	const void *pData);
+		 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 const void *pData);
 // requires: psQueue is not empty
 // results: Updates the data from a given key in the hash table
 //					error code priority: ERROR_INVALID_HT, ERROR_NULL_HT_PTR,
