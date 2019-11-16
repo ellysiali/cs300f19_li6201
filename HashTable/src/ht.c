@@ -204,7 +204,7 @@ bool htFind (HashTablePtr psHTable, const void *pKey, void *pData)
 
  Parameters:	psHTable - pointer to the hash table
 
- Returned:	 	true if the key was found; false otherwise
+ Returned:	 	None
  *************************************************************************/
 void htPrint (HashTablePtr psHTable)
 {
