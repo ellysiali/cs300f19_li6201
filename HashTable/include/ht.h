@@ -45,13 +45,13 @@ strcpy(gszHTErrors[ERROR_EMPTY_HT], "Error: Empty Hash Table.");
 //*************************************************************************
 typedef struct HashTable *HashTablePtr;
 
-typedef int (*HashFunction) (void*, void*);
-typedef bool (*CompareFunction) (void*, void*);
-typedef void (*PrintFunction) (void*, void*);
+typedef int (*HashFunction) (const void*);
+typedef bool (*CompareFunction) (const void*, const void*);
+typedef void (*PrintFunction) (const void*, const void*);
 
 typedef struct HashTable
 {
-	ListPtr psTable;
+	ListPtr psLists;
 	int tableSize;
 	HashFunction pHashFunction;
 	CompareFunction pCompareFunction;
@@ -67,9 +67,9 @@ typedef struct HashTableElement
 /**************************************************************************
 *										Allocation and Deallocation
 **************************************************************************/
-extern void htCreate (HashTablePtr psHTable, UserFunction pHashFunction,
-		 	 	 	 	 	 	 	 	 	UserFunction pCompareFunction,
-											UserFunction pPrintFunction);
+extern void htCreate (HashTablePtr psHTable, HashFunction pHashFunction,
+										  CompareFunction pCompareFunction,
+											PrintFunction pPrintFunction, const int size);
 // results: If HT can be created, then HT exists and is empty
 //					otherwise, ERROR_NO_HT_CREATE
 

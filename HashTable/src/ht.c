@@ -43,10 +43,24 @@ static void processError (const char *pszFunctionName, int errorCode)
 
  Returned:	 	None
  *************************************************************************/
-void htCreate (HashTablePtr psHTable, UserFunction pHashFunction,
-							 UserFunction pCompareFunction, UserFunction pPrintFunction)
+void htCreate (HashTablePtr psHTable, HashFunction pHashFunction,
+							 CompareFunction pCompareFunction, PrintFunction pPrintFunction,
+							 const int size)
 {
-
+	int i;
+	if (NULL == psHTable)
+	{
+		processError ("htCreate", ERROR_NO_HT_CREATE);
+	}
+	psHTable->tableSize = size;
+	psHTable->psLists = (ListPtr) malloc (sizeof (List) * size);
+	for (i = 0; size > i; i++)
+	{
+		lstCreate (&psHTable->psLists[i]);
+	}
+	psHTable->pCompareFunction = pCompareFunction;
+	psHTable->pHashFunction = pHashFunction;
+	psHTable->pPrintFunction = pPrintFunction;
 }
 // results: If HT can be created, then HT exists and is empty
 //					otherwise, ERROR_NO_HT_CREATE
@@ -62,7 +76,27 @@ void htCreate (HashTablePtr psHTable, UserFunction pHashFunction,
  *************************************************************************/
 void htTerminate (HashTablePtr psHTable)
 {
-
+	int i;
+	HashTableElement sTempHTE;
+	if (NULL == psHTable)
+	{
+		processError ("htTerminate", ERROR_NO_HT_TERMINATE);
+	}
+	for (i = 0; psHTable->tableSize > i; i++)
+	{
+		while (!lstIsEmpty (&psHTable->psLists[i]))
+		{
+			lstFirst (&psHTable->psLists[i]);
+			lstDeleteCurrent (&psHTable->psLists[i], &sTempHTE,
+												sizeof (HashTableElement));
+			free (sTempHTE.pData);
+			free (sTempHTE.pKey);
+		}
+	}
+	free (psHTable->psLists);
+	psHTable->pCompareFunction = NULL;
+	psHTable->pHashFunction = NULL;
+	psHTable->pPrintFunction = NULL;
 }
 // results: If HT can be terminated, then HT no longer exists and is empty
 //				   otherwise, ERROR_NO_HT_TERMINATE
@@ -94,10 +128,12 @@ void htLoadErrorMessages ()
  *************************************************************************/
 int htSize (const HashTablePtr psHTable)
 {
-	return 0;
+	if (NULL == psHTable)
+	{
+		processError ("htSize", ERROR_INVALID_HT);
+	}
+	return psHTable->tableSize;
 }
-// results: Returns the number of buckets (size) of the hash table
-// 					error code priority: ERROR_INVALID_HT if HT is NULL
 
 /**************************************************************************
  Function: 	 	htIsEmpty
@@ -110,6 +146,18 @@ int htSize (const HashTablePtr psHTable)
  *************************************************************************/
 bool htIsEmpty (const HashTablePtr psHTable)
 {
+	int i;
+	if (NULL == psHTable)
+	{
+		processError ("htIsEmpty", ERROR_INVALID_HT);
+	}
+	for (i = 0; psHTable->tableSize < i; i++)
+	{
+		if (!lstIsEmpty (&psHTable->psLists[i]))
+		{
+			return false;
+		}
+	}
 	return true;
 }
 // results: If HT is empty, return true; otherwise, return false
@@ -130,6 +178,40 @@ bool htIsEmpty (const HashTablePtr psHTable)
 bool htInsert (HashTablePtr psHTable, const void *pKey,
 																			const void *pData)
 {
+	int bucket;
+	HashTableElement sTempHTE;
+	if (NULL == psHTable)
+	{
+		processError ("htInsert", ERROR_INVALID_HT);
+	}
+	if (NULL == pKey || NULL == pData)
+	{
+		processError ("htInsert", ERROR_NULL_HT_PTR);
+	}
+	bucket = psHTable->pHashFunction (pKey);
+	if (!lstHasCurrent (&psHTable->psLists[bucket]))
+	{
+		sTempHTE.pKey = pKey;
+		sTempHTE.pData = pData;
+		lstInsertBefore (&psHTable->psLists[bucket], &sTempHTE,
+										 sizeof (HashTableElement));
+		return true;
+	}
+	lstFirst (&psHTable->psLists[bucket]);
+	while (lstHasCurrent (&psHTable->psLists[bucket]))
+	{
+		lstPeek (&psHTable->psLists[bucket], &sTempHTE, sizeof (HashTableElement));
+		if (psHTable->pCompareFunction (pKey, pData))
+		{
+			return false;
+		}
+		lstNext (&psHTable->psLists[bucket]);
+	}
+	lstFirst (&psHTable->psLists[bucket]);
+	sTempHTE.pKey = pKey;
+	sTempHTE.pData = pData;
+	lstInsertBefore (&psHTable->psLists[bucket], &sTempHTE,
+									 sizeof (HashTableElement));
 	return true;
 }
 // requires:
@@ -150,12 +232,35 @@ bool htInsert (HashTablePtr psHTable, const void *pKey,
  *************************************************************************/
 bool htDelete (HashTablePtr psHTable, const void *pKey, void *pData)
 {
-	return true;
+	int bucket;
+	HashTableElement sTempHTE;
+	if (NULL == psHTable)
+	{
+		processError ("htDelete", ERROR_INVALID_HT);
+	}
+	if (NULL == pKey || NULL == pData)
+	{
+		processError ("htDelete", ERROR_NULL_HT_PTR);
+	}
+	bucket = psHTable->pHashFunction (pKey);
+	lstFirst (&psHTable->psLists[bucket]);
+
+	while (lstHasCurrent (&psHTable->psLists[bucket]))
+	{
+		lstPeek (&psHTable->psLists[bucket], &sTempHTE, sizeof (HashTableElement));
+		if (psHTable->pCompareFunction (pKey, pData))
+		{
+			lstDeleteCurrent (&psHTable->psLists[bucket], &sTempHTE,
+											  sizeof (HashTableElement));
+			memcpy (pData, sTempHTE.pData, sizeof (*(sTempHTE.pData)));
+			return true;
+		}
+	}
+	return false;
 }
 // requires: psHTable is not empty
 // results: Remove the data and key from the hash table, returning the data
-//					error code priority: ERROR_INVALID_HT, ERROR_NULL_HT_PTR,
-//															 ERROR_EMPTY_HT
+//					error code priority: ERROR_INVALID_HT, ERROR_NULL_HT_PTR
 
 /**************************************************************************
  Function: 	 	htUpdate
@@ -171,12 +276,35 @@ bool htDelete (HashTablePtr psHTable, const void *pKey, void *pData)
 bool htUpdate (HashTablePtr psHTable, const void *pKey,
 		 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	const void *pData)
 {
-	return true;
+	int bucket;
+	HashTableElement sTempHTE;
+	if (NULL == psHTable)
+	{
+		processError ("htUpdate", ERROR_INVALID_HT);
+	}
+	if (NULL == pKey || NULL == pData)
+	{
+		processError ("htUpdate", ERROR_NULL_HT_PTR);
+	}
+	bucket = psHTable->pHashFunction (pKey);
+	lstFirst (&psHTable->psLists[bucket]);
+
+	while (lstHasCurrent (&psHTable->psLists[bucket]))
+	{
+		lstPeek (&psHTable->psLists[bucket], &sTempHTE, sizeof (HashTableElement));
+		if (psHTable->pCompareFunction (pKey, pData))
+		{
+			sTempHTE.pData = pData;
+			lstUpdateCurrent (&psHTable->psLists[bucket], &sTempHTE,
+											  sizeof (HashTableElement));
+			return true;
+		}
+	}
+	return false;
 }
 // requires: psQueue is not empty
 // results: Updates the data from a given key in the hash table
-//					error code priority: ERROR_INVALID_HT, ERROR_NULL_HT_PTR,
-//															 ERROR_EMPTY_HT
+//					error code priority: ERROR_INVALID_HT, ERROR_NULL_HT_PTR
 
 /**************************************************************************
  Function: 	 	htFind
@@ -191,11 +319,31 @@ bool htUpdate (HashTablePtr psHTable, const void *pKey,
  *************************************************************************/
 bool htFind (HashTablePtr psHTable, const void *pKey, void *pData)
 {
-	return true;
+	int bucket;
+	HashTableElement sTempHTE;
+	if (NULL == psHTable)
+	{
+		processError ("htFind", ERROR_INVALID_HT);
+	}
+	if (NULL == pKey || NULL == pData)
+	{
+		processError ("htFind", ERROR_NULL_HT_PTR);
+	}
+	bucket = psHTable->pHashFunction (pKey);
+	lstFirst (&psHTable->psLists[bucket]);
+
+	while (lstHasCurrent (&psHTable->psLists[bucket]))
+	{
+		lstPeek (&psHTable->psLists[bucket], &sTempHTE, sizeof (HashTableElement));
+		if (psHTable->pCompareFunction (pKey, pData))
+		{
+			return true;
+		}
+	}
+	return false;
 }
 // results: Find and return the data for a given key in the hash table
-// 						error code priority: ERROR_INVALID_HT, ERROR_NULL_HT_PTR,
-//																 ERROR_EMPTY_HT
+// 						error code priority: ERROR_INVALID_HT, ERROR_NULL_HT_PTR
 
 /**************************************************************************
  Function: 	 	htPrint
@@ -208,9 +356,35 @@ bool htFind (HashTablePtr psHTable, const void *pKey, void *pData)
  *************************************************************************/
 void htPrint (HashTablePtr psHTable)
 {
+	int i = 0;
+	HashTableElement sTempHTE;
+	if (NULL == psHTable)
+	{
+		processError ("htPrint", ERROR_INVALID_HT);
+	}
+	for (i = 0; psHTable->tableSize > i; i++)
+	{
+		printf ("Bucket %d: ", i);
 
+		if (!lstHasCurrent (&psHTable->psLists[i]))
+		{
+			printf ("NULL");
+		}
+		else
+		{
+			lstFirst (&psHTable->psLists[i]);
+		}
+		while (lstHasCurrent (&psHTable->psLists[i]))
+		{
+			lstPeek (&psHTable->psLists[i], &sTempHTE, sizeof (HashTableElement));
+			psHTable->pPrintFunction (sTempHTE.pKey, sTempHTE.pData);
+			printf (" ");
+			lstNext (&psHTable->psLists[i]);
+		}
+		puts ("");
+	}
 }
 // requires: psQueue is not empty
 // results: Debugging purposes; print out each bucket and its chain;
 //					if the chain is empty, print out NULL
-// 						error code priority: ERROR_INVALID_Q, ERROR_EMPTY_HT
+// 						error code priority: ERROR_INVALID_Q
