@@ -40,21 +40,26 @@ static void processError (const char *pszFunctionName, int errorCode)
  	 	 	 	 	 	 	pHashFunction 	 - function pointer to the hash function
  	 	 	 	 	 	 	pCompareFunction - function pointer to the compare function
  	 	 	 	 	 	 	pPrintFunction   - function pointer to the print function
+ 	 	 	 	 	 	 	arraySize				 - size of the array
+ 	 	 	 	 	 	 	keySize					 - size of the data type of the key
+ 	 	 	 	 	 	 	dataSize				 - size of the data type of the data
 
  Returned:	 	None
  *************************************************************************/
 void htCreate (HashTablePtr psHTable, HashFunction pHashFunction,
 							 CompareFunction pCompareFunction, PrintFunction pPrintFunction,
-							 const int size)
+							 const int arraySize, const int keySize, const int dataSize)
 {
 	int i;
 	if (NULL == psHTable)
 	{
 		processError ("htCreate", ERROR_NO_HT_CREATE);
 	}
-	psHTable->tableSize = size;
-	psHTable->psLists = (ListPtr) malloc (sizeof (List) * size);
-	for (i = 0; size > i; i++)
+	psHTable->keySize = keySize;
+	psHTable->dataSize = dataSize;
+	psHTable->tableSize = arraySize;
+	psHTable->psLists = (ListPtr) malloc (sizeof (List) * arraySize);
+	for (i = 0; arraySize > i; i++)
 	{
 		lstCreate (&psHTable->psLists[i]);
 	}
@@ -151,7 +156,7 @@ bool htIsEmpty (const HashTablePtr psHTable)
 	{
 		processError ("htIsEmpty", ERROR_INVALID_HT);
 	}
-	for (i = 0; psHTable->tableSize < i; i++)
+	for (i = 0; psHTable->tableSize > i; i++)
 	{
 		if (!lstIsEmpty (&psHTable->psLists[i]))
 		{
@@ -189,10 +194,12 @@ bool htInsert (HashTablePtr psHTable, const void *pKey,
 		processError ("htInsert", ERROR_NULL_HT_PTR);
 	}
 	bucket = psHTable->pHashFunction (pKey);
-	if (!lstHasCurrent (&psHTable->psLists[bucket]))
+	if (lstIsEmpty (&psHTable->psLists[bucket]))
 	{
-		sTempHTE.pKey = pKey;
-		sTempHTE.pData = pData;
+		sTempHTE.pKey = malloc (psHTable->keySize);
+		sTempHTE.pData = malloc (psHTable->dataSize);
+		memcpy (sTempHTE.pKey, pKey, psHTable->keySize);
+		memcpy (sTempHTE.pData, pData, psHTable->dataSize);
 		lstInsertBefore (&psHTable->psLists[bucket], &sTempHTE,
 										 sizeof (HashTableElement));
 		return true;
@@ -201,15 +208,17 @@ bool htInsert (HashTablePtr psHTable, const void *pKey,
 	while (lstHasCurrent (&psHTable->psLists[bucket]))
 	{
 		lstPeek (&psHTable->psLists[bucket], &sTempHTE, sizeof (HashTableElement));
-		if (psHTable->pCompareFunction (pKey, pData))
+		if (psHTable->pCompareFunction (pKey, sTempHTE.pKey))
 		{
 			return false;
 		}
 		lstNext (&psHTable->psLists[bucket]);
 	}
 	lstFirst (&psHTable->psLists[bucket]);
-	sTempHTE.pKey = pKey;
-	sTempHTE.pData = pData;
+	sTempHTE.pKey = malloc (psHTable->keySize);
+	sTempHTE.pData = malloc (psHTable->dataSize);
+	memcpy (sTempHTE.pKey, pKey, psHTable->keySize);
+	memcpy (sTempHTE.pData, pData, psHTable->dataSize);
 	lstInsertBefore (&psHTable->psLists[bucket], &sTempHTE,
 									 sizeof (HashTableElement));
 	return true;
@@ -294,7 +303,7 @@ bool htUpdate (HashTablePtr psHTable, const void *pKey,
 		lstPeek (&psHTable->psLists[bucket], &sTempHTE, sizeof (HashTableElement));
 		if (psHTable->pCompareFunction (pKey, pData))
 		{
-			sTempHTE.pData = pData;
+			memcpy (sTempHTE.pData, pData, psHTable->dataSize);
 			lstUpdateCurrent (&psHTable->psLists[bucket], &sTempHTE,
 											  sizeof (HashTableElement));
 			return true;

@@ -52,7 +52,7 @@ typedef void (*PrintFunction) (const void*, const void*);
 typedef struct HashTable
 {
 	ListPtr psLists;
-	int tableSize;
+	int tableSize, keySize, dataSize;
 	HashFunction pHashFunction;
 	CompareFunction pCompareFunction;
 	PrintFunction pPrintFunction;
@@ -69,7 +69,8 @@ typedef struct HashTableElement
 **************************************************************************/
 extern void htCreate (HashTablePtr psHTable, HashFunction pHashFunction,
 										  CompareFunction pCompareFunction,
-											PrintFunction pPrintFunction, const int size);
+											PrintFunction pPrintFunction, const int arraySize,
+											const int keySize, const int dataSize);
 // results: If HT can be created, then HT exists and is empty
 //					otherwise, ERROR_NO_HT_CREATE
 

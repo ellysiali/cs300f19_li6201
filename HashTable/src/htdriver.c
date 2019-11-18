@@ -13,7 +13,7 @@
 
 #include "../include/ht.h"
 
-#define STRING_HASH_SIZE 7
+#define STRING_HASH_SIZE 1
 #define INT_HASH_SIZE 256
 #define MASK 0x000ff000
 #define SHIFT 12
@@ -118,7 +118,7 @@ static int midSquareHash (const void* pKey)
  ****************************************************************************/
 static bool compareString (const void* pKey, const void* pOtherKey)
 {
-	return 0 == strncmp (pKey, pOtherKey, MAX_STRING_SIZE);
+	return 0 == strncmp ((char*) pKey, (char*) pOtherKey, MAX_STRING_SIZE);
 }
 
 /****************************************************************************
@@ -178,15 +178,17 @@ static void printInt (const void* pKey, const void* pData)
  *************************************************************************/
 int main ()
 {
+	const char WORD1[] = "Apple", WORD2[] = "Orange";
 	HashTable sTheHTable;
-	char szArray[MAX_STRING_SIZE], i, word[] = "B";
-	int j;
+	char szKey[MAX_STRING_SIZE];
+	int i = 0;
 	float k;
 
 	puts ("Driver Start\n");
 
+	// Validate htCreate
 	htCreate (&sTheHTable, stringHash, compareString, printString,
-						STRING_HASH_SIZE);
+						STRING_HASH_SIZE, sizeof (char) * MAX_STRING_SIZE, sizeof (int));
 
 	assert (htIsEmpty (&sTheHTable), "Initiated HT is empty",
 																   "Initiated HT is NOT empty");
@@ -194,26 +196,58 @@ int main ()
 					"String HT is correct size",
 					"String HT is NOT correct size");
 
-	i = 'A';
-	memset (szArray, '\0', MAX_STRING_SIZE);
-	strncpy (szArray, &i, MAX_STRING_SIZE);
-	j = 0;
+	// Validate htInsert works when adding to an empty/nonempty bucket
 
-	htInsert (&sTheHTable, &szArray, &j);
+	strncpy (szKey, WORD1, MAX_STRING_SIZE);
+	assert (htInsert (&sTheHTable, &szKey, &i),
+					"Element inserted into empty bucket",
+					"Element NOT inserted into empty bucket");
+	assert (!htIsEmpty (&sTheHTable),
+					"Hash table is not empty",
+					"Hash table IS empty");
 
-	memset (szArray, '\0', MAX_STRING_SIZE);
-	strncpy (szArray, word, MAX_STRING_SIZE);
-	j = 2;
-
-	// Issues with inserting - trying to use memcpy but don't know the size of
-	// pData nor pKey
-	htInsert (&sTheHTable, &szArray, &j);
+	strncpy (szKey, WORD2, MAX_STRING_SIZE);
+	i++;
+	assert (htInsert (&sTheHTable, &szKey, &i),
+					"Element inserted into nonempty bucket",
+					"Element NOT inserted into nonempty bucket");
+	assert (!htIsEmpty (&sTheHTable),
+					"Hash table is not empty",
+					"Hash table IS empty");
 
 	htPrint (&sTheHTable);
 
+	// Validate htInsert will NOT add an element if it has a pre-existing key
+
+	assert (!htInsert (&sTheHTable, &szKey, &i),
+					"Pre-existing element was not inserted into hash table",
+					"Pre-existing element WAS inserted into hash table");
+
+	// Validate htDelete with a valid key
+
+
+
+	// Validate htDelete with an invalid key
+
+
+
+	// Validate a fully deleted hash table is empty and htDelete when empty
+
+
+
 	htTerminate (&sTheHTable);
 
-	puts ("End");
+	// Validate the hash table using a lot more elements and a larger table
+	// (using int keys and float data this time)
+
+	htCreate (&sTheHTable, midSquareHash, compareInt, printInt,
+						INT_HASH_SIZE, sizeof (int), sizeof (float));
+
+
+
+	htTerminate (&sTheHTable);
+
+	puts ("\nDriver End");
 
 	return EXIT_SUCCESS;
 }
