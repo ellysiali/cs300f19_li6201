@@ -103,7 +103,7 @@ static int stringHash (const void* pKey)
  ****************************************************************************/
 static int midSquareHash (const void* pKey)
 {
-	return (*(int*) pKey) * (*(int*) pKey) & MASK >> SHIFT;
+	return (*(uint64_t*) pKey) * (*(uint64_t*) pKey) & MASK >> SHIFT;
 }
 
 /****************************************************************************
@@ -178,10 +178,10 @@ static void printInt (const void* pKey, const void* pData)
  *************************************************************************/
 int main ()
 {
-	const char WORD1[] = "Apple", WORD2[] = "Orange";
+	const char WORD1[] = "Red", WORD2[] = "Orange";
 	HashTable sTheHTable;
 	char szKey[MAX_STRING_SIZE];
-	int i = 0;
+	int i = 0, intBuffer;
 	float k;
 
 	puts ("Driver Start\n");
@@ -190,11 +190,13 @@ int main ()
 	htCreate (&sTheHTable, stringHash, compareString, printString,
 						STRING_HASH_SIZE, sizeof (char) * MAX_STRING_SIZE, sizeof (int));
 
-	assert (htIsEmpty (&sTheHTable), "Initiated HT is empty",
-																   "Initiated HT is NOT empty");
+	assert (htIsEmpty (&sTheHTable), "Initiated hash table is empty",
+																   "Initiated hash table is NOT empty");
 	assert (STRING_HASH_SIZE == htSize (&sTheHTable),
-					"String HT is correct size",
-					"String HT is NOT correct size");
+					"String hash table is correct size",
+					"String hash table is NOT correct size");
+	htPrint (&sTheHTable);
+	puts ("");
 
 	// Validate htInsert works when adding to an empty/nonempty bucket
 
@@ -216,24 +218,59 @@ int main ()
 					"Hash table IS empty");
 
 	htPrint (&sTheHTable);
+	puts ("");
 
 	// Validate htInsert will NOT add an element if it has a pre-existing key
 
 	assert (!htInsert (&sTheHTable, &szKey, &i),
 					"Pre-existing element was not inserted into hash table",
 					"Pre-existing element WAS inserted into hash table");
+	puts ("");
+
+	// Validate htFind with a valid key
+
+	assert (htFind (&sTheHTable, &szKey, &intBuffer),
+					"Key was found in the hash table",
+					"Key was NOT found in the hash table");
+	puts ("");
+
+	assert (i == intBuffer, "Found (peeked) data is correct",
+													"Found (peeked) data is NOT correct");
 
 	// Validate htDelete with a valid key
 
+	assert (htDelete (&sTheHTable, &szKey, &i),
+					"Element deleted from hash table",
+					"Element NOT deleted from hash table");
 
+	assert (i == intBuffer, "Deleted data is correct",
+													"Deleted data is NOT correct");
+	puts ("");
+
+	// Validate htFind with an invalid key
+
+	assert (!htFind (&sTheHTable, &szKey, &intBuffer),
+					"Non-existent key was not found in the hash table",
+					"Non-existent key WAS found in the hash table");
+	htPrint (&sTheHTable);
+	puts ("");
 
 	// Validate htDelete with an invalid key
 
-
+	assert (!htDelete (&sTheHTable, &szKey, &i),
+					"Non-existent element was not deleted from hash table",
+					"Non-existent element WAS deleted from hash table");
+	puts ("");
 
 	// Validate a fully deleted hash table is empty and htDelete when empty
 
+	i--;
+	strncpy (szKey, WORD1, MAX_STRING_SIZE);
+	htDelete (&sTheHTable, &szKey, &i);
 
+	assert (htIsEmpty (&sTheHTable), "Fully deleted hash table is empty",
+																   "Fully deleted hash table is NOT empty");
+	htPrint (&sTheHTable);
 
 	htTerminate (&sTheHTable);
 

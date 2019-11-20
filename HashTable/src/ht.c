@@ -252,18 +252,27 @@ bool htDelete (HashTablePtr psHTable, const void *pKey, void *pData)
 		processError ("htDelete", ERROR_NULL_HT_PTR);
 	}
 	bucket = psHTable->pHashFunction (pKey);
+
+	if (lstIsEmpty (&psHTable->psLists[bucket]))
+	{
+		return false;
+	}
+
 	lstFirst (&psHTable->psLists[bucket]);
 
 	while (lstHasCurrent (&psHTable->psLists[bucket]))
 	{
 		lstPeek (&psHTable->psLists[bucket], &sTempHTE, sizeof (HashTableElement));
-		if (psHTable->pCompareFunction (pKey, pData))
+		if (psHTable->pCompareFunction (pKey, sTempHTE.pKey))
 		{
 			lstDeleteCurrent (&psHTable->psLists[bucket], &sTempHTE,
 											  sizeof (HashTableElement));
-			memcpy (pData, sTempHTE.pData, sizeof (*(sTempHTE.pData)));
+			memcpy (pData, sTempHTE.pData, psHTable->dataSize);
+			free (sTempHTE.pData);
+			free (sTempHTE.pKey);
 			return true;
 		}
+		lstNext (&psHTable->psLists[bucket]);
 	}
 	return false;
 }
@@ -296,18 +305,25 @@ bool htUpdate (HashTablePtr psHTable, const void *pKey,
 		processError ("htUpdate", ERROR_NULL_HT_PTR);
 	}
 	bucket = psHTable->pHashFunction (pKey);
+
+	if (lstIsEmpty (&psHTable->psLists[bucket]))
+	{
+		return false;
+	}
+
 	lstFirst (&psHTable->psLists[bucket]);
 
 	while (lstHasCurrent (&psHTable->psLists[bucket]))
 	{
 		lstPeek (&psHTable->psLists[bucket], &sTempHTE, sizeof (HashTableElement));
-		if (psHTable->pCompareFunction (pKey, pData))
+		if (psHTable->pCompareFunction (pKey, sTempHTE.pKey))
 		{
 			memcpy (sTempHTE.pData, pData, psHTable->dataSize);
 			lstUpdateCurrent (&psHTable->psLists[bucket], &sTempHTE,
 											  sizeof (HashTableElement));
 			return true;
 		}
+		lstNext (&psHTable->psLists[bucket]);
 	}
 	return false;
 }
@@ -339,15 +355,23 @@ bool htFind (HashTablePtr psHTable, const void *pKey, void *pData)
 		processError ("htFind", ERROR_NULL_HT_PTR);
 	}
 	bucket = psHTable->pHashFunction (pKey);
+
+	if (lstIsEmpty (&psHTable->psLists[bucket]))
+	{
+		return false;
+	}
+
 	lstFirst (&psHTable->psLists[bucket]);
 
 	while (lstHasCurrent (&psHTable->psLists[bucket]))
 	{
 		lstPeek (&psHTable->psLists[bucket], &sTempHTE, sizeof (HashTableElement));
-		if (psHTable->pCompareFunction (pKey, pData))
+		if (psHTable->pCompareFunction (pKey, sTempHTE.pKey))
 		{
+			memcpy (pData, sTempHTE.pData, psHTable->dataSize);
 			return true;
 		}
+		lstNext (&psHTable->psLists[bucket]);
 	}
 	return false;
 }
