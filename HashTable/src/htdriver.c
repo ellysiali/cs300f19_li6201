@@ -20,7 +20,6 @@
 #define SHIFT 12
 #define MAX_STRING_SIZE 21
 #define LONG_INSERT_SIZE 10000
-
 /****************************************************************************
  Function: 	 	success
 
@@ -78,9 +77,9 @@ static void assert (bool bExpression, const char *pTrue, const char *pFalse)
 
  Description: 	a string hashing function to test the driver with
 
- Parameters:		pKey  - pointer to the (string) key
+ Parameters:		pKey - pointer to the (string) key
 
- Returned:	 		none
+ Returned:	 		the bucket of the respective key
  ****************************************************************************/
 static int stringHash (const void* pKey)
 {
@@ -101,11 +100,11 @@ static int stringHash (const void* pKey)
 
  Parameters:		pKey  - pointer to the (int) key
 
- Returned:	 		none
+ Returned:	 		the bucket of the respective key
  ****************************************************************************/
 static int midSquareHash (const void* pKey)
 {
-	return (*(uint64_t*) pKey) * (*(uint64_t*) pKey) & MASK >> SHIFT;
+	return ((*(uint64_t*) pKey) * (*(uint64_t*) pKey)) & MASK >> SHIFT;
 }
 
 /****************************************************************************
@@ -116,11 +115,12 @@ static int midSquareHash (const void* pKey)
  Parameters:		pKey  - pointer to the (string) key
  	 	 	 	 	 	 	 	pOtherKey - pointer to the other (string) key
 
- Returned:	 		none
+ Returned:	 	  an int representative of the comparison (positive if inserted
+ 	 	 	 	 	 	 	 	after, negative if before, and zero if the same)
  ****************************************************************************/
-static bool compareString (const void* pKey, const void* pOtherKey)
+static int compareString (const void* pKey, const void* pOtherKey)
 {
-	return 0 == strncmp ((char*) pKey, (char*) pOtherKey, MAX_STRING_SIZE);
+	return strncmp ((char*) pKey, (char*) pOtherKey, MAX_STRING_SIZE);
 }
 
 /****************************************************************************
@@ -131,11 +131,12 @@ static bool compareString (const void* pKey, const void* pOtherKey)
  Parameters:		pKey  - pointer to the (int) key
  	 	 	 	 	 	 	 	pOtherKey - pointer to the other (int) key
 
- Returned:	 		none
+ Returned:	 		an int representative of the comparison (positive if inserted
+ 	 	 	 	 	 	 	 	after, negative if before, and zero if the same)
  ****************************************************************************/
-static bool compareInt (const void* pKey, const void* pOtherKey)
+static int compareInt (const void* pKey, const void* pOtherKey)
 {
-	return *(int*) pKey == *(int*) pOtherKey;
+	return *(int*) pKey - *(int*) pOtherKey;
 }
 
 
@@ -170,7 +171,7 @@ static void printInt (const void* pKey, const void* pData)
 }
 
 /**************************************************************************
- Function: 	 	main"String HT is correct size"
+ Function: 	 	main
 
  Description: test all the functionality of the hash table
 
@@ -310,6 +311,7 @@ int main ()
 					"Incorrect key/data inserted into hash table");
 		}
 		j++;
+
 	}
 
 	// Update elements

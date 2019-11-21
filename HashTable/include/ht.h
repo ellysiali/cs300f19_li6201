@@ -46,7 +46,7 @@ strcpy(gszHTErrors[ERROR_EMPTY_HT], "Error: Empty Hash Table.");
 typedef struct HashTable *HashTablePtr;
 
 typedef int (*HashFunction) (const void*);
-typedef bool (*CompareFunction) (const void*, const void*);
+typedef int (*CompareFunction) (const void*, const void*);
 typedef void (*PrintFunction) (const void*, const void*);
 
 typedef struct HashTable
