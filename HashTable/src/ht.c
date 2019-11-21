@@ -55,20 +55,27 @@ void htCreate (HashTablePtr psHTable, HashFunction pHashFunction,
 	{
 		processError ("htCreate", ERROR_NO_HT_CREATE);
 	}
+	if (NULL == pHashFunction || NULL == pCompareFunction ||
+			NULL == pPrintFunction)
+	{
+		processError ("htCreate", ERROR_NULL_HT_PTR);
+	}
 	psHTable->keySize = keySize;
 	psHTable->dataSize = dataSize;
 	psHTable->tableSize = arraySize;
 	psHTable->psLists = (ListPtr) malloc (sizeof (List) * arraySize);
+
 	for (i = 0; arraySize > i; i++)
 	{
 		lstCreate (&psHTable->psLists[i]);
 	}
+
 	psHTable->pCompareFunction = pCompareFunction;
 	psHTable->pHashFunction = pHashFunction;
 	psHTable->pPrintFunction = pPrintFunction;
 }
 // results: If HT can be created, then HT exists and is empty
-//					otherwise, ERROR_NO_HT_CREATE
+//					otherwise, ERROR_NO_HT_CREATE, ERROR_NULL_HT_PTR
 
 /**************************************************************************
  Function: 	 	htTerminate
@@ -98,7 +105,9 @@ void htTerminate (HashTablePtr psHTable)
 			free (sTempHTE.pKey);
 		}
 	}
+
 	free (psHTable->psLists);
+	psHTable->psLists = NULL;
 	psHTable->pCompareFunction = NULL;
 	psHTable->pHashFunction = NULL;
 	psHTable->pPrintFunction = NULL;
@@ -155,6 +164,10 @@ bool htIsEmpty (const HashTablePtr psHTable)
 	if (NULL == psHTable)
 	{
 		processError ("htIsEmpty", ERROR_INVALID_HT);
+	}
+	if (NULL == psHTable->psLists)
+	{
+		return true;
 	}
 	for (i = 0; psHTable->tableSize > i; i++)
 	{
@@ -342,7 +355,7 @@ bool htUpdate (HashTablePtr psHTable, const void *pKey,
 
  Returned:	 	true if the key was found; false otherwise
  *************************************************************************/
-bool htFind (HashTablePtr psHTable, const void *pKey, void *pData)
+bool htFind (const HashTablePtr psHTable, const void *pKey, void *pData)
 {
 	int bucket;
 	HashTableElement sTempHTE;
@@ -387,7 +400,7 @@ bool htFind (HashTablePtr psHTable, const void *pKey, void *pData)
 
  Returned:	 	None
  *************************************************************************/
-void htPrint (HashTablePtr psHTable)
+void htPrint (const HashTablePtr psHTable)
 {
 	int i = 0;
 	HashTableElement sTempHTE;
@@ -399,7 +412,7 @@ void htPrint (HashTablePtr psHTable)
 	{
 		printf ("Bucket %d: ", i);
 
-		if (!lstHasCurrent (&psHTable->psLists[i]))
+		if (lstIsEmpty (&psHTable->psLists[i]))
 		{
 			printf ("NULL");
 		}

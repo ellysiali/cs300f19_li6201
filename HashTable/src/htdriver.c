@@ -12,12 +12,14 @@
 #include <stdint.h>
 
 #include "../include/ht.h"
+#include "../../GenericDynamicList/include/list.h"
 
 #define STRING_HASH_SIZE 1
 #define INT_HASH_SIZE 256
 #define MASK 0x000ff000
 #define SHIFT 12
-#define MAX_STRING_SIZE 9
+#define MAX_STRING_SIZE 21
+#define LONG_INSERT_SIZE 10000
 
 /****************************************************************************
  Function: 	 	success
@@ -28,7 +30,7 @@
 
  Returned:	 	none
  ****************************************************************************/
-static void success (char *pszStr)
+static void success (const char *pszStr)
 {
 	printf ("SUCCESS: %s\n", pszStr);
 }
@@ -43,7 +45,7 @@ static void success (char *pszStr)
  Returned:	 	none
 
  ****************************************************************************/
-static void failure (char *pszStr)
+static void failure (const char *pszStr)
 {
 	printf ("FAILURE: %s\n", pszStr);
 	exit (EXIT_FAILURE);
@@ -83,13 +85,13 @@ static void assert (bool bExpression, const char *pTrue, const char *pFalse)
 static int stringHash (const void* pKey)
 {
 	const int MULTIPLIER = 31;
-	int i, key = 1;
+	int i, bucket = 1;
 
 	for (i = 0; MAX_STRING_SIZE > i; i++)
 	{
-		key = key * MULTIPLIER + *(char*) pKey + i;
+		bucket = bucket * MULTIPLIER + *(char*) pKey + i;
 	}
-	return abs(key) % STRING_HASH_SIZE;
+	return abs(bucket) % STRING_HASH_SIZE;
 }
 
 /****************************************************************************
@@ -149,7 +151,7 @@ static bool compareInt (const void* pKey, const void* pOtherKey)
  ****************************************************************************/
 static void printString (const void* pKey, const void* pData)
 {
-	printf ("%s-%d", (char*) pKey, *(int*) pData);
+	printf ("%s: %d ", (char*) pKey, *(int*) pData);
 }
 
 /****************************************************************************
@@ -164,7 +166,7 @@ static void printString (const void* pKey, const void* pData)
  ****************************************************************************/
 static void printInt (const void* pKey, const void* pData)
 {
-	printf ("%d-%f", *(int*) pKey, *(float*) pData);
+	printf ("%d, %f ", *(int*) pKey, *(float*) pData);
 }
 
 /**************************************************************************
@@ -180,13 +182,16 @@ int main ()
 {
 	const char WORD1[] = "Red", WORD2[] = "Orange";
 	HashTable sTheHTable;
+	HashTableElement sTemp;
 	char szKey[MAX_STRING_SIZE];
 	int i = 0, intBuffer;
-	float k;
+	float j = 0, floatBuffer;
 
 	puts ("Driver Start\n");
+	htLoadErrorMessages ();
 
 	// Validate htCreate
+
 	htCreate (&sTheHTable, stringHash, compareString, printString,
 						STRING_HASH_SIZE, sizeof (char) * MAX_STRING_SIZE, sizeof (int));
 
@@ -202,8 +207,8 @@ int main ()
 
 	strncpy (szKey, WORD1, MAX_STRING_SIZE);
 	assert (htInsert (&sTheHTable, &szKey, &i),
-					"Element inserted into empty bucket",
-					"Element NOT inserted into empty bucket");
+					"htInsert returned true when inserting into empty bucket",
+					"htInsert returned FALSE when inserting into empty bucket");
 	assert (!htIsEmpty (&sTheHTable),
 					"Hash table is not empty",
 					"Hash table IS empty");
@@ -211,8 +216,10 @@ int main ()
 	strncpy (szKey, WORD2, MAX_STRING_SIZE);
 	i++;
 	assert (htInsert (&sTheHTable, &szKey, &i),
-					"Element inserted into nonempty bucket",
-					"Element NOT inserted into nonempty bucket");
+					"htInsert returned true when inserting valid key into nonempty "
+					"bucket",
+					"htInsert returned FALSE when inserting valid key into nonempty "
+					"bucket");
 	assert (!htIsEmpty (&sTheHTable),
 					"Hash table is not empty",
 					"Hash table IS empty");
@@ -223,43 +230,37 @@ int main ()
 	// Validate htInsert will NOT add an element if it has a pre-existing key
 
 	assert (!htInsert (&sTheHTable, &szKey, &i),
-					"Pre-existing element was not inserted into hash table",
-					"Pre-existing element WAS inserted into hash table");
+					"htInsert returned false when inserting invalid key into bucket",
+					"htInsert returned TRUE when inserting invalid key into bucket");
 	puts ("");
 
-	// Validate htFind with a valid key
+	// Validate htFind and htDelete with a valid key
 
 	assert (htFind (&sTheHTable, &szKey, &intBuffer),
 					"Key was found in the hash table",
 					"Key was NOT found in the hash table");
-	puts ("");
 
-	assert (i == intBuffer, "Found (peeked) data is correct",
-													"Found (peeked) data is NOT correct");
-
-	// Validate htDelete with a valid key
+	assert (i == intBuffer, "Found (returned) data is correct",
+													"Found (returned) data is NOT correct");
 
 	assert (htDelete (&sTheHTable, &szKey, &i),
-					"Element deleted from hash table",
-					"Element NOT deleted from hash table");
+					"htDelete returned true when deleting valid key",
+					"htDelete returned FALSE when deleting valid key");
 
-	assert (i == intBuffer, "Deleted data is correct",
-													"Deleted data is NOT correct");
-	puts ("");
-
-	// Validate htFind with an invalid key
-
-	assert (!htFind (&sTheHTable, &szKey, &intBuffer),
-					"Non-existent key was not found in the hash table",
-					"Non-existent key WAS found in the hash table");
+	assert (i == intBuffer, "Deleted (returned) data is correct",
+													"Deleted (returned) data is NOT correct");
 	htPrint (&sTheHTable);
 	puts ("");
 
-	// Validate htDelete with an invalid key
+	// Validate htFind and htDelete with an invalid key
+
+	assert (!htFind (&sTheHTable, &szKey, &intBuffer),
+					"Invalid key was not found in the hash table",
+					"Invalid key WAS found in the hash table");
 
 	assert (!htDelete (&sTheHTable, &szKey, &i),
-					"Non-existent element was not deleted from hash table",
-					"Non-existent element WAS deleted from hash table");
+					"htDelete returned false when deleting invalid key",
+					"htDelete returned TRUE when deleting invalid key");
 	puts ("");
 
 	// Validate a fully deleted hash table is empty and htDelete when empty
@@ -267,22 +268,94 @@ int main ()
 	i--;
 	strncpy (szKey, WORD1, MAX_STRING_SIZE);
 	htDelete (&sTheHTable, &szKey, &i);
-
 	assert (htIsEmpty (&sTheHTable), "Fully deleted hash table is empty",
 																   "Fully deleted hash table is NOT empty");
 	htPrint (&sTheHTable);
 
+	puts ("");
+
+	// Validate htFind and htDelete with an empty bucket
+
+	assert (!htFind (&sTheHTable, &szKey, &intBuffer),
+					"Invalid key was not found in the (empty) hash table",
+					"Invalid key WAS found in the (empty) hash table");
+
+	assert (!htDelete (&sTheHTable, &szKey, &i),
+					"htDelete returned false when deleting invalid key",
+					"htDelete returned TRUE when deleting invalid key");
+	puts ("");
+
+
 	htTerminate (&sTheHTable);
 
-	// Validate the hash table using a lot more elements and a larger table
+	// Validate the hash table using a lot more elements and an actual table
 	// (using int keys and float data this time)
 
 	htCreate (&sTheHTable, midSquareHash, compareInt, printInt,
 						INT_HASH_SIZE, sizeof (int), sizeof (float));
 
+	// Insert elements
 
+	for (i = 0; i < LONG_INSERT_SIZE; i++)
+	{
+		htInsert (&sTheHTable, &i, &j);
+
+		lstPeek (&(sTheHTable.psLists[midSquareHash (&i)]), &sTemp,
+						 sizeof (HashTableElement));
+
+		if (i != *(int*) sTemp.pKey || j != *(float*) sTemp.pData)
+		{
+			assert (i == *(int*) sTemp.pKey && j == *(float*) sTemp.pData,
+					"Correct key/data inserted into hash table",
+					"Incorrect key/data inserted into hash table");
+		}
+		j++;
+	}
+
+	// Update elements
+
+	j = 1;
+	for (i = 0; i < LONG_INSERT_SIZE; i++)
+	{
+		htUpdate (&sTheHTable, &i, &j);
+
+		lstPeek (&(sTheHTable.psLists[midSquareHash (&i)]), &sTemp,
+						 sizeof (HashTableElement));
+
+		if (i != *(int*) sTemp.pKey || j != *(float*) sTemp.pData)
+		{
+			assert (i == *(int*) sTemp.pKey && j == *(float*) sTemp.pData,
+					"Correct key/data updated",
+					"Incorrect key/data updated");
+		}
+		j++;
+	}
+
+	// Find elements
+
+	j = 1;
+	for (i = 0; i < LONG_INSERT_SIZE; i++)
+	{
+		htFind (&sTheHTable, &i, &floatBuffer);
+
+		if (j != floatBuffer)
+		{
+			assert (j != floatBuffer,
+					"Correct data for key found",
+					"Incorrect data for key found");
+		}
+		j++;
+	}
+
+	success ("Validated hash table functions for larger int-key, "
+					 "float-data hash table");
+
+	// Validate when terminating a non-empty hash table
 
 	htTerminate (&sTheHTable);
+
+	assert (htIsEmpty (&sTheHTable), "Terminated hash table is empty",
+																   "Terminated hash table is NOT empty");
 
 	puts ("\nDriver End");
 

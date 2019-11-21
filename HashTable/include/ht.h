@@ -118,12 +118,12 @@ extern bool htUpdate (HashTablePtr psHTable, const void *pKey,
 /**************************************************************************
 *													Peek and Print Operations
 **************************************************************************/
-extern bool htFind (HashTablePtr psHTable, const void *pKey, void *pData);
+extern bool htFind (const HashTablePtr psHTable, const void *pKey, void *pData);
 // results: Find and return the data for a given key in the hash table
 // 						error code priority: ERROR_INVALID_HT, ERROR_NULL_HT_PTR,
 //																 ERROR_EMPTY_HT
 
-extern void htPrint (HashTablePtr psHTable);
+extern void htPrint (const HashTablePtr psHTable);
 // requires: psQueue is not empty
 // results: Debugging purposes; print out each bucket and its chain;
 //					if the chain is empty, print out NULL
