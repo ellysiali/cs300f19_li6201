@@ -74,8 +74,6 @@ void htCreate (HashTablePtr psHTable, HashFunction pHashFunction,
 	psHTable->pHashFunction = pHashFunction;
 	psHTable->pPrintFunction = pPrintFunction;
 }
-// results: If HT can be created, then HT exists and is empty
-//					otherwise, ERROR_NO_HT_CREATE, ERROR_NULL_HT_PTR
 
 /**************************************************************************
  Function: 	 	htTerminate
@@ -111,9 +109,8 @@ void htTerminate (HashTablePtr psHTable)
 	psHTable->pCompareFunction = NULL;
 	psHTable->pHashFunction = NULL;
 	psHTable->pPrintFunction = NULL;
+	psHTable->tableSize = psHTable->keySize = psHTable->dataSize = 0;
 }
-// results: If HT can be terminated, then HT no longer exists and is empty
-//				   otherwise, ERROR_NO_HT_TERMINATE
 
 /**************************************************************************
  Function: 	 	htLoadErrorMessages
@@ -178,8 +175,6 @@ bool htIsEmpty (const HashTablePtr psHTable)
 	}
 	return true;
 }
-// results: If HT is empty, return true; otherwise, return false
-// 					error code priority: ERROR_INVALID_HT
 
 /**************************************************************************
  Function: 	 	htInsert
@@ -207,6 +202,9 @@ bool htInsert (HashTablePtr psHTable, const void *pKey,
 		processError ("htInsert", ERROR_NULL_HT_PTR);
 	}
 	bucket = psHTable->pHashFunction (pKey);
+
+	// Inserting when list is empty
+
 	if (lstIsEmpty (&psHTable->psLists[bucket]))
 	{
 		sTempHTE.pKey = malloc (psHTable->keySize);
@@ -217,6 +215,8 @@ bool htInsert (HashTablePtr psHTable, const void *pKey,
 										 sizeof (HashTableElement));
 		return true;
 	}
+
+	// Inserting when new element should be at the end
 
 	lstLast (&psHTable->psLists[bucket]);
 	lstPeek (&psHTable->psLists[bucket], &sTempHTE, sizeof(HashTableElement));
@@ -230,6 +230,8 @@ bool htInsert (HashTablePtr psHTable, const void *pKey,
 				sizeof(HashTableElement));
 		return true;
 	}
+
+	// Inserting in any other situation
 
 	lstFirst (&psHTable->psLists[bucket]);
 	lstPeek (&psHTable->psLists[bucket], &sTempHTE, sizeof(HashTableElement));
@@ -254,9 +256,6 @@ bool htInsert (HashTablePtr psHTable, const void *pKey,
 
 	return true;
 }
-// requires:
-// results: Insert the data and key into the hash table.
-//					error code priority: ERROR_INVALID_HT, ERROR_NULL_HT_PTR
 
 /**************************************************************************
  Function: 	 	htDelete
@@ -309,9 +308,6 @@ bool htDelete (HashTablePtr psHTable, const void *pKey, void *pData)
 			}
 	return false;
 }
-// requires: psHTable is not empty
-// results: Remove the data and key from the hash table, returning the data
-//					error code priority: ERROR_INVALID_HT, ERROR_NULL_HT_PTR
 
 /**************************************************************************
  Function: 	 	htUpdate
@@ -321,7 +317,7 @@ bool htDelete (HashTablePtr psHTable, const void *pKey, void *pData)
  Parameters:	psHTable - pointer to the hash table
  	 	 	 	 	 	  pKey     - pointer to the key
  	 	 	 	 	 	  pData    - pointer to the value to update with
-
+when new element should be at the end
  Returned:	 	true if the key was found and updated; false otherwise
  *************************************************************************/
 bool htUpdate (HashTablePtr psHTable, const void *pKey,
@@ -362,9 +358,6 @@ bool htUpdate (HashTablePtr psHTable, const void *pKey,
 	}
 	return false;
 }
-// requires: psQueue is not empty
-// results: Updates the data from a given key in the hash table
-//					error code priority: ERROR_INVALID_HT, ERROR_NULL_HT_PTR
 
 /**************************************************************************
  Function: 	 	htFind
@@ -412,8 +405,6 @@ bool htFind (const HashTablePtr psHTable, const void *pKey, void *pData)
 	}
 	return false;
 }
-// results: Find and return the data for a given key in the hash table
-// 						error code priority: ERROR_INVALID_HT, ERROR_NULL_HT_PTR
 
 /**************************************************************************
  Function: 	 	htPrint
@@ -454,7 +445,3 @@ void htPrint (const HashTablePtr psHTable)
 		puts ("");
 	}
 }
-// requires: psQueue is not empty
-// results: Debugging purposes; print out each bucket and its chain;
-//					if the chain is empty, print out NULL
-// 						error code priority: ERROR_INVALID_Q

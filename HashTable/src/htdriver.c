@@ -20,6 +20,7 @@
 #define SHIFT 12
 #define MAX_STRING_SIZE 21
 #define LONG_INSERT_SIZE 10000
+
 /****************************************************************************
  Function: 	 	success
 
