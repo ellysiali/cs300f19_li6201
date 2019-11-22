@@ -135,7 +135,7 @@ int main (int argc, char* argv[])
 	int i, count, id, quantity;
 	char szDenom[MAX_STRING_SIZE], szName[MAX_STRING_SIZE],
 			 szManufacturer[MAX_STRING_SIZE], szConcat[MAX_STRING_SIZE];
-	float cost;
+	float cost, conversion;
 	HashTable sCurrencyTable, sItemTable;
 	FILE* pInFile = NULL;
 
@@ -167,11 +167,11 @@ int main (int argc, char* argv[])
   // Implement currency hash table
 
 	pInFile = fopen (argv[CURRENCY], "r");
-	count = fscanf (pInFile, "%s %f", szDenom, &cost);
+	count = fscanf (pInFile, "%s %f", szDenom, &conversion);
 	while (0 < count)
 	{
-		htInsert (&sCurrencyTable, &szDenom, &cost);
-		count = fscanf (pInFile, "%s %f", szDenom, &cost);
+		htInsert (&sCurrencyTable, &szDenom, &conversion);
+		count = fscanf (pInFile, "%s %f", szDenom, &conversion);
 	}
 
 	// Implement item hash table
@@ -185,14 +185,18 @@ int main (int argc, char* argv[])
 		count = fscanf (pInFile, "%d %s %s", &id, szName, szManufacturer);
 	}
 
+	htPrint (&sItemTable);
+
 	// Print purchases to file
+
 	pInFile = fopen (argv[ACTION], "r");
 	count = fscanf (pInFile, "%d %d %f %s", &id, &quantity, &cost, szDenom);
 	while (0 < count)
 	{
-		// Actually add implementation for writing to file
-		// Actually get correct name/manufacturer and prices in USD
-		printf ("%d %s, %d %.2f %.2f\n", id, szManufacturer, quantity, cost, cost);
+		htFind (&sCurrencyTable, szDenom, &conversion);
+		htFind (&sItemTable, &id, &szConcat);
+		printf ("%d %s, %d %.2f %.2f\n", id, szConcat, quantity, cost * conversion,
+																		 quantity * cost * conversion);
 		count = fscanf (pInFile, "%d %d %f %s", &id, &quantity, &cost, szDenom);
 	}
 
