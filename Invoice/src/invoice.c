@@ -18,10 +18,6 @@
 #define MASK 0x000ff000
 #define SHIFT 12
 #define MAX_STRING_SIZE 21
-#define NUMBER_OF_FILES 3
-#define CURRENCY 1
-#define ITEM 2
-#define ACTION 3
 
 /****************************************************************************
  Function: 	 		stringHash
@@ -130,33 +126,22 @@ static void printInt (const void* pKey, const void* pData)
 
  Returned:	 	Exit Status
  *************************************************************************/
-int main (int argc, char* argv[])
+int main ()
 {
-	int i, count, id, quantity;
+	const char* ACTION_FILE = "data/actions.txt";
+	const char* CONVERSION_FILE  = "data/conversions.txt";
+	const char* ITEM_FILE = "data/items.txt";
+	const char* PRINT_FILE = "data/invoice.txt";
+
+	int count, id, quantity;
 	char szDenom[MAX_STRING_SIZE], szName[MAX_STRING_SIZE],
 			 szManufacturer[MAX_STRING_SIZE], szConcat[MAX_STRING_SIZE];
 	float cost, conversion;
 	HashTable sCurrencyTable, sItemTable;
 	FILE* pInFile = NULL;
+	FILE* pOutFile = NULL;
 
-  // Check number of arguments
-
-  if ( argc != NUMBER_OF_FILES + 1)
-  {
-    printf ("Invalid number of arguments\n");
-    return EXIT_FAILURE;
-  }
-
-  // Check valid files
-  for (i = 1; NUMBER_OF_FILES > i; i++)
-	{
-		pInFile = fopen (argv[i], "r");
-		if (NULL == pInFile)
-		{
-			printf ("Could not open file\n");
-			return EXIT_FAILURE;
-		}
-	}
+	// Initialize hash tables
 
   htLoadErrorMessages ();
 	htCreate (&sCurrencyTable, stringHash, compareString, printString,
@@ -166,7 +151,12 @@ int main (int argc, char* argv[])
 
   // Implement currency hash table
 
-	pInFile = fopen (argv[CURRENCY], "r");
+	pInFile = fopen (CONVERSION_FILE, "r");
+	if (NULL == pInFile)
+	{
+		printf ("Could not open file\n");
+		return EXIT_FAILURE;
+	}
 	count = fscanf (pInFile, "%s %f", szDenom, &conversion);
 	while (0 < count)
 	{
@@ -176,7 +166,12 @@ int main (int argc, char* argv[])
 
 	// Implement item hash table
 
-	pInFile = fopen (argv[ITEM], "r");
+	pInFile = fopen (ITEM_FILE, "r");
+	if (NULL == pInFile)
+	{
+		printf ("Could not open file\n");
+		return EXIT_FAILURE;
+	}
 	count = fscanf (pInFile, "%d %s %s", &id, szName, szManufacturer);
 	while (0 < count)
 	{
@@ -185,18 +180,22 @@ int main (int argc, char* argv[])
 		count = fscanf (pInFile, "%d %s %s", &id, szName, szManufacturer);
 	}
 
-	htPrint (&sItemTable);
-
 	// Print purchases to file
 
-	pInFile = fopen (argv[ACTION], "r");
+	pOutFile = fopen (PRINT_FILE, "w");
+	pInFile = fopen (ACTION_FILE, "r");
+	if (NULL == pInFile)
+	{
+		printf ("Could not open file\n");
+		return EXIT_FAILURE;
+	}
 	count = fscanf (pInFile, "%d %d %f %s", &id, &quantity, &cost, szDenom);
 	while (0 < count)
 	{
 		htFind (&sCurrencyTable, szDenom, &conversion);
 		htFind (&sItemTable, &id, &szConcat);
-		printf ("%d %s, %d %.2f %.2f\n", id, szConcat, quantity, cost * conversion,
-																		 quantity * cost * conversion);
+		fprintf (pOutFile, "%d %s, %d %.2f %.2f\n", id, szConcat, quantity,
+						 cost * conversion, quantity * cost * conversion);
 		count = fscanf (pInFile, "%d %d %f %s", &id, &quantity, &cost, szDenom);
 	}
 

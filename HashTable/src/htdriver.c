@@ -300,14 +300,15 @@ int main ()
 
 	for (i = 0; i < LONG_INSERT_SIZE; i++)
 	{
-		htInsert (&sTheHTable, &i, &j);
+		intBuffer = i * i;
+		htInsert (&sTheHTable, &intBuffer, &j);
 
-		lstPeek (&(sTheHTable.psLists[midSquareHash (&i)]), &sTemp,
+		lstPeek (&(sTheHTable.psLists[midSquareHash (&intBuffer)]), &sTemp,
 						 sizeof (HashTableElement));
 
-		if (i != *(int*) sTemp.pKey || j != *(float*) sTemp.pData)
+		if (intBuffer != *(int*) sTemp.pKey || j != *(float*) sTemp.pData)
 		{
-			assert (i == *(int*) sTemp.pKey && j == *(float*) sTemp.pData,
+			assert (intBuffer == *(int*) sTemp.pKey && j == *(float*) sTemp.pData,
 					"Correct key/data inserted into hash table",
 					"Incorrect key/data inserted into hash table");
 		}
@@ -320,14 +321,15 @@ int main ()
 	j = 1;
 	for (i = 0; i < LONG_INSERT_SIZE; i++)
 	{
-		htUpdate (&sTheHTable, &i, &j);
+		intBuffer = i * i;
+		htUpdate (&sTheHTable, &intBuffer, &j);
 
-		lstPeek (&(sTheHTable.psLists[midSquareHash (&i)]), &sTemp,
+		lstPeek (&(sTheHTable.psLists[midSquareHash (&intBuffer)]), &sTemp,
 						 sizeof (HashTableElement));
 
-		if (i != *(int*) sTemp.pKey || j != *(float*) sTemp.pData)
+		if (intBuffer != *(int*) sTemp.pKey || j != *(float*) sTemp.pData)
 		{
-			assert (i == *(int*) sTemp.pKey && j == *(float*) sTemp.pData,
+			assert (intBuffer == *(int*) sTemp.pKey && j == *(float*) sTemp.pData,
 					"Correct key/data updated",
 					"Incorrect key/data updated");
 		}
@@ -339,7 +341,8 @@ int main ()
 	j = 1;
 	for (i = 0; i < LONG_INSERT_SIZE; i++)
 	{
-		htFind (&sTheHTable, &i, &floatBuffer);
+		intBuffer = i * i;
+		htFind (&sTheHTable, &intBuffer, &floatBuffer);
 
 		if (j != floatBuffer)
 		{
@@ -352,6 +355,8 @@ int main ()
 
 	success ("Validated hash table functions for larger int-key, "
 					 "float-data hash table");
+
+	htPrint (&sTheHTable);
 
 	// Validate when terminating a non-empty hash table
 
