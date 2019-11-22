@@ -105,7 +105,7 @@ static int stringHash (const void* pKey)
  ****************************************************************************/
 static int midSquareHash (const void* pKey)
 {
-	return ((*(uint64_t*) pKey) * (*(uint64_t*) pKey)) & MASK >> SHIFT;
+	return (((*(uint64_t*) pKey) * (*(uint64_t*) pKey)) & MASK) >> SHIFT;
 }
 
 /****************************************************************************
@@ -355,8 +355,6 @@ int main ()
 
 	success ("Validated hash table functions for larger int-key, "
 					 "float-data hash table");
-
-	htPrint (&sTheHTable);
 
 	// Validate when terminating a non-empty hash table
 
